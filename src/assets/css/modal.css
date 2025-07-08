@@ -1,0 +1,14 @@
+.modal-enter-active,
+.modal-leave-active {
+  @apply transition-transform transition-opacity duration-300 ease-in-out;
+}
+.modal-enter-from,
+.modal-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
+}
+.modal-enter-to,
+.modal-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
