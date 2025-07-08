@@ -25,12 +25,6 @@ const overlay = useOverlayStore()
 <style scoped>
 
 .landing-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  background-color: $color-landing-bg;
-  overflow: hidden;
 }
 
 .hero-container {
