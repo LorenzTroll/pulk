@@ -1,23 +1,20 @@
 <script setup>
 import { defineProps, defineEmits, watch } from 'vue'
 
-// Props und Emits
 const props = defineProps({
   visible: { type: Boolean, required: true }
 })
 const emit = defineEmits(['close'])
 
-// Close-Funktion
 function close() {
   emit('close')
 }
 
-// Auto-Focus (bleibt unverändert)
 watch(
   () => props.visible,
   (val) => {
     if (val) {
-      // Fokus über tabindex im Container
+      // Fokus via tabindex
     }
   }
 )
@@ -28,42 +25,37 @@ watch(
     <transition name="overlay-slide">
       <div
         v-if="visible"
-        class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[100]"
+        class="overlay-backdrop"
         @click.self="close"
       >
-        <div
-          class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 relative"
-          @keydown.escape.window="close"
-          tabindex="0"
-        >
-          <slot />
-          <button
-            class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-            @click="close"
-            aria-label="Close modal"
-          >
-            &times;
-          </button>
-        </div>
+        <!-- Hier kommt jetzt direkt dein Modal-Content -->
+        <slot />
       </div>
     </transition>
   </Teleport>
 </template>
 
 <style scoped>
-/* Slide-Up + Opacity-Transition für das Overlay */
+.overlay-backdrop {
+  position: fixed;
+  top: 0.7rem; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,1);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  overflow: auto;
+}
+
+/* Slide-Up + Fade */
 .overlay-slide-enter-active,
 .overlay-slide-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.5s ease;
 }
 .overlay-slide-enter-from,
 .overlay-slide-leave-to {
-  transform: translateY(100%); /* startet unten */
-  opacity: 0.7;                /* halbtransparent */
+  transform: translateY(100%); opacity: 0.7;
 }
 .overlay-slide-enter-to,
 .overlay-slide-leave-from {
-  transform: translateY(0);    /* in Position */
-  opacity: 1;                  /* voll opaque */
+  transform: translateY(0); opacity: 1;
 }
 </style>

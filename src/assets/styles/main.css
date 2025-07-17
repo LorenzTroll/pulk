@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'TWK Everett';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url('@/assets/fonts/TWKEverett-Regular.woff2') format('woff2'),
+    url('@/assets/fonts/TWKEverett-Regular.woff')  format('woff'),
+    url('@/assets/fonts/TWKEverett-Regular.otf')  format('opentype');
+}
+
+/* TWK Everett Bold (700) */
+@font-face {
+  font-family: 'TWK Everett';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    url('@/assets/fonts/TWKEverett-Bold.woff2') format('woff2'),
+    url('@/assets/fonts/TWKEverett-Bold.woff')  format('woff'),
+    url('@/assets/fonts/TWKEverett-Bold.otf')  format('opentype');
+}
+
+/* TWK Everett ExtraBold (800) */
+@font-face {
+  font-family: 'TWK Everett';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src:
+    url('@/assets/fonts/TWKEverett-ExtraBold.woff2') format('woff2'),
+    url('@/assets/fonts/TWKEverett-ExtraBold.woff')  format('woff'),
+    url('@/assets/fonts/TWKEverett-ExtraBold.otf')  format('opentype');
+}
 
 html, body {
   margin: 0;
