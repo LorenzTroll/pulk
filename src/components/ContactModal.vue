@@ -1,16 +1,17 @@
 <!-- src/components/ContactModal.vue -->
 <script setup>
 import { defineProps, defineEmits, onMounted, computed, ref, watch } from 'vue'
-import { useOverlayStore }  from '@/stores/overlay'
-import { Calendar }         from 'hkanev-vue-calendar'
+import { useOverlayStore } from '@/stores/overlay'
+import { Calendar } from 'hkanev-vue-calendar'
 import { useCalendarStore } from '@/stores/calendar'
 import 'hkanev-vue-calendar/dist/style.css'
-import Modal                from './Modal.vue'
-import pulkLogo             from '@/assets/pulk-logo-neoncoral.svg'
+import Modal from './Modal.vue'
+import pulkLogo from '@/assets/pulk-logo-neoncoral.svg'
+import pulkContactImage from '@/assets/pulk-contact-image.png'
 
-const props    = defineProps({ visible: Boolean })
-const emit     = defineEmits(['close'])
-const overlay  = useOverlayStore()
+const props = defineProps({ visible: Boolean })
+const emit = defineEmits(['close'])
+const overlay = useOverlayStore()
 const calendar = useCalendarStore()
 
 // steuert Ein-/Ausblenden des Kalenders
@@ -68,12 +69,30 @@ function onDayClick(day) {
   }
 }
 
-// für Anzeige im Input-Feld
+// für Anzeige im Input-Feld im deutschen Datumsformat
 const displayRange = computed(() => {
   const { start, end } = selectedRange.value
-  if (start && end) return `${start} – ${end}`
-  if (start) return start
+  const fmt = d => {
+    const date = new Date(d)
+    return new Intl.DateTimeFormat('de-DE', {
+      day:   '2-digit',
+      month: '2-digit',
+      year:  'numeric'
+    }).format(date)
+  }
+  if (start && end) return `${fmt(start)} – ${fmt(end)}`
+  if (start)          return fmt(start)
   return ''
+})
+
+// Prüft, ob alle Pflicht‑Felder ausgefüllt sind
+const isFormValid = computed(() => {
+  return Boolean(
+    overlay.contactForm.name?.trim() &&
+    overlay.contactForm.usage &&
+    selectedRange.value.start &&
+    overlay.contactForm.message?.trim()
+  )
 })
 </script>
 
@@ -91,8 +110,8 @@ const displayRange = computed(() => {
         <!-- Formular -->
         <div class="form-section">
           <h2 class="contact-title">
-            LUST WAS ZU STARTEN?<br/>
-            SENDE UNS EINE ANFRAGE.
+            LUST, WAS ZU STARTEN?<br/>
+            SCHICK DEINE ANFRAGE.
           </h2>
 
           <form class="contact-form" @submit.prevent="$emit('close')">
@@ -150,12 +169,19 @@ const displayRange = computed(() => {
               <textarea
                 v-model="overlay.contactForm.message"
                 name="message"
-                placeholder="Gib uns bitte eine Beschreibung was du vor hast*"
+                placeholder="Bitte gib uns eine Beschreibung, was du vorhast. Alle Details besprechen wir dann persönlich miteinander.*"
                 required
               />
             </div>
           </form>
         </div>
+        <div class="image-section">
+  <img
+    :src="pulkContactImage"
+    alt="Studio Bild"
+    class="contact-image"
+  />
+</div>
         
         <!-- Kalender-Overlay -->
         <div
@@ -179,7 +205,6 @@ const displayRange = computed(() => {
 
 
 <style scoped>
-/* damit die absolute Positionierung in .form-section funktioniert */
 .form-section {
   position: relative;
   flex: 1;
@@ -190,7 +215,7 @@ const displayRange = computed(() => {
 .calendar-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,6 +227,7 @@ const displayRange = computed(() => {
   background: #fff;
   border-radius: 8px;
   padding: 1rem;
+  padding-bottom: 0rem;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
   max-width: 90%;
   max-height: 90%;
@@ -222,6 +248,11 @@ const displayRange = computed(() => {
   position: relative;
 }
 
+.usage-select:invalid {
+  color: rgba(0,0,0,0.2);
+  font-size: 0.75rem;
+}
+
 .absolute { margin: 2rem; }
 
 .contact-content {
@@ -231,19 +262,22 @@ const displayRange = computed(() => {
 }
 
 /* Formular */
-.form-section { flex: 1; padding: 4rem 0 4rem 7rem; }
+.form-section { flex: 1; padding: 4rem 0 2rem 7rem; }
 .contact-title {
   color: #141414;
   font-family: 'TWK Everett', sans-serif;
   font-weight: 800;
-  font-size: clamp(1.5rem, 3vw, 3rem);
-  padding-bottom: 4rem;
-  margin-top: 12rem;
+  font-size: clamp(1.5rem, 3vw, 2.95rem);
+  padding-bottom: 2rem;
+  margin-top: 10rem;
   text-align: left;
 }
 .contact-form .row {
-  display: flex; flex-wrap: wrap; gap: 1rem;
-  width: 80%; margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 85%;
+  margin-bottom: 1.5rem;
 }
 .contact-form .row.two-cols > * {
   flex: 1 1 calc(50% - 0.5rem);
@@ -252,16 +286,28 @@ const displayRange = computed(() => {
 .contact-form select,
 .contact-form textarea {
   font-family: 'TWK Everett', sans-serif !important;
-  padding: 0.9rem 1rem; border: none; border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  border: none;
+  border-radius: 8px;
   background: linear-gradient(to top left, rgb(237,238,245) 0.5%, #fff 100%);
-  font-size: 1rem; color: #333; outline: none; width: 100%;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+  width: 100%;
   box-sizing: border-box;
 }
-::placeholder {
-  color: rgba(20,20,20,0.3);
-  font-family: 'TWK Everett', sans-serif;
-  font-size: 0.75rem; opacity: 1;
+
+.contact-form textarea {
+  min-height: 8rem;
+  resize: vertical; /* Optional: Nutzer kann Höhe per Drag anpassen */
 }
+
+::placeholder {
+  color: rgba(20,20,20,0.2);
+  font-family: 'TWK Everett', sans-serif;
+  font-size: 0.8rem; opacity: 1;
+}
+
 .honeypot { display: none; }
 
 /* Kalender */
@@ -342,10 +388,20 @@ const displayRange = computed(() => {
   z-index: 10;
 }
 
+::v-deep .vc-bordered,
+::v-deep .vc-pane,
+::v-deep .vc-header,
+::v-deep .vc-weeks,
+::v-deep .vc-days,
+::v-deep .vc-day {
+  border: 0 !important;
+}
+
+
 /* Bildbereich (wieder) */
 .image-section {
-  flex: 0 0 40%;
-  margin: 1.5rem 1.5rem 1.5rem 0;
+  flex: 0 0 45%;
+  margin: 1.5rem 1.5rem 1.5rem 0rem;
   position: relative;
   overflow: hidden;
 }
@@ -372,9 +428,15 @@ const displayRange = computed(() => {
   }
   .form-section { padding: 2rem; }
 }
+.image-section {
+  margin: 1.5rem 1.5rem 1.5rem 1.5rem;
+}
 @media (max-width: 640px) {
   .contact-title {
     font-size: clamp(2rem, 3vw, 3rem);
   }
+  .image-section {
+  margin: 1.5rem 1.5rem 1.5rem 1.5rem;
+}
 }
 </style>

@@ -1,39 +1,51 @@
+// src/stores/overlay.js
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
 
-export const useOverlayStore = defineStore('overlay', () => {
-  // aktuelles Overlay: 'contact' | 'about' | 'pricing' | null
-  const current = ref(null)
+export const useOverlayStore = defineStore('overlay', {
+  state: () => ({
+    current: null,
+    contactForm: {
+      honeypot: '',
+      name: '',          // Vollständiger Name
+      company: '',       // Firma, Institution oder Verein
+      usage: '',         // ausgewählte Nutzungsart
+      message: '',       // Freitext-Beschreibung
+      dateStart: null,   // gewähltes Start‑Datum
+      dateEnd: null      // gewähltes End‑Datum
+    }
+  }),
 
-  function open(type) {
-    current.value = type
-  }
-  function close() {
-    current.value = null
-  }
+  getters: {
+    // true, wenn alle Pflicht‑Felder befüllt sind
+    isContactValid: (state) => {
+      const f = state.contactForm
+      return Boolean(
+        f.name.trim() &&
+        f.usage &&
+        f.dateStart &&
+        f.dateEnd &&
+        f.message.trim()
+      )
+    }
+  },
 
-  // Kontakt-Formular im Store
-  const contactForm = reactive({
-    name:     '',
-    company:  '',
-    usage:    '',
-    message:  '',
-    honeypot: ''
-  })
-
-  // Computed: Pflichtfelder + Honeypot prüfen
-  const isContactValid = computed(() =>
-    contactForm.name.trim()    !== '' &&
-    contactForm.usage.trim()   !== '' &&
-    contactForm.message.trim() !== '' &&
-    contactForm.honeypot.trim() === ''
-  )
-
-  return {
-    current,
-    open,
-    close,
-    contactForm,
-    isContactValid
+  actions: {
+    open(type) {
+      this.current = type
+    },
+    close() {
+      this.current = null
+    },
+    resetForm() {
+      this.contactForm = {
+        honeypot: '',
+        name: '',
+        company: '',
+        usage: '',
+        message: '',
+        dateStart: null,
+        dateEnd: null
+      }
+    }
   }
 })

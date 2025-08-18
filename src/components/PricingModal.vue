@@ -53,9 +53,9 @@ const pricing = usePricingStore()
   background: #E7E8EC;
   width: 100%;
   /* ersetze height:100% und overflow:hidden: */
-  min-height: 100vh;      /* sorgt dafür, dass der Hintergrund immer die volle Höhe des Viewports abdeckt */
+  min-height: 100vh; 
   max-height: 100vh;
-  overflow-y: auto;       /* bei zu viel Inhalt scrollt nur der Modal-Content, nicht der Hintergrund */
+  overflow-y: auto;
   box-sizing: border-box;
   font-family: 'TWK Everett', sans-serif;
   padding: 2rem;
