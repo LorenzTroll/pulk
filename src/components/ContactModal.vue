@@ -1,6 +1,6 @@
 <!-- src/components/ContactModal.vue -->
 <script setup>
-import { defineProps, defineEmits, onMounted, computed, ref, watch } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useOverlayStore } from '@/stores/overlay'
 import { Calendar } from 'hkanev-vue-calendar'
 import { useCalendarStore } from '@/stores/calendar'
@@ -342,39 +342,39 @@ const isFormValid = computed(() => {
 }
 
 /* 1) Entfernt den blauen Hintergrund der „belegten“ Highlights */
-::v-deep .vc-highlight.vc-disabled-bg {
+:deep(.vc-highlight.vc-disabled-bg) {
   background:rgb(235, 235, 235) !important;
   background-image: none !important;
 }
 
 /* 2) Graut die Highlight-Layer (Anfang/Mitte/Ende) aus, damit wirklich kein Blau mehr zu sehen ist */
-::v-deep .vc-highlight.vc-disabled-bg-base-start,
-::v-deep .vc-highlight.vc-disabled-bg-base-middle,
-::v-deep .vc-highlight.vc-disabled-bg-base-end {
+:deep(.vc-highlight.vc-disabled-bg-base-start),
+:deep(.vc-highlight.vc-disabled-bg-base-middle),
+:deep(.vc-highlight.vc-disabled-bg-base-end) {
   background: rgba(0, 0, 0, 0.05) !important;
 }
 
 /* 3) Graut die eigentliche Tageszahl aus und deaktiviert alle Pointer-Events */
-::v-deep .vc-day-content.vc-disabled-day {
+::deep(.vc-day-content.vc-disabled-day) {
   color: rgba(20, 20, 20, 0.3) !important;
   pointer-events: none;
 }
 
 /* 4) Entfernt jeglichen Hover-Effekt auf bereits belegten Tagen */
-::v-deep .vc-day-content.vc-disabled-day:hover {
+:deep(.vc-day-content.vc-disabled-day:hover) {
   background: transparent !important;
   cursor: default !important;
 }
 
 /* markiere die Range-Highlights sauber in #FF3B42 */
-::v-deep .vc-highlight.vc-selected-range-base-start,
-::v-deep .vc-highlight.vc-selected-range-base-middle,
-::v-deep .vc-highlight.vc-selected-range-base-end {
+:deep(.vc-highlight.vc-selected-range-base-start),
+:deep(.vc-highlight.vc-selected-range-base-middle),
+:deep(.vc-highlight.vc-selected-range-base-end) {
   background-color: #FF3B42 !important;
 }
 
 /* damit auch die Tageszahl im Range farbig wird */
-::v-deep .vc-day-content.vc-selected-range {
+:deep(.vc-day-content.vc-selected-range) {
   color: #fff !important;
 }
 
@@ -388,12 +388,12 @@ const isFormValid = computed(() => {
   z-index: 10;
 }
 
-::v-deep .vc-bordered,
-::v-deep .vc-pane,
-::v-deep .vc-header,
-::v-deep .vc-weeks,
-::v-deep .vc-days,
-::v-deep .vc-day {
+:deep(.vc-bordered),
+:deep(.vc-pane),
+:deep(.vc-header),
+:deep(.vc-weeks),
+:deep(.vc-days),
+:deep(.vc-day) {
   border: 0 !important;
 }
 

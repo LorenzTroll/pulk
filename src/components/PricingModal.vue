@@ -1,37 +1,67 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { usePricingStore } from '@/stores/pricing'
 import Modal from './Modal.vue'
 import pulkLogo from '@/assets/pulk-logo-purple.svg'
 
+import { useRevealUp } from '@/composables/useRevealUp'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+
 const props   = defineProps({ visible: Boolean })
 const emit    = defineEmits(['close'])
 const pricing = usePricingStore()
+
+const rootRef = ref(null)
+
+// lazy init (erst wenn Modal offen ist)
+const { init, kill } = useRevealUp('.reveal-up', {
+  container: rootRef,
+  scroller:  rootRef,     // Modal scrollt selbst
+  start:     'top 90%',   // triggert sofort am Viewport-Rand des Modals
+  duration:  0.6,
+  ease:      'power2.out',
+  once:      true,
+  lazy:      true
+})
+
+watch(() => props.visible, async (open) => {
+  if (open) {
+    await nextTick()       // DOM der Cards existiert
+    init(rootRef.value)    // Trigger jetzt bauen
+    ScrollTrigger.refresh()
+  } else {
+    kill()                 // sauber aufräumen
+  }
+})
 </script>
 
 <template>
   <Modal :visible="props.visible" @close="emit('close')">
-    <div class="pricing-modal">
+    <!-- v-if verhindert Vorab-Paint im geschlossenen Zustand -->
+    <div v-if="props.visible" ref="rootRef" class="pricing-modal">
       <img :src="pulkLogo" alt="Pulk Logo" class="absolute top-6 left-6 w-12 h-12" />
 
       <div class="cards-wrapper">
         <div
-          v-for="plan in pricing.plans"
+          v-for="(plan, idx) in pricing.plans"
           :key="plan.key"
-          :class="['card', { 'card--highlight': plan.key === 'workshop' }]"
+          :class="['card', 'reveal-up', { 'card--highlight': plan.key === 'workshop' }]"
+          :data-reveal-delay="idx * 0.3"   <!-- 0,3 s Staffelung rein im Template -->
         >
           <header class="card-header">
             <h2 class="card-title">{{ plan.title }}</h2>
             <p class="card-subtitle">{{ plan.subtitle }}</p>
           </header>
 
-          <!-- Preisbereich: stets vorhanden, aber unsichtbar bei 'individuell' -->
           <div class="card-price" :class="{ 'price-hidden': plan.key === 'individuell' }">
-            <span class="price-from">ab</span>
-            <span class="price-amount">{{ plan.price }}€</span>
+            <span class="price-from" v-if="plan.key === 'versammlung'">ab</span>
+            <span class="price-amount">
+              {{ plan.price }}<template v-if="plan.price !== '–'"> EUR</template>
+            </span>
             <span class="price-unit">{{ plan.unit }}</span>
           </div>
-          <section class="card-features">
+
+          <section class="card-features" v-if="plan.features?.length">
             <h3 class="features-heading">
               {{ plan.key === 'individuell' ? 'Beispielsweise:' : 'Was enthalten ist:' }}
             </h3>
@@ -42,6 +72,16 @@ const pricing = usePricingStore()
               </li>
             </ul>
           </section>
+
+          <section class="card-features" v-if="plan.onRequest?.length">
+            <h3 class="features-heading">Auf Anfrage:</h3>
+            <ul class="features-list">
+              <li v-for="(item, i) in plan.onRequest" :key="i" class="feature-item">
+                <font-awesome-icon icon="check" class="feature-check" />
+                <span class="feature-text">{{ item }}</span>
+              </li>
+            </ul>
+          </section>
         </div>
       </div>
     </div>
@@ -49,6 +89,8 @@ const pricing = usePricingStore()
 </template>
 
 <style scoped>
+.pricing-modal .reveal-up { visibility: hidden; }
+
 .pricing-modal {
   background: #E7E8EC;
   width: 100%;
@@ -61,6 +103,12 @@ const pricing = usePricingStore()
   padding: 2rem;
   position: relative;
 }
+
+.pricing-modal .reveal-up {
+  opacity: 0;
+  transform: translateY(24px);
+  will-change: transform, opacity;
+}
 .pricing-logo {
   width: 100%;
 }
@@ -72,15 +120,10 @@ const pricing = usePricingStore()
   gap: 2rem;
   flex-wrap: no-wrap;
   justify-content: center;
-  margin-top: 8rem;
+  margin-top: 6rem;
 }
 .card {
-    background: linear-gradient(
-    to top left,
-  rgb(237, 238, 245) 0.5%,
-  #ffffff 100%
-    );
-  transition: background 1s ease-in-out, transform 1s ease-in-out;
+  background: linear-gradient(to top left, rgb(237,238,245) 0.5%, #fff 100%);
   border-radius: 1rem;
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   padding: 3rem;
@@ -89,11 +132,12 @@ const pricing = usePricingStore()
   flex: 1 1 20rem;
   width: 21.875rem;
   max-width: 20rem;
-  transition: transform 0.5s ease;
 }
-.card:hover {
+.card:hover { 
   transform: translateY(-0.5rem);
+  transition: transform 0.2s ease;
 }
+
 /* Highlight erste Card */
 .card--highlight {
   background: #141414;
@@ -135,7 +179,7 @@ const pricing = usePricingStore()
   margin-bottom: 1.5rem;
 }
 .card-features {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 .price-hidden {
   visibility: hidden;
@@ -158,7 +202,7 @@ const pricing = usePricingStore()
   font-size: 1rem;
   font-weight: 400;
   color: #141414;
-  margin: 2rem 0 2rem;
+  margin: 0.5rem 0 1rem;
 }
 .features-list {
   list-style: none;

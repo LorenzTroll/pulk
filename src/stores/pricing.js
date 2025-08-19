@@ -1,43 +1,49 @@
 // src/stores/pricing.js
 import { defineStore } from 'pinia'
-import { reactive }    from 'vue'
+import { reactive } from 'vue'
 
 export const usePricingStore = defineStore('pricing', () => {
   const plans = reactive([
     {
       key:        'workshop',
       title:      'Workshop',
-      subtitle:   'Ideal für Lernveranstaltungen kleiner und mittlerer Gruppen. Bei Gemeinnützigkeit gewähren wir Rabatt.',
-      price:      100,
-      unit:       '/halbtägig',
+      subtitle:   'Max. 20 Personen. Ideal für kleine und mittlere Gruppen und unsere flexible Empfehlung. Preis exkl. MwSt.',
+      price:      50,
+      unit:       '/ pro Stunde + Mwst.',
       buttonText: 'Workshop anfragen',
       features: [
-        'max. 20 Personen',
         '7 Tische + 4 "Werkbänke"',
         'Teeküche',
-        'Energiepauschale inbegriffen',
-        'Catering/Getränke auf Anfrage',
-        'Fernseher 50 Zoll & Pinnwände',
-        'Beamer mieten möglich',
-        'Reinigungspauschale 30 €'
+        'Fernseher 50 Zoll',
+        'Pinnwand',
+        'Whiteboard', 
+        'Reinigungspauschale 20 €'
+      ],
+      onRequest: [
+        'Catering / Getränke',
+        'Mikrofon',
+        'Beamer'
       ]
     },
     {
       key:        'versammlung',
       title:      'Veranstaltung',
-      subtitle:   'Firmenpräsentation, Firmenfeiern, Versammlungen, kleine Events oder Feierlichkeiten im Familiären Rahmen.',
+      subtitle:   'Max. 40 Personen. Präsentation, Vernetzungstreffen, Versammlungen, kleine Events o. Apéro. Preis exkl. MwSt.',
       price:      300,
-      unit:       '/pro Anlass',
+      unit:       '/ pro Anlass + Mwst.',
       buttonText: 'Versammlung anfragen',
       features: [
-        'max. 40 Personen',
         'Bestuhlung',
         'Teeküche',
-        'Energiepauschale inbegriffen',
-        'Catering/Getränke auf Anfrage',
-        'Fernseher 50 Zoll & Pinnwände',
-        'Beamer mieten möglich',
-        'Reinigungspauschale 50 €'
+        'Fernseher 50 Zoll',
+        'Pinnwand',
+        'Whiteboard',
+        'Reinigungspauschale 40 €'
+      ],
+      onRequest: [
+        'Catering / Getränke',
+        'Mikrofon',
+        'Beamer'
       ]
     },
     {
@@ -53,7 +59,7 @@ export const usePricingStore = defineStore('pricing', () => {
         'Vorträge',
         'Screenings',
         'Lesungen',
-        'Kurse'
+        'Kursreihen'
       ]
     }
   ])
