@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useOverlayStore = defineStore('overlay', {
   state: () => ({
     current: null,
+    feedback: null,
     contactForm: {
       honeypot: '',
       name: '',          // Vollständiger Name
@@ -46,6 +47,10 @@ export const useOverlayStore = defineStore('overlay', {
         dateStart: null,
         dateEnd: null
       }
+    },
+    markSubmitted() {
+      this.feedback = 'submitted'
+      setTimeout(() => { this.feedback = null }, 5000)
     }
   }
 })

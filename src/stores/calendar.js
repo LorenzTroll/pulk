@@ -5,8 +5,7 @@ export const useCalendarStore = defineStore('calendar', {
     // jedes Event muss mindestens ein `key` und ein `dates`-Feld haben
     events: [
       // Beispiel-Daten
-      { id: 1, title: 'Workshop',     dates: { start: '2025-07-15', end: '2025-07-16' } },
-      { id: 2, title: 'Vereinstreffen', dates: { start: '2025-07-20', end: '2025-07-20' } },
+      { id: 1, title: 'Reserviert',     dates: { start: '2026-02-07', end: '2026-02-07' } },
       // ... weitere Einträge
     ]
   }),

@@ -5,62 +5,102 @@ import { reactive } from 'vue'
 export const usePricingStore = defineStore('pricing', () => {
   const plans = reactive([
     {
-      key:        'workshop',
-      title:      'Workshop',
-      subtitle:   'Max. 20 Personen. Ideal für kleine und mittlere Gruppen und unsere flexible Empfehlung. Preis exkl. MwSt.',
-      price:      50,
-      unit:       '/ pro Stunde + Mwst.',
-      buttonText: 'Workshop anfragen',
+      key:        'business',
+      title:      'Business',
+      audience:   '',
+      context:    'Für Team- oder Business-Meetings, Workshops, Präsentationen, Weiterbildungen bis',
+      maxPersons: 'max. 40 Personen',
+
+      // Preisinfos
+      price:      50, 
+      unit:       'Euro / Stunde',
+      priceAlt:   '350 Euro für 8 Stunden',
+      priceNote:  'Preis zzgl. MwSt.',
+
+      buttonText: 'Business-Paket anfragen',
+
+      // Leistungen
       features: [
-        '7 Tische + 4 "Werkbänke"',
-        'Teeküche',
+        'Ganzer Raum 100 qm',
+        'Saalbestuhlung',
+        '7 Tische',
+        'Teeküche / Tresen',
         'Fernseher 50 Zoll',
+        'Beamer',
         'Pinnwand',
-        'Whiteboard', 
-        'Reinigungspauschale 20 €'
+        'Whiteboard'
       ],
       onRequest: [
         'Catering / Getränke',
-        'Mikrofon',
-        'Beamer'
-      ]
+        'Mikrofonierung'
+      ],
+
+      // Beschreibungstext
+      description:
+        ''
     },
+
     {
-      key:        'versammlung',
-      title:      'Veranstaltung',
-      subtitle:   'Max. 40 Personen. Präsentation, Vernetzungstreffen, Versammlungen, kleine Events o. Apéro. Preis exkl. MwSt.',
-      price:      300,
-      unit:       '/ pro Anlass + Mwst.',
-      buttonText: 'Versammlung anfragen',
+      key:        'gruppen',
+      title:      'Gruppen',
+      audience:   '',
+      context:    'Für Netzwerktreffen, Workshops, Sprints, Team-Meetings, Seminare und Vorträge bis',
+      maxPersons: 'max. 25 Personen',
+
+      price:      25,
+      unit:       'Euro / Stunde',
+      priceAlt:   'Ab 5 Personen: + 5 Euro pro Person und Stunde',
+      priceNote:  'Preis zzgl. MwSt.',
+
+      buttonText: 'Gruppen-Paket anfragen',
+
       features: [
-        'Bestuhlung',
-        'Teeküche',
+        'Workshop-Bereich',
+        '7 Tische',
+        '4 Werkbänke',
+        'Teeküche / Tresen',
         'Fernseher 50 Zoll',
         'Pinnwand',
-        'Whiteboard',
-        'Reinigungspauschale 40 €'
+        'Whiteboard'
       ],
       onRequest: [
         'Catering / Getränke',
-        'Mikrofon',
+        'Mikrofonierung',
         'Beamer'
-      ]
+      ],
+
+      description:
+        ''
     },
+
     {
       key:        'individuell',
-      title:      'Individuelle Anfrage',
-      subtitle:   'Für alles, was die anderen Pakete nicht abdecken. Bei Vorlage der Gemeinnützigkeit gewähren wir Rabatt.',
-      price:      '–',
+      title:      'Individuell',
+      audience:   ' ',
+      context:    'Kein Paket gefunden? Dann fragt uns bitte direkt an. Gemeinsam finden wir ein maßgeschneidertes Angebot, das sowohl deinem Vorhaben als auch unseren Möglichkeiten entspricht.',
+      maxPersons: '',
+
+      // Kein fixer Preis
+      price:      null,
       unit:       '',
-      buttonText: 'Anfrage schicken',
+      priceLabel: '',
+
+      buttonText: 'Individuelle Anfrage schicken',
+
       features: [
-        'Vereinssitzungen',
+        'Kleine Gruppen',
+        'Vereinsversammlungen',
+        'Veranstaltungsreihen',
         'Ausstellungen',
-        'Vorträge',
-        'Screenings',
+        'Kurse',
         'Lesungen',
-        'Kursreihen'
-      ]
+        'Apéro'
+      ],
+
+      onRequest: [],
+
+      description:
+        ''
     }
   ])
 

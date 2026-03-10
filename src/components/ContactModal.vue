@@ -1,120 +1,339 @@
-<!-- src/components/ContactModal.vue -->
 <script setup>
-import { onMounted, computed, ref, watch } from 'vue'
-import { useOverlayStore } from '@/stores/overlay'
-import { Calendar } from 'hkanev-vue-calendar'
-import { useCalendarStore } from '@/stores/calendar'
-import 'hkanev-vue-calendar/dist/style.css'
-import Modal from './Modal.vue'
-import pulkLogo from '@/assets/pulk-logo-neoncoral.svg'
-import pulkContactImage from '@/assets/pulk-contact-image.png'
+/* -----------------------------------------------------------------------------
+ * Imports
+ * ---------------------------------------------------------------------------*/
+import {
+  ref,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  computed
+} from 'vue'
 
-const props = defineProps({ visible: Boolean })
+import { useHead } from '@vueuse/head'
+import Modal from './Modal.vue'
+import { Calendar } from 'hkanev-vue-calendar'
+
+import { useOverlayStore } from '@/stores/overlay'
+import { useCalendarStore } from '@/stores/calendar'
+
+import { getGsap } from '@/composables/lazyGsap'
+import { useRevealUp } from '@/composables/useRevealUp'
+
+import 'hkanev-vue-calendar/dist/style.css'
+import pulkLogo from '@/assets/pulk-logo-neoncoral_E3.svg'
+import pulkContactImage from '@/assets/PULK_250513_Foto_Michel_Klehm_4.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+
+/* -----------------------------------------------------------------------------
+ * Props & Emits
+ * ---------------------------------------------------------------------------*/
+const props = defineProps({
+  visible: { type: Boolean, required: true },
+  enterDelay: { type: Number, default: 0.4 },
+  stagger: { type: Number, default: 0.2 }
+})
+
 const emit = defineEmits(['close'])
+
+/* -----------------------------------------------------------------------------
+ * Stores
+ * ---------------------------------------------------------------------------*/
 const overlay = useOverlayStore()
 const calendar = useCalendarStore()
 
-// steuert Ein-/Ausblenden des Kalenders
+/* -----------------------------------------------------------------------------
+ * Refs & State
+ * ---------------------------------------------------------------------------*/
+const rootRef = ref(null)
 const showCalendar = ref(false)
+const selectedRange = ref({ start: null, end: null })
+const formRef = ref(null)
 
-// reset, wenn das Modal geschlossen wird
-watch(() => props.visible, v => {
-  if (!v) showCalendar.value = false
-})
+let tl = null
+let gsap = null
+
+/* -----------------------------------------------------------------------------
+ * Anti-Bot: Time-Lock + JS-Challenge
+ * ---------------------------------------------------------------------------*/
+const openTimestamp = ref(Date.now())
+const jsChallenge = ref('')
 
 onMounted(() => {
+  jsChallenge.value = btoa(Math.random().toString(36).slice(2))
+  openTimestamp.value = Date.now()
+
   calendar.fetchEvents()
+  window.addEventListener('submit-contact', handleFormSubmit)
 })
 
-// ausgewählter Bereich
-const selectedRange = ref({ start: null, end: null })
+onBeforeUnmount(() => {
+  window.removeEventListener('submit-contact', handleFormSubmit)
+})
 
+/* -----------------------------------------------------------------------------
+ * Reset beim Öffnen
+ * ---------------------------------------------------------------------------*/
+watch(
+  () => props.visible,
+  visible => {
+    if (!visible) {
+      showCalendar.value = false
+      selectedRange.value = { start: null, end: null }
+      overlay.contactForm.dateStart = null
+      overlay.contactForm.dateEnd = null
+      return
+    }
+
+    openTimestamp.value = Date.now()
+    jsChallenge.value = btoa(Math.random().toString(36).slice(2))
+  }
+)
+
+/* -----------------------------------------------------------------------------
+ * GSAP Reveal-Up Animations
+ * ---------------------------------------------------------------------------*/
+useRevealUp('.reveal-up', {
+  container: rootRef,
+  once: true
+})
+
+watch(
+  () => props.visible,
+  async visible => {
+    if (!visible) {
+      tl?.kill()
+      tl = null
+      if (rootRef.value) {
+        const els = rootRef.value.querySelectorAll('.reveal-up')
+        if (gsap) gsap.set(els, { clearProps: 'transform,opacity,willChange' })
+      }
+      return
+    }
+
+    await nextTick()
+
+    gsap = await getGsap()
+    if (!gsap) return
+
+    const container = rootRef.value
+    if (!container) return
+
+    const targets = [...container.querySelectorAll('.reveal-up')]
+
+    tl?.kill()
+    tl = gsap.timeline({
+      defaults: { duration: 0.8, ease: 'power2.out' },
+      delay: props.enterDelay
+    })
+
+    tl.fromTo(
+      targets,
+      {
+        y: (i, el) => (Number(gsap.getProperty(el, 'y')) || 0) + 32,
+        opacity: 0,
+        willChange: 'transform,opacity'
+      },
+      {
+        y: (i, el) => Number(gsap.getProperty(el, 'y')) || 0,
+        opacity: 1,
+        delay: (i, el) => Number(el.getAttribute('data-modal-delay')) || 0,
+        stagger: props.stagger,
+        clearProps: 'willChange'
+      },
+      0
+    )
+  }
+)
+
+/* -----------------------------------------------------------------------------
+ * Calendar attributes
+ * ---------------------------------------------------------------------------*/
 const attributes = computed(() => {
-  const used = calendar.events.map(evt => ({
+  const reserved = calendar.events.map(evt => ({
     key: `used-${evt.id}`,
     dates: { start: evt.dates.start, end: evt.dates.end },
-    highlight: {
-      class: 'vc-disabled-bg',
-      contentClass: 'vc-disabled-day'
-    },
+    highlight: { class: 'vc-disabled-bg', contentClass: 'vc-disabled-day' },
     customData: { disabled: true }
   }))
-  const sel = (selectedRange.value.start && selectedRange.value.end)
-    ? [{
-        key: 'sel-range',
-        dates: {
-          start: selectedRange.value.start,
-          end:   selectedRange.value.end
-        },
-        highlight: { class: 'vc-selected-range' }
-      }]
-    : []
-  return [...used, ...sel]
+
+  const range =
+    selectedRange.value.start && selectedRange.value.end
+      ? [
+          {
+            key: 'sel-range',
+            dates: {
+              start: selectedRange.value.start,
+              end: selectedRange.value.end
+            },
+            highlight: { class: 'vc-selected-range' }
+          }
+        ]
+      : []
+
+  return [...reserved, ...range]
 })
 
-function onDayClick(day) {
-  if (day.customData?.disabled) return
-
-  if (!selectedRange.value.start || selectedRange.value.end) {
-    // 1. Klick: nur Start wählen
-    selectedRange.value = { start: day.date, end: null }
-    overlay.contactForm.dateStart = day.date
-    overlay.contactForm.dateEnd   = null
-    // hier NOCH NICHT schliessen, damit man die Auswahl sieht
-  } else {
-    // 2. Klick: End-Datum wählen
-    selectedRange.value.end = day.date
-    overlay.contactForm.dateEnd = day.date
-    showCalendar.value = false    // erst jetzt schließen
-  }
+const startOfDay = d => {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  return x
 }
 
-// für Anzeige im Input-Feld im deutschen Datumsformat
+const today = startOfDay(new Date())
+
+const minDate = computed(() => {
+  const d = new Date(today)
+  d.setDate(d.getDate() + 1)
+  return d
+})
+
+const maxDate = computed(() => {
+  const d = new Date(today)
+  d.setMonth(d.getMonth() + 12)
+  return d
+})
+
+const disabledPastDates = computed(() => [{ start: null, end: today }])
+
+/* -----------------------------------------------------------------------------
+ * Calendar selection
+ * ---------------------------------------------------------------------------*/
+function onDayClick(day) {
+  const clicked = startOfDay(day.date)
+  const { start, end } = selectedRange.value
+
+  if (clicked <= today) return
+  if (day.customData?.disabled) return
+
+  if (!start || end) {
+    selectedRange.value = { start: clicked, end: null }
+    overlay.contactForm.dateStart = clicked
+    overlay.contactForm.dateEnd = null
+    return
+  }
+
+  if (clicked < start) {
+    selectedRange.value = { start: clicked, end: null }
+    overlay.contactForm.dateStart = clicked
+    overlay.contactForm.dateEnd = null
+    return
+  }
+
+  selectedRange.value.end = clicked
+  overlay.contactForm.dateEnd = clicked
+  showCalendar.value = false
+}
+
+/* -----------------------------------------------------------------------------
+ * Display Range
+ * ---------------------------------------------------------------------------*/
 const displayRange = computed(() => {
   const { start, end } = selectedRange.value
-  const fmt = d => {
-    const date = new Date(d)
-    return new Intl.DateTimeFormat('de-DE', {
-      day:   '2-digit',
+  if (!start) return ''
+
+  const fmt = d =>
+    new Intl.DateTimeFormat('de-DE', {
+      day: '2-digit',
       month: '2-digit',
-      year:  'numeric'
-    }).format(date)
+      year: 'numeric'
+    }).format(new Date(d))
+
+  if (!end) return fmt(start)
+  if (start.getTime() === end.getTime()) return fmt(start)
+  return `${fmt(start)} – ${fmt(end)}`
+})
+
+/* -----------------------------------------------------------------------------
+ * Form submit (anti-bot + Web3Forms)
+ * ---------------------------------------------------------------------------*/
+function handleFormSubmit() {
+  const form = formRef.value
+  if (!form) return
+
+  const submitDelay = Date.now() - openTimestamp.value
+  if (submitDelay < 1200) {
+    console.warn('Blocked bot: submission too fast', submitDelay)
+    showToast('Verdächtige Anfrage blockiert.')
+    return
   }
-  if (start && end) return `${fmt(start)} – ${fmt(end)}`
-  if (start)          return fmt(start)
-  return ''
-})
 
-// Prüft, ob alle Pflicht‑Felder ausgefüllt sind
-const isFormValid = computed(() => {
-  return Boolean(
-    overlay.contactForm.name?.trim() &&
-    overlay.contactForm.usage &&
-    selectedRange.value.start &&
-    overlay.contactForm.message?.trim()
-  )
-})
+  if (!jsChallenge.value) {
+    console.warn('Blocked bot: JS challenge missing')
+    showToast('Verdächtige Anfrage blockiert.')
+    return
+  }
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    body: new FormData(form)
+  })
+    .then(res => {
+      if (res.ok) {
+        overlay.markSubmitted()
+        overlay.close()
+        overlay.resetForm()
+      } else {
+        showToast('Fehler beim Senden. Bitte versuche es erneut.')
+      }
+    })
+    .catch(() => {
+      showToast('Netzwerkfehler. Bitte später erneut versuchen.')
+    })
+}
 </script>
-
 
 <template>
   <Modal :visible="props.visible" @close="emit('close')">
-    <div class="contact-overlay">
+    <div ref="rootRef" class="contact-overlay">
+      <!-- Logo oben links -->
       <img
         :src="pulkLogo"
         alt="Pulk Logo"
         class="absolute top-6 left-6 w-12 h-12"
       />
-
+      <!-- Haupt-Layout -->
       <div class="contact-content">
-        <!-- Formular -->
-        <div class="form-section">
-          <h2 class="contact-title">
-            LUST, WAS ZU STARTEN?<br/>
-            SCHICK DEINE ANFRAGE.
-          </h2>
+        <!-- Bildbereich ----------------------------------------------------- -->
+        <div class="image-section reveal-up" data-modal-delay="0">
+          <picture>
+            <source
+              v-for="src in pulkContactImage.sources"
+              :key="src.type"
+              :srcset="src.srcset"
+              :type="src.type"
+            />
 
-          <form class="contact-form" @submit.prevent="$emit('close')">
+            <img
+              :src="pulkContactImage.img.src"
+              :srcset="pulkContactImage.img.srcset"
+              :width="pulkContactImage.img.width"
+              :height="pulkContactImage.img.height"
+              alt="Studio Bild"
+              class="contact-image"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
+        <!-- Formularbereich ------------------------------------------------- -->
+        <div class="form-section reveal-up" data-modal-delay="0.15">
+          <h2 class="contact-title">
+            Der erste Schritt? <br>Eine kurze Nachricht
+          </h2>
+          <form
+            ref="formRef"
+            class="contact-form"
+            method="POST"
+            action="https://api.web3forms.com/submit"
+            @submit.prevent="handleFormSubmit"
+          >
+            <!-- Hidden Web3Forms Data -->
+            <input type="hidden" name="access_key" value="a8ef790f-fa7e-404d-b711-ed9764960209" />
+            <input type="hidden" name="subject" value="Neue Anfrage von PULK Website" />
+            <input type="hidden" name="from_name" value="PULK Website" />
+            <!-- Anti-bot JS challenge -->
+            <input type="hidden" name="js_challenge" :value="jsChallenge" />
             <!-- Honeypot -->
             <input
               v-model="overlay.contactForm.honeypot"
@@ -123,123 +342,94 @@ const isFormValid = computed(() => {
               name="hp"
               autocomplete="off"
             />
-
+            <input type="checkbox" name="botcheck" class="hidden" style="display:none" />
+            <!-- Name + Email -->
             <div class="row two-cols">
               <input
+                aria-label="Name oder Organisation"
                 v-model="overlay.contactForm.name"
                 type="text"
                 name="fullName"
-                placeholder="Vollständiger Name*"
+                placeholder="Vollständiger Name / Firma oder Organisation *"
                 required
+                @focus="trackFormField('name')"
               />
               <input
+                aria-label="E-Mail-Adresse"
                 v-model="overlay.contactForm.company"
-                type="text"
+                type="email"
                 name="company"
-                placeholder="Firma, Institution oder Verein*"
+                placeholder="Email Adresse *"
+                required
+                @focus="trackFormField('email')"
               />
             </div>
-
+            <!-- Nutzung + Datum -->
             <div class="row two-cols">
               <select
+                aria-label="Nutzung auswählen"
                 v-model="overlay.contactForm.usage"
                 name="usage"
-                required
                 class="usage-select"
+                required
+                @focus="trackFormField('usage')"
               >
-                <option value="" disabled>Art der Nutzung*</option>
+                <option value="" disabled>Art der Nutzung *</option>
                 <option>Workshop</option>
                 <option>Veranstaltung</option>
-                <option>individuelle Anfrage</option>
+                <option>Andere Nutzung</option>
               </select>
 
               <input
                 type="text"
                 :value="displayRange"
                 name="dateRange"
-                placeholder="Datum wählen*"
+                placeholder="Datum wählen"
                 readonly
-                required
                 class="date-input"
                 @click="showCalendar = true"
+                @focus="trackFormField('dateRange')"
               />
             </div>
-
+            <!-- Nachricht -->
             <div class="row">
               <textarea
+                aria-label="Beschreibung"
                 v-model="overlay.contactForm.message"
                 name="message"
-                placeholder="Bitte gib uns eine Beschreibung, was du vorhast. Alle Details besprechen wir dann persönlich miteinander.*"
+                placeholder="Bitte gib uns eine Beschreibung, was du vorhast *"
                 required
+                @focus="trackFormField('message')"
               />
             </div>
           </form>
         </div>
-        <div class="image-section">
-  <img
-    :src="pulkContactImage"
-    alt="Studio Bild"
-    class="contact-image"
-  />
-</div>
-        
-        <!-- Kalender-Overlay -->
-        <div
-          v-if="showCalendar"
-          class="calendar-backdrop"
-          @click.self="showCalendar = false"
-        >
+      </div>
+      <!-- Kalender Overlay ---------------------------------------------------- -->
+      <div
+        v-if="showCalendar"
+        class="calendar-backdrop"
+        @click.self="showCalendar = false"
+      >
         <div class="calendar-overlay">
           <Calendar
             is-expanded
             :attributes="attributes"
+            :min-date="minDate"
+            :max-date="maxDate"
+            :disabled-dates="disabledPastDates"
             @dayclick="onDayClick"
           />
-        </div>
         </div>
       </div>
     </div>
   </Modal>
 </template>
 
-
-
 <style scoped>
-.form-section {
-  position: relative;
-  flex: 1;
-  padding: 4rem 0 4rem 7rem;
-}
-
-/* Kalender-Overlay-Hintergrund */
-.calendar-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-/* Die Box mit Padding für den Kalender */
-.calendar-overlay {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1rem;
-  padding-bottom: 0rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  max-width: 90%;
-  max-height: 90%;
-  overflow: auto;
-  z-index: 2001;
-}
-
-/* Input-Feld und Select in einer Zeile */
-.date-input {
-  cursor: pointer;
-}
-
+/* ============================================================================
+ * CONTAINER / LAYOUT
+ * ========================================================================== */
 .contact-overlay {
   background: #E7E8EC;
   width: 100%;
@@ -248,146 +438,171 @@ const isFormValid = computed(() => {
   position: relative;
 }
 
-.usage-select:invalid {
-  color: rgba(0,0,0,0.2);
-  font-size: 0.75rem;
+/* Globale Logo-Positionierung */
+.absolute {
+  margin: 2rem;
+  width: max(7rem, 9%);
 }
 
-.absolute { margin: 2rem; }
-
+/* Haupt-Grid: Bild links, Formular rechts */
 .contact-content {
-  display: flex;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2.2fr;
+  gap: 7rem;
+  width: min(1400px, 92vw);
+  margin: 11rem auto;
 }
 
-/* Formular */
-.form-section { flex: 1; padding: 4rem 0 2rem 7rem; }
+
+/* ============================================================================
+ * FORM
+ * ========================================================================== */
+.form-section {
+  grid-column: 2;
+  max-width: 100%;
+}
+
 .contact-title {
   color: #141414;
-  font-family: 'TWK Everett', sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.5rem, 3vw, 2.95rem);
-  padding-bottom: 2rem;
-  margin-top: 10rem;
-  text-align: left;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 900;
+  line-height: 1.07;
+  margin: 0 0 3rem 0;
+  font-size: clamp(2rem, 6vw, 3.8rem);
 }
+
+/* Zeilenlayout */
 .contact-form .row {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  width: 85%;
   margin-bottom: 1.5rem;
 }
+
 .contact-form .row.two-cols > * {
   flex: 1 1 calc(50% - 0.5rem);
 }
+
+/* Inputs */
 .contact-form input,
 .contact-form select,
-.contact-form textarea {
-  font-family: 'TWK Everett', sans-serif !important;
+.contact-form textarea,
+.usage-select {
+  font-family: 'LayGrotesk', sans-serif !important;
   padding: 1.2rem 1.4rem;
   border: none;
   border-radius: 8px;
   background: linear-gradient(to top left, rgb(237,238,245) 0.5%, #fff 100%);
   font-size: 1rem;
-  color: #333;
   outline: none;
   width: 100%;
   box-sizing: border-box;
 }
 
+.usage-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  padding: 1.2rem 1.4rem !important;
+  height: 3.6rem !important; /* match input height */
+  line-height: 1.4rem !important;
+
+  display: flex;
+  align-items: center;
+}
+
+/* iOS Safari compensation */
+@supports (-webkit-touch-callout: none) {
+  .usage-select {
+    height: 3.8rem !important; 
+  }
+}
+
 .contact-form textarea {
   min-height: 8rem;
-  resize: vertical; /* Optional: Nutzer kann Höhe per Drag anpassen */
+  resize: vertical;
 }
 
+/* Placeholder */
 ::placeholder {
-  color: rgba(20,20,20,0.2);
-  font-family: 'TWK Everett', sans-serif;
-  font-size: 0.8rem; opacity: 1;
+  color: rgba(20,20,20,0.4);
+  font-size: 0.8rem;
+  opacity: 1;
 }
 
+/* Select disabled */
+.usage-select:invalid {
+  color: rgba(0,0,0,0.4);
+  font-size: 0.75rem;
+}
+
+/* Honeypot */
 .honeypot { display: none; }
 
-/* Kalender */
-.calendar-section {
-  flex: 0 0 40%;
-  margin: 1.5rem 1.5rem 1.5rem 0;
-}
-.calendar-section .vc-pane {
-  border: none;
-  background: linear-gradient(to top left, rgb(237,238,245) 0.5%, #fff 100%);
-  border-radius: 8px; padding: 1rem;
-}
-.calendar-section .vc-weekday,
-.calendar-section .vc-day {
-  font-family: 'TWK Everett', sans-serif;
-  color: #333;
-}
-/* belegt = ausgegraut */
-.vc-disabled-day .vc-day {
-  color: rgba(0,0,0,0.2) !important;
-  pointer-events: none;
-}
-/* ausgewählte Range */
-.vc-selected-range .vc-day {
-  background-color: #9687FF !important;
-  color: #fff !important;
-}
-/* hover freier Tage */
-.calendar-section .vc-day:not(.badge):hover {
-  background-color: #eef1f6;
-  cursor: pointer;
+
+/* ============================================================================
+ * IMAGE
+ * ========================================================================== */
+.image-section {
+  grid-column: 1;
+  overflow: hidden;
+  border-radius: 1rem;
 }
 
-/* 1) Entfernt den blauen Hintergrund der „belegten“ Highlights */
-:deep(.vc-highlight.vc-disabled-bg) {
-  background:rgb(235, 235, 235) !important;
-  background-image: none !important;
+.contact-image {
+  width: 100%;
+  min-height: 32rem;
+  object-fit: cover;
+  border-radius: 1rem;
 }
 
-/* 2) Graut die Highlight-Layer (Anfang/Mitte/Ende) aus, damit wirklich kein Blau mehr zu sehen ist */
-:deep(.vc-highlight.vc-disabled-bg-base-start),
-:deep(.vc-highlight.vc-disabled-bg-base-middle),
-:deep(.vc-highlight.vc-disabled-bg-base-end) {
-  background: rgba(0, 0, 0, 0.05) !important;
-}
 
-/* 3) Graut die eigentliche Tageszahl aus und deaktiviert alle Pointer-Events */
-::deep(.vc-day-content.vc-disabled-day) {
-  color: rgba(20, 20, 20, 0.3) !important;
-  pointer-events: none;
-}
-
-/* 4) Entfernt jeglichen Hover-Effekt auf bereits belegten Tagen */
-:deep(.vc-day-content.vc-disabled-day:hover) {
-  background: transparent !important;
-  cursor: default !important;
-}
-
-/* markiere die Range-Highlights sauber in #FF3B42 */
-:deep(.vc-highlight.vc-selected-range-base-start),
-:deep(.vc-highlight.vc-selected-range-base-middle),
-:deep(.vc-highlight.vc-selected-range-base-end) {
-  background-color: #FF3B42 !important;
-}
-
-/* damit auch die Tageszahl im Range farbig wird */
-:deep(.vc-day-content.vc-selected-range) {
-  color: #fff !important;
-}
-
+/* ============================================================================
+ * CALENDAR OVERLAY
+ * ========================================================================== */
 .calendar-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.2);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
+.calendar-overlay {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 1rem 0 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+}
+
+/* Zusatz: klickbar markieren */
+.date-input {
+  cursor: pointer;
+}
+
+/* Ausgewählte Range */
+.vc-selected-range .vc-day {
+  background-color: #9687FF !important;
+  color: #fff !important;
+}
+
+/* Reservierte Tage rot */
+:deep(.vc-highlight.vc-disabled-bg) {
+  background: #FF464E !important;
+  background-image: none !important;
+}
+
+/* Kalender-Standardcleaning */
 :deep(.vc-bordered),
 :deep(.vc-pane),
 :deep(.vc-header),
@@ -397,46 +612,64 @@ const isFormValid = computed(() => {
   border: 0 !important;
 }
 
-
-/* Bildbereich (wieder) */
-.image-section {
-  flex: 0 0 45%;
-  margin: 1.5rem 1.5rem 1.5rem 0rem;
-  position: relative;
-  overflow: hidden;
-}
-.contact-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 1rem;
+/* Disabled Days (Vergangenheit & Reserviert) */
+:deep(.vc-day.is-disabled) {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
 }
 
-/* und die Calendar-Box selbst etwas prominenter */
-.calendar-backdrop .vc-pane {
-  z-index: 11; /* über dem Backdrop */
+:deep(.vc-day.is-disabled .vc-day-content) {
+  color: #999;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .contact-content {
+
+/* ============================================================================
+ * RESPONSIVE BREAKPOINTS
+ * ========================================================================== */
+@media (max-width: 1024px){
+  .contact-content{
+    display: flex;
     flex-direction: column;
+    gap: 2rem;
+    width: min(900px, 92vw);
+    margin: 6rem auto;
   }
-  .form-section,
-  .calendar-section {
-    flex: none; width: 100%;
+  .form-section { order: 1; }
+  .image-section { order: 2; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px){
+  .contact-content{
+    grid-template-columns: 1fr;
+    place-items: center;
+    width: min(900px, 92vw);
+    margin: 12rem auto;
+    min-height: 80vh;
   }
-  .form-section { padding: 2rem; }
+  .form-section{
+    width: min(720px, 88vw);
+    margin: 0 auto;
+  }
+  .image-section { display: none !important; }
 }
-.image-section {
-  margin: 1.5rem 1.5rem 1.5rem 1.5rem;
-}
-@media (max-width: 640px) {
+
+@media (max-width: 640px){
   .contact-title {
-    font-size: clamp(2rem, 3vw, 3rem);
+    font-size: clamp(3rem, 6vw, 3rem);
+    margin: 0rem 1rem 3rem;
   }
-  .image-section {
-  margin: 1.5rem 1.5rem 1.5rem 1.5rem;
-}
+
+  .contact-form .row.two-cols > * {
+    flex: 1 1 100%;
+    margin-bottom: 0.3rem;
+  }
+
+  .contact-image {
+    width: 95svw;
+    max-width: 92vw;
+    margin: 0 auto;
+    border-radius: 1rem;
+  }
 }
 </style>

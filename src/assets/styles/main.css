@@ -3,38 +3,47 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'TWK Everett';
+  font-family: 'LayGrotesk';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src:
-    url('@/assets/fonts/TWKEverett-Regular.woff2') format('woff2'),
-    url('@/assets/fonts/TWKEverett-Regular.woff')  format('woff'),
-    url('@/assets/fonts/TWKEverett-Regular.otf')  format('opentype');
+    url('@/assets/fonts/LayGrotesk-Trial-Regular.woff2') format('woff2'),
+    url('@/assets/fonts/LayGrotesk-Trial-Regular.woff')  format('woff'),
+    url('@/assets/fonts/LayGrotesk-Trial-Regular.otf')  format("opentype");
 }
 
-/* TWK Everett Bold (700) */
 @font-face {
-  font-family: 'TWK Everett';
+  font-family: 'LayGrotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src:
+    url('@/assets/fonts/laygrotesk-trial-medium.woff2') format('woff2'),
+    url('@/assets/fonts/laygrotesk-trial-medium.woff')  format('woff'),
+    url('@/assets/fonts/laygrotesk-trial-medium.otf')  format("opentype");
+}
+
+@font-face {
+  font-family: 'LayGrotesk';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
   src:
-    url('@/assets/fonts/TWKEverett-Bold.woff2') format('woff2'),
-    url('@/assets/fonts/TWKEverett-Bold.woff')  format('woff'),
-    url('@/assets/fonts/TWKEverett-Bold.otf')  format('opentype');
+    url('@/assets/fonts/LayGrotesk-Trial-Bold.woff2') format('woff2'),
+    url('@/assets/fonts/LayGrotesk-Trial-Bold.woff')  format('woff'),
+    url('@/assets/fonts/LayGrotesk-Trial-Bold.otf')  format("opentype");
 }
 
-/* TWK Everett ExtraBold (800) */
 @font-face {
-  font-family: 'TWK Everett';
+  font-family: 'LayGrotesk';
   font-style: normal;
-  font-weight: 800;
+  font-weight: 900;
   font-display: swap;
   src:
-    url('@/assets/fonts/TWKEverett-ExtraBold.woff2') format('woff2'),
-    url('@/assets/fonts/TWKEverett-ExtraBold.woff')  format('woff'),
-    url('@/assets/fonts/TWKEverett-ExtraBold.otf')  format('opentype');
+    url('@/assets/fonts/LayGrotesk-Trial-Black.woff2') format('woff2'),
+    url('@/assets/fonts/LayGrotesk-Trial-Black.woff')  format('woff'),
+    url('@/assets/fonts/LayGrotesk-Trial-Black.otf')  format("opentype");
 }
 
 html, body {
@@ -44,8 +53,23 @@ html, body {
   background-color: #9687FF;
 }
 
+body, html, #app.plain-background {
+  background-color: white !important;
+}
+
 :root {
   --font-heading: 'Inter', sans-serif;
+}
+
+/* Footer: Default (SEO-Seiten) */
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Footer wird in Modals ausgeblendet */
+.hide-footer .site-footer {
+  display: none !important;
 }
 
 @layer components {

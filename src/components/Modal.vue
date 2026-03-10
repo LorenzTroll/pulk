@@ -28,7 +28,6 @@ watch(
         class="overlay-backdrop"
         @click.self="close"
       >
-        <!-- Hier kommt jetzt direkt dein Modal-Content -->
         <slot />
       </div>
     </transition>
@@ -45,7 +44,6 @@ watch(
   overflow: auto;
 }
 
-/* Slide-Up + Fade */
 .overlay-slide-enter-active,
 .overlay-slide-leave-active {
   transition: transform 0.3s ease, opacity 0.5s ease;

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Blockiere Modal-Varianten (Duplicate Content vermeiden)
+Disallow: /*?modal=about
+Disallow: /*?modal=preise
+Disallow: /*?modal=miete
+
+# Sitemap
+Sitemap: https://pulk.space/sitemap.xml

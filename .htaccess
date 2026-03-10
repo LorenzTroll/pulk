@@ -1,0 +1,35 @@
+RewriteEngine On
+
+# ---------------------------------------------------------
+# 1) Zuerst: www → non-www + http → https
+# ---------------------------------------------------------
+RewriteCond %{HTTP_HOST} ^www\.pulk\.space$ [NC,OR]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://pulk.space/$1 [L,R=301]
+
+# ---------------------------------------------------------
+# 2) Wenn Datei oder Ordner existiert → direkt laden
+# ---------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ---------------------------------------------------------
+# 3) SPA-Fallback: Alles geht an index.html
+# ---------------------------------------------------------
+RewriteRule ^ index.html [L]
+
+# ---------------------------------------------------------
+# 4) Hetzner/Performance: Directory Listing deaktivieren
+# ---------------------------------------------------------
+IndexIgnore *
+
+# GZIP Fallback
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
+
+# Brotli (falls verfügbar)
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
