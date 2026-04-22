@@ -1036,7 +1036,7 @@ onBeforeUnmount(() => {
   .pm-chairs-mixed-picture {
     display: block;
     width: 100%;
-    height: 27rem;
+    height: 30rem;
   }
 
   .pm-chairs-mixed {
