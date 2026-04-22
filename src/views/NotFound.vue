@@ -4,23 +4,48 @@
  * ==========================================================================*/
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useLenis } from '@/composables/useLenis.js'
-import pulkLogo from '@/assets/pulk-logo-white_E3.svg'
+import pulkLogo from '@/assets/pulk-logo-landingpage.svg'
 import { useHead } from '@vueuse/head'
+import { track } from '@/utils/tracking'
 
 /* ============================================================================
  * Meta Tags / SEO
  * ==========================================================================*/
 useHead({
-  title: 'Seite nicht gefunden · PULK',
+  title: 'Seite nicht gefunden · PULK Halle (Saale)',
   meta: [
     {
       name: 'description',
       content:
-        'Die Seite konnte leider nicht gefunden werden. Bitte überprüfe die URL oder kehre zur Startseite zurück.'
+        'Diese Seite gibt es nicht oder wurde verschoben. Zurück zur Startseite von PULK – Raum für Workshops in Halle (Saale).'
     },
-    { name: 'robots', content: 'noindex,follow' }
-  ],
-  link: [{ rel: 'canonical', href: 'https://pulk.space/404' }]
+    { name: 'robots', content: 'noindex,follow' },
+
+    // Open Graph
+    { property: 'og:title', content: 'Seite nicht gefunden · PULK Halle (Saale)' },
+    {
+      property: 'og:description',
+      content:
+        'Diese Seite gibt es nicht oder wurde verschoben. Zurück zur Startseite von PULK – Raum für Workshops in Halle (Saale).'
+    },
+    { property: 'og:url', content: 'https://pulk.space/' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:locale', content: 'de_DE' },
+    { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: 'PULK – Raum in Halle (Saale)' },
+
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Seite nicht gefunden · PULK Halle (Saale)' },
+    {
+      name: 'twitter:description',
+      content:
+        'Diese Seite gibt es nicht oder wurde verschoben. Zurück zur Startseite von PULK.'
+    },
+    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
+  ]
 })
 
 /* ============================================================================
@@ -34,6 +59,11 @@ const rootRef = ref(null)
  * ==========================================================================*/
 onMounted(() => {
   document.getElementById('app')?.classList.add('hide-footer')
+
+  track('pulk.page.404', {
+    url: typeof window !== 'undefined' ? window.location.href : '',
+    referrer: typeof document !== 'undefined' ? document.referrer : ''
+  })
 
   // Ensure Lenis starts and reads layout
   lenis.value?.start?.()
@@ -55,38 +85,37 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="notfound-wrap" ref="rootRef">
-    <!-- Logo -->
-    <img :src="pulkLogo" alt="PULK Logo" class="pulk-logo" />
+    <!-- Header: Logo -->
+    <header class="notfound-header">
+      <img :src="pulkLogo" alt="PULK Logo" class="pulk-logo" />
+    </header>
+
     <!-- Content Box -->
     <section class="notfound-box">
-      <!-- Description -->
-      <div class="notfound-text">
-        <p>
-          Ups! Hier gibt’s nichts zu sehen. Die aufgerufene Seite existiert nicht
-          (mehr) oder der Link war fehlerhaft. Bitte überprüfe die URL oder kehre zu unserer
+      <!-- Left: Text + Startseite Button -->
+      <div class="notfound-left">
+        <p class="notfound-text">
+          Ups! Hier gibt’s nichts zu sehen. Bitte überprüfe die URL oder kehre zu unserer
           Startseite zurück. Falls du glaubst, dass hier ein Fehler vorliegt, dann schreib uns
           gerne eine email an:
           <a href="mailto:kontakt@pulk.space?subject=Bug%20Report%20Pulk%20Webseite">
             kontakt@pulk.space
           </a>.
         </p>
+        <RouterLink to="/" class="notfound-btn">Startseite</RouterLink>
       </div>
-      <!-- 404 Code -->
-      <div class="notfound-code">
-        <h1>404</h1>
-        <p>not found</p>
+
+      <!-- Middle: 404 / not found -->
+      <div class="notfound-code-box">
+        <span class="notfound-code-top">404</span>
+        <span class="notfound-code-bottom">not found</span>
       </div>
-      <!-- Icon -->
-      <div class="notfound-icon">
-        <img src="@/assets/404-Pictogram_E1.svg" alt="Warnsymbol" />
+
+      <!-- Right: Warning Pictogram -->
+      <div class="notfound-icon-box">
+        <img src="@/assets/404-Pictogram_E2.svg" alt="Warnsymbol" class="notfound-icon-img" />
       </div>
     </section>
-    <!-- Back Button -->
-    <div class="back-home-wrapper">
-      <RouterLink to="/" class="back-home-btn">
-        Zurück zur Startseite
-      </RouterLink>
-    </div>
   </main>
 </template>
 
@@ -95,51 +124,71 @@ onBeforeUnmount(() => {
  * Main Layout
  * ==========================================================================*/
 .notfound-wrap {
-  background-color: #f15133;
+  min-height: 100dvh;
+  background-color: #ff5234;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 20rem;
-  padding-bottom: 12rem;
+  justify-content: space-between;
+  padding: clamp(3rem, 6vw, 6.0625rem) clamp(1.5rem, 6vw, 6.75rem) 3.5rem;
   font-family: 'LayGrotesk', sans-serif;
   color: #141414;
-  overflow: auto;
+}
+
+.notfound-wrap *,
+.notfound-wrap *::before,
+.notfound-wrap *::after {
+  box-sizing: border-box;
 }
 
 /* ============================================================================
- * Logo
+ * Header (Logo + pulk.space pill)
  * ==========================================================================*/
+.notfound-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1vw, 1rem);
+}
+
 .pulk-logo {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  width: 7%;
-  height: auto;
+  height: clamp(3rem, 5vw, 6.5rem);
+  width: auto;
+  display: block;
 }
 
 /* ============================================================================
- * Content Box
+ * Content Box (gray container with 3 areas)
  * ==========================================================================*/
 .notfound-box {
   background-color: #d9d9d9;
-  border-radius: 1rem;
-  width: 90%;
+  border-radius: 1.25rem;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  gap: 3rem;
+  gap: 0.75rem;
+  align-items: stretch;
+  padding: 1rem 0.9375rem 1.0625rem 3rem;
+  height: clamp(20rem, 22vw, 26rem);
 }
 
 /* ============================================================================
- * Text
+ * Left column: Text + Button
  * ==========================================================================*/
+.notfound-left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 2vw, 4.4375rem) 2rem 1rem 0rem;
+}
+
 .notfound-text {
-  width: 90%;
-  flex: 1;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-inline-start: 3rem;
+  font-family: 'LayGrotesk', sans-serif;
+  font-size: clamp(1rem, 1.2vw, 1.5625rem);
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
+  color: #141414;
+  font-weight: 400;
+  margin: 0;
+  max-width: 95%;
 }
 
 .notfound-text a {
@@ -148,79 +197,168 @@ onBeforeUnmount(() => {
   font-weight: 600;
 }
 
-/* ============================================================================
- * 404 Code
- * ==========================================================================*/
-.notfound-code {
-  flex: 1;
-  text-align: center;
-}
-
-.notfound-code h1 {
-  font-size: clamp(3rem, 7vw, 9rem);
-  font-weight: 900;
-  margin: 0;
-  padding-top: 2rem;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.notfound-code p {
-  font-size: 2.8rem;
-  font-weight: 900;
-  margin-top: 0;
-  color: #141414;
-}
-
-/* ============================================================================
- * Icon
- * ==========================================================================*/
-.notfound-icon {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.notfound-icon img {
-  width: 20rem;
-  height: auto;
-  background-color: #000;
-  border-radius: 8px;
-}
-
-/* ============================================================================
- * Back Button
- * ==========================================================================*/
-.back-home-wrapper {
-  margin-top: 3rem;
-  text-align: center;
-}
-
-.back-home-btn {
+.notfound-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: #141414;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 1rem 2.5rem;
-  border-radius: 999px;
+  color: #fff;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1rem, 0.4vw + 0.85rem, 1.25rem);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  padding: 0 1.5rem;
+  height: 3.5625rem;
+  min-width: 10.0625rem;
+  border-radius: 0.625rem;
   text-decoration: none;
-  display: inline-block;
   transition: background-color 0.25s ease, transform 0.2s ease;
 }
 
-.back-home-btn:hover {
+.notfound-btn:hover {
   background-color: #000;
-  transform: translateY(-2px);
+  transform: scale(1.015);
+}
+
+.notfound-btn:active {
+  transform: scale(0.99);
 }
 
 /* ============================================================================
- * Tablet Layout
+ * 404 / not found box
  * ==========================================================================*/
-@media (min-width: 768px) {
+.notfound-code-box {
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  background-color: #141414;
+  border-radius: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-family: 'LayGrotesk', sans-serif;
+  color: #d9d9d9;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-align: center;
+}
+
+.notfound-code-top,
+.notfound-code-bottom {
+  font-size: clamp(1.75rem, 3vw, 3.6458rem);
+  line-height: 1.23;
+}
+
+/* ============================================================================
+ * Icon box (warning pictogram)
+ * ==========================================================================*/
+.notfound-icon-box {
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  background-color: #141414;
+  border-radius: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 2vw, 2.5rem);
+}
+
+.notfound-icon-img {
+  width: 66.6667%;
+  height: auto;
+  display: block;
+}
+
+/* ============================================================================
+ * Tablet (≤ 64rem)
+ * ==========================================================================*/
+@media (max-width: 64rem) {
+  .notfound-wrap {
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3rem) clamp(2rem, 4vw, 3rem);
+    gap: clamp(3rem, 8vw, 6rem);
+  }
+
   .notfound-box {
-    flex-direction: row;
-    justify-content: space-between;
+    height: auto;
+    padding: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .notfound-left {
+    flex: 1 1 100%;
+    padding: 1.5rem 1rem 0.5rem;
+    max-width: none;
     gap: 2rem;
+  }
+
+  .notfound-code-box,
+  .notfound-icon-box {
+    flex: 1 1 0;
+    aspect-ratio: 1 / 1;
+    max-width: calc(50% - 0.5rem);
+    max-height: 18rem;
+  }
+
+  .notfound-code-top,
+  .notfound-code-bottom {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .notfound-icon-box {
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+}
+
+/* ============================================================================
+ * Mobile (≤ 40rem)
+ * ==========================================================================*/
+@media (max-width: 40rem) {
+  .notfound-wrap {
+    padding: 2rem 1rem;
+    gap: 2rem;
+  }
+
+  .notfound-header {
+    gap: 0.75rem;
+  }
+
+  .pulk-logo {
+    height: 3rem;
+  }
+
+  .notfound-box {
+    flex-direction: column;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .notfound-left {
+    padding: 1rem 0.5rem;
+    gap: 2rem;
+  }
+
+  .notfound-text {
+    font-size: 1rem;
+  }
+
+  .notfound-code-box,
+  .notfound-icon-box {
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 1 / 1;
+    max-height: none;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .notfound-btn {
+    width: 100%;
   }
 }
 </style>

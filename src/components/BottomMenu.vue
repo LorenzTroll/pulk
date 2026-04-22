@@ -7,8 +7,17 @@ import { useRouter } from 'vue-router'
 import gsap from 'gsap'
 
 import { useOverlayStore } from '@/stores/overlay'
+import { track } from '@/utils/tracking'
 import ArrowIcon from './ArrowIcon.vue'
 import checkIcon from '@/assets/pulk_check-mark.svg'
+
+function contactFormStage() {
+  const f = overlay.contactForm
+  const filled = [f.name, f.usage, f.message, f.dateStart, f.dateEnd].filter(Boolean).length
+  if (filled === 0) return 'empty'
+  if (overlay.isContactValid) return 'near-complete'
+  return 'partial'
+}
 
 
 /* -----------------------------------------------------------------------------
@@ -210,39 +219,26 @@ watch(
  * Tracking Helpers
  * ---------------------------------------------------------------------------*/
 function trackAndClick(target) {
-  if (window.MDAL?.event) {
-    const isClosing = overlay.current === target
-
-    MDAL.event({
-      Name: 'bottommenu-click',
-      Parameters: [
-        { Name: 'button', Value: target },
-        { Name: 'action', Value: isClosing ? 'close' : 'open' }
-      ]
-    })
-  }
-
+  const action = overlay.current === target ? 'close' : 'open'
+  track('pulk.nav.click', {
+    target,
+    action,
+    source: 'bottommenu'
+  })
   handleClick(target)
 }
 
 function trackSubmit() {
-  if (window.MDAL?.event) {
-    MDAL.event({
-      Name: 'modal-button-click',
-      Parameters: [{ Name: 'target', Value: 'submit' }]
-    })
-  }
+  track('pulk.contact.submit-click', { source: 'bottommenu' })
   window.dispatchEvent(new Event('submit-contact'))
 }
 
 function trackCloseContact() {
-  if (window.MDAL?.event) {
-    MDAL.event({
-      Name: 'contactmodal-abort',
-      Parameters: [{ Name: 'via', Value: 'close-button' }]
-    })
-  }
-
+  track('pulk.contact.abort', {
+    via: 'close-button',
+    source: 'bottommenu',
+    stage: contactFormStage()
+  })
   handleClick('contact')
 }
 
@@ -255,24 +251,6 @@ const buttonLabel = computed(() => {
   }
   return { text: 'Mieten', icon: 'arrow' }
 })
-
-function trackCloseContactModal() {
-  // Nur tracken, wenn das Modal gerade offen ist
-  if (overlay.current === 'contact') {
-    if (window.MDAL?.event) {
-      MDAL.event({
-        Name: 'modal-abort',
-        Parameters: [
-          { Name: 'modal', Value: 'contact' },
-          { Name: 'action', Value: 'close-button' }
-        ]
-      })
-    }
-  }
-
-  // Dann normales Verhalten ausführen
-  handleClick('contact')
-}
 </script>
 
 <template>
@@ -312,7 +290,7 @@ function trackCloseContactModal() {
     <button
       class="tab contact"
       ref="contactRef"
-      @click="handleClick('contact')"
+      @click="trackAndClick('contact')"
     >
       <span class="btn-text">Anfragen</span>
       <span class="icon">
@@ -328,7 +306,7 @@ function trackCloseContactModal() {
     <button
       class="tab about"
       ref="aboutRef"
-      @click="handleClick('about')"
+      @click="trackAndClick('about')"
     >
       <span>{{ overlay.current === 'about' ? 'Schließen' : 'About' }}</span>
       <span class="icon">
@@ -340,7 +318,7 @@ function trackCloseContactModal() {
     <button
       class="tab pricing"
       ref="pricingRef"
-      @click="handleClick('pricing')"
+      @click="trackAndClick('pricing')"
     >
       <span>{{ overlay.current === 'pricing' ? 'Schließen' : 'Preise' }}</span>
       <span class="icon">
@@ -398,7 +376,7 @@ function trackCloseContactModal() {
  * ---------------------------------------------------------------------------*/
 .bottom-menu {
   position: fixed;
-  bottom: 3rem;
+  bottom: calc(45rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -415,7 +393,7 @@ function trackCloseContactModal() {
   align-items: center;
   gap: 1rem;
   padding: 1rem 2rem;
-  border-radius: 9999px;
+  border-radius: 1rem;
   font-family: 'LayGrotesk', sans-serif;
   font-weight: 500;
   font-size: 1rem;

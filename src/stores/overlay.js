@@ -25,7 +25,7 @@ export const useOverlayStore = defineStore('overlay', {
         f.usage &&
         f.dateStart &&
         f.dateEnd &&
-        f.message.trim()
+        f.message.trim().length >= 30
       )
     }
   },

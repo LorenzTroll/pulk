@@ -1,2 +1,12 @@
 node_modules
 /dist
+/.vite-cache
+
+# Claude SEO skill (project-local install)
+/.claude/skills/
+/.claude/agents/
+
+# Local-only tooling & metadata
+CLAUDE.md
+**/.DS_Store
+/.qodo/

@@ -2,11 +2,12 @@
 /* -----------------------------------------------------------------------------
  * Imports
  * ---------------------------------------------------------------------------*/
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { track } from '@/utils/tracking'
 import ArrowIcon from './ArrowIcon.vue'
-import footerChairs from '@/assets/footer-chairs_E1.webp?w=800&format=webp;png&as=picture'
-import LogoWhite from '@/assets/pulk-logo-white_E3.svg'
+import footerChairs from '@/assets/pulk_footer-image_e2.png?w=800&format=avif;webp;png&as=picture'
+import FooterLogo from '@/assets/pulk_footer-logo.svg'
 
 /* -----------------------------------------------------------------------------
  * Props
@@ -20,21 +21,34 @@ const props = defineProps({
 })
 
 /* -----------------------------------------------------------------------------
- * Tracking (MDAL analytics)
+ * Tracking (Sitesight / MDAL)
  * ---------------------------------------------------------------------------*/
-/** Track Instagram click through MDAL analytics (if available) */
 function trackInstagramClick() {
-  if (window.MDAL?.event) {
-    window.MDAL.event({
-      Name: 'social-link',
-      Parameters: [{ Name: 'type', Value: 'instagram' }]
-    })
-  }
+  track('pulk.outbound.click', { destination: 'instagram', source: 'footer' })
+}
+
+function trackMapsClick() {
+  track('pulk.outbound.click', { destination: 'google-maps', source: 'footer' })
+}
+
+function trackAssociateClick(name) {
+  track('pulk.outbound.click', { destination: name, source: 'footer-associates' })
+}
+
+const copied = ref(false)
+
+async function copyPageUrl() {
+  try {
+    await navigator.clipboard.writeText('https://pulk.space/')
+    copied.value = true
+    track('pulk.footer.copy-link', { url: 'https://pulk.space/' })
+    setTimeout(() => { copied.value = false }, 2000)
+  } catch {}
 }
 
 const route = useRoute()
 // all routes, footer is invisible
-const modalRoutes = ['about', 'preise', 'miete']
+const modalRoutes = ['about', 'preise', 'anfragen']
 
 const isAbsolute = computed(() =>
   modalRoutes.includes(route.name)
@@ -43,67 +57,39 @@ const isAbsolute = computed(() =>
 
 <template>
   <footer class="site-footer" :class="{ 'footer-absolute': isAbsolute }">
-    <div class="footer-inner">
-      <!-- LEFT SIDE: Info columns -->
-      <div class="footer-left">
-        <!-- Address -->
-        <div class="footer-group">
-          <h3>Adresse</h3>
-          <ul>
-            <li>Talstraße 7</li>
-            <li>06120 Halle</li>
-            <li>
-              <a
-                href="https://www.google.com/maps?q=Talstraße+7,+06120+Halle+(Saale)"
-                target="_blank"
-                rel="noopener"
-              >
-                Route
-                <ArrowIcon class="arrow yellow" />
-              </a>
-            </li>
-          </ul>
-        </div>
-        <!-- Pages -->
-        <div class="footer-group">
-          <h3>Seiten</h3>
-          <ul>
-            <li>
-              <router-link to="/miete">
-                Mieten <ArrowIcon class="arrow purple" />
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/about">
-                About <ArrowIcon class="arrow purple" />
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/preise">
-                Preise <ArrowIcon class="arrow purple" />
-              </router-link>
-            </li>
-          </ul>
-        </div>
-        <!-- Social Media -->
-        <div class="footer-group">
-          <h3>Social Media</h3>
-          <ul>
-            <li>
-              <a
-                :href="instagramUrl"
-                target="_blank"
-                rel="noopener"
-                @click="trackInstagramClick"
-              >
-                Instagram <ArrowIcon class="arrow orange" />
-              </a>
-            </li>
-          </ul>
-        </div>
+
+    <!-- TOP: CTAs + Chairs -->
+    <div class="footer-top">
+      <div class="footer-ctas">
+        <a
+          class="footer-cta"
+          :href="instagramUrl"
+          target="_blank"
+          rel="noopener"
+          @click="trackInstagramClick"
+        >
+          <span>Instagram</span>
+          <!-- Instagram icon -->
+          <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <button class="footer-cta" :class="{ 'cta--copied': copied }" type="button" @click="copyPageUrl">
+          <span>{{ copied ? 'Link kopiert!' : 'Weiterempfehlen' }}</span>
+          <!-- Check icon (copied state) -->
+          <svg v-if="copied" class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <!-- Clipboard / copy icon (default) -->
+          <svg v-else class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
       </div>
-      <!-- RIGHT SIDE: Chairs image -->
-      <div class="footer-right">
+      <div class="footer-chairs-wrap">
         <picture>
           <source
             v-for="s in footerChairs.sources"
@@ -113,7 +99,7 @@ const isAbsolute = computed(() =>
           />
           <img
             :src="footerChairs.img.src"
-            alt="Drei Stühle"
+            alt="PULK Raum"
             class="footer-chairs"
             loading="lazy"
             decoding="async"
@@ -121,29 +107,98 @@ const isAbsolute = computed(() =>
         </picture>
       </div>
     </div>
-    <!-- BOTTOM SECTION -->
+
+    <!-- BOTTOM: Logo + Columns -->
     <div class="footer-bottom">
-      <div class="footer-bottom-inner">
-        <!-- Logo -->
+      <div class="footer-bottom-row">
+        <!-- Logo badge -->
         <div class="footer-logo-wrap">
-          <router-link to="/">
-            <img :src="LogoWhite" alt="PULK Logo weiß" class="footer-logo" />
+          <router-link to="/" class="footer-logo-link">
+            <img :src="FooterLogo" alt="PULK Logo" class="footer-logo" />
           </router-link>
         </div>
-        <!-- Divider Line -->
-        <div class="footer-divider"></div>
-        <!-- Legal section -->
-        <div class="footer-legal">
-          <div class="legal-links">
-            <router-link :to="datenschutzHref">Datenschutz</router-link>
-            <router-link :to="impressumHref">Impressum</router-link>
+
+        <!-- Nav columns -->
+        <div class="footer-columns">
+          <!-- Adresse -->
+          <div class="footer-group">
+            <h3>Adresse</h3>
+            <ul>
+              <li>Talstraße 7</li>
+              <li>06120 Halle</li>
+              <li>
+                <a
+                  href="https://www.google.com/maps?q=Talstraße+7,+06120+Halle+(Saale)"
+                  target="_blank"
+                  rel="noopener"
+                  @click="trackMapsClick"
+                >
+                  Route Starten <ArrowIcon class="arrow yellow" />
+                </a>
+              </li>
+            </ul>
           </div>
-          <div class="copyright">
-            © {{ company }} {{ year }}
+
+          <!-- Seiten -->
+          <div class="footer-group">
+            <h3>Seiten</h3>
+            <ul>
+              <li><router-link to="/anfragen">Anfrage senden</router-link></li>
+              <li><router-link to="/about">Über uns</router-link></li>
+              <li><router-link to="/preise">Preise und Pakete</router-link></li>
+            </ul>
+          </div>
+
+          <!-- Rechtliches -->
+          <div class="footer-group">
+            <h3>Rechtliches</h3>
+            <ul>
+              <li><router-link :to="datenschutzHref">Datenschutz</router-link></li>
+              <li><router-link :to="impressumHref">Impressum</router-link></li>
+            </ul>
+          </div>
+
+          <!-- Associates -->
+          <div class="footer-group">
+            <h3>Associates</h3>
+            <ul>
+              <li>
+                <a
+                  href="https://verliebtinhalle.de/location/pulk"
+                  target="_blank"
+                  rel="noopener"
+                  @click="trackAssociateClick('verliebtinhalle')"
+                >
+                  Besser Tagen <ArrowIcon class="arrow yellow" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://tmrb.eu/detail.php?id=527"
+                  target="_blank"
+                  rel="noopener"
+                  @click="trackAssociateClick('tmrb')"
+                >
+                  Freiraumbüro <ArrowIcon class="arrow yellow" />
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
+
+      <!-- Divider + Legal bar -->
+      <div class="footer-divider"></div>
+      <div class="footer-legal">
+        <p class="footer-credit">
+          Webseite <strong>Lorenz Troll</strong>
+        </p>
+        <p class="footer-copyright">
+          © {{ company }} {{ year }}
+        </p>
+      </div>
     </div>
+
   </footer>
 </template>
 
@@ -152,102 +207,20 @@ const isAbsolute = computed(() =>
  * Footer container
  * ---------------------------------------------------------------------------*/
 .site-footer {
-  background: #212121;
-  color: #fff;
+  background: #242424;
+  color: #e7e8ec;
   border-top-left-radius: 2rem;
   border-top-right-radius: 2rem;
-  padding-top: 3rem;
   font-family: 'LayGrotesk', sans-serif;
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 1000;
-}
-
-/* -----------------------------------------------------------------------------
- * Top content area
- * ---------------------------------------------------------------------------*/
-.footer-inner {
-  max-width: 1400px;
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 4rem;
-}
-
-.footer-left {
-  display: flex;
-  gap: 5rem;
-  flex: 1 1 60%;
-  flex-wrap: nowrap;
-  padding-top: 1rem;
-}
-
-.footer-group {
+  padding: 6rem 7.25% 2.125rem;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-}
-
-.footer-group h3 {
-  color: #b0b0b0;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-}
-
-.footer-group ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.footer-group a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.2s ease;
-}
-
-.footer-group a:hover {
-  color: #9687ff;
-}
-
-/* Footer – Seitenliste grau */
-.footer-group:nth-child(2) a {
-  color: #b0b0b0;
-}
-
-.footer-group:nth-child(2) a:hover {
-  color: #fff;
-}
-
-/* Arrow icons */
-.arrow {
-  width: 0.8rem;
-  height: 0.8rem;
-  margin-left: 0.4rem;
-  vertical-align: middle;
-}
-.arrow.purple { color: #9687ff; }
-.arrow.orange { color: #ff5533; }
-.arrow.yellow { color: #f2b607; }
-
-/* Right image */
-.footer-right {
-  flex: 0 0 auto;
-}
-.footer-chairs {
-  width: clamp(18rem, 22vw, 30rem);
-  height: auto;
-  object-fit: contain;
-  transition: width 0.3s ease;
+  gap: 8rem;
 }
 
 .footer-absolute {
@@ -258,119 +231,311 @@ const isAbsolute = computed(() =>
 }
 
 /* -----------------------------------------------------------------------------
- * Bottom section
+ * TOP: CTAs + Chairs
  * ---------------------------------------------------------------------------*/
-.footer-bottom {
-  width: 100%;
-  background: #212121;
-  margin-top: 1rem;
+.footer-top {
   display: flex;
-  justify-content: center;
-  padding-bottom: 2rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
 }
 
-.footer-bottom-inner {
-  width: 80%;
+.footer-ctas {
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 0.2rem;
 }
 
-.footer-logo-wrap {
+.footer-cta {
   display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #e7e8ec;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.footer-cta:hover {
+  opacity: 0.75;
+}
+
+.cta--copied .cta-icon {
+  color: #a8f0a0;
+}
+
+.cta-icon {
+  width: clamp(1.75rem, 2.5vw, 2.75rem);
+  height: clamp(1.75rem, 2.5vw, 2.75rem);
+  flex-shrink: 0;
+}
+
+/* Chairs right side */
+.footer-chairs-wrap {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
+.footer-chairs {
+  width: clamp(14rem, 28vw, 30rem);
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* -----------------------------------------------------------------------------
+ * BOTTOM: Logo + Columns
+ * ---------------------------------------------------------------------------*/
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.footer-bottom-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4rem;
+}
+
+/* Logo badge */
+.footer-logo-wrap {
+  flex: 0 0 auto;
+}
+
+.footer-logo-link {
+  display: inline-block;
+  text-decoration: none;
+  line-height: 0;
 }
 
 .footer-logo {
-  width: clamp(6rem, 8vw, 8rem);
+  width: clamp(10rem, 16vw, 16rem);
   height: auto;
 }
 
-.footer-divider {
-  width: 100%;
-  border-bottom: 1px solid #3a3a3a;
+/* Columns grid */
+.footer-columns {
+  display: flex;
+  gap: clamp(2rem, 6vw, 8.5rem);
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  justify-content: flex-end;
 }
 
+.footer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.footer-group h3 {
+  color: #63646d;
+  font-weight: 400;
+  font-size: 1.5625rem;
+  line-height: 1.2;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.015625rem;
+}
+
+.footer-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.footer-group li {
+  color: #e7e8ec;
+  font-size: 1.25rem;
+  line-height: 2.3125rem;
+  font-weight: 400;
+  letter-spacing: -0.0125rem;
+}
+
+.footer-group a {
+  color: #e7e8ec;
+  text-decoration: none;
+  font-size: 1.25rem;
+  line-height: 2.3125rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: opacity 0.2s ease;
+}
+
+.footer-group a:hover {
+  opacity: 0.7;
+}
+
+/* Arrow icons */
+.arrow {
+  width: 0.7rem;
+  height: 0.7rem;
+  flex-shrink: 0;
+}
+.arrow.yellow { color: #f2b607; }
+.arrow.purple { color: #9687ff; }
+.arrow.orange { color: #ff5533; }
+
+/* Divider */
+.footer-divider {
+  width: 100%;
+  border-bottom: 0.0625rem solid #3a3a3a;
+}
+
+/* Legal bar */
 .footer-legal {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #a8a8a8;
-  font-size: 0.95rem;
 }
 
-.legal-links {
-  display: flex;
-  gap: 2rem;
+.footer-credit,
+.footer-copyright {
+  color: #63646d;
+  font-size: 1.25rem;
+  line-height: 1.875rem;
+  margin: 0;
+  letter-spacing: -0.0125rem;
 }
 
-.legal-links a {
-  color: #b0b0b0;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.legal-links a:hover {
-  color: #fff;
+.footer-credit strong {
+  font-weight: 900;
+  color: #63646d;
 }
 
-.copyright {
-  font-weight: 600;
-  color: #b0b0b0;
+.footer-copyright {
+  font-weight: 900;
+}
+
+/* -----------------------------------------------------------------------------
+ * Desktop (> 1024px)
+ * ---------------------------------------------------------------------------*/
+@media (min-width: 1025px) {
+  .footer-top {
+    align-items: flex-start;
+  }
+
+  .footer-ctas {
+    margin-top: 1rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * Tablet + Mobile (≤ 1024px)
+ * ---------------------------------------------------------------------------*/
+@media (max-width: 1024px) {
+  .footer-top {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .footer-chairs {
+    width: clamp(12rem, 40vw, 22rem);
+  }
+
+  .footer-bottom-row {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .footer-columns {
+    justify-content: flex-start;
+    gap: 2.5rem;
+  }
 }
 
 /* -----------------------------------------------------------------------------
  * Tablet
  * ---------------------------------------------------------------------------*/
-@media (max-width: 1024px) {
-  .footer-inner {
-    gap: 2rem;
+@media (min-width: 641px) and (max-width: 1024px) {
+  .site-footer {
+    gap: 6rem;
+    padding: 6rem 9% 2.125rem;
   }
-  .footer-left {
-    flex-wrap: wrap;
-    gap: 3rem;
+
+  .footer-logo {
+    width: clamp(13rem, 16vw, 16rem);
   }
+
   .footer-chairs {
-    width: clamp(14rem, 22vw, 20rem);
+    width: clamp(12rem, 30vw, 22rem);
+  }
+
+  .footer-ctas {
+    gap: 0.5rem;
+  }
+
+  .footer-columns {
+    justify-content: space-between;
+    gap: 2.5rem;
+    width: 100%;
+  }
+
+  .footer-group h3 {
+    font-size: 1.3rem;
   }
 }
 
 /* -----------------------------------------------------------------------------
  * Mobile
  * ---------------------------------------------------------------------------*/
-@media (max-width: 768px) {
-  .footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 88%;
+@media (max-width: 640px) {
+  .site-footer {
+    padding: 4rem 7.5% 3rem;
+    gap: 3rem;
   }
 
-  .footer-right {
+  .footer-cta {
+    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    white-space: normal;
+  }
+
+  .footer-chairs-wrap {
     display: none;
   }
 
-  .footer-left {
-    width: 100%;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    gap: 2rem;
+  .footer-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    column-gap: 4rem;
   }
 
   .footer-bottom {
-    margin-top: 5rem;
+    gap: 2rem;
   }
 
-  .footer-bottom-inner {
-    width: 88%;
+  .footer-group h3 {
+    font-size: 0.9375rem;
+    font-weight: 400;
   }
 
   .footer-legal {
     flex-direction: row;
     align-items: flex-start;
-    gap: 0.8rem;
+    gap: 0.25rem;
   }
 
-  .legal-links {
-    gap: 2.5rem;
+  .footer-credit,
+  .footer-copyright {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .footer-logo {
+    width: clamp(8rem, 45vw, 12rem);
   }
 }
 </style>

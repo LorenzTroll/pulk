@@ -5,6 +5,12 @@ import { imagetools } from 'vite-imagetools'
 import path from 'path'
 
 export default defineConfig({
+  cacheDir: '.vite-cache',
+  server: {
+    hmr: {
+      overlay: false
+    }
+  },
   plugins: [
     vue(),
     imagetools({
@@ -17,6 +23,25 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue', 'vue-router', 'pinia'],
+          head: ['@unhead/vue', '@vueuse/head'],
+          gsap: ['gsap'],
+          scroll: ['lenis', '@studio-freight/lenis', 'locomotive-scroll'],
+          gl: ['ogl'],
+          icons: [
+            '@fortawesome/fontawesome-svg-core',
+            '@fortawesome/free-solid-svg-icons',
+            '@fortawesome/vue-fontawesome'
+          ],
+          calendar: ['hkanev-vue-calendar']
+        }
+      }
     }
   }
 })

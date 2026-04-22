@@ -3,10 +3,10 @@
  * Imports
  * ==========================================================================*/
 import { ref, watch, onMounted, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { CSSPlugin } from 'gsap/CSSPlugin'
-import chairImage from '@/assets/chair-cookie-banner_E3.png?w=800&format=png&as=img'
+import chairImage from '@/assets/hero-chair-black.png?w=600&format=png&as=img'
 import { getLenis } from '@/composables/useLenis'
 
 gsap.registerPlugin(CSSPlugin)
@@ -16,6 +16,7 @@ gsap.registerPlugin(CSSPlugin)
  * ==========================================================================*/
 const showBanner = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 /* ============================================================================
  * Determine whether the banner should be shown
@@ -45,13 +46,6 @@ async function evaluateBanner() {
   if (!consent) {
     showBanner.value = true
     await nextTick()
-
-    // Soft background animation
-    gsap.fromTo(
-      '.cookie-overlay',
-      { backdropFilter: 'blur(15px) saturate(120%)' },
-      { backdropFilter: 'blur(30px) saturate(150%)', duration: 0.7, ease: 'power2.out' }
-    )
 
     // Stop scrolling while the banner is open
     getLenis()?.stop()
@@ -105,7 +99,7 @@ function openPrivacy(evt) {
   showBanner.value = false
 
   setTimeout(() => {
-    window.location.href = '/datenschutz'
+    router.push('/datenschutz')
   }, 100)
 }
 </script>
@@ -128,29 +122,33 @@ function openPrivacy(evt) {
       @wheel.prevent
       @touchmove.prevent
     >
-      <div class="content">
-        <!-- Left side -->
-        <div class="left">
-          <h2>Cookies</h2>
-          <img :src="chairImage.src" alt="Stuhl" class="chair-image" />
+      <!-- Left: Title + Chair row -->
+      <div class="banner-left">
+        <h2 class="banner-title">Cookies</h2>
+        <div class="chair-row" aria-hidden="true">
+          <img :src="chairImage.src" alt="" class="chair-image" />
+          <img :src="chairImage.src" alt="" class="chair-image" />
+          <img :src="chairImage.src" alt="" class="chair-image" />
         </div>
-        <!-- Right side -->
-        <div class="right">
-          <p class="cookie-paragaph">
-            Damit Du alles findest, was du an Infos benötigst und wir die Webseite Schritt für Schritt verbessern können.
-            Funktionale Cookies sind notwendig. Um zu verstehen, wie sich die User:innen auf unserer Webseite verhalten,
-            verwenden wir das datenschutzfreundliche Analyse-Tool Sitesight (gehostet in der EU).
-            Weitere Informationen findest du in unseren
-            <a href="/datenschutz" class="privacy-link" @click="openPrivacy">Datenschutz-Richtlinien</a>
-          </p>
-          <div class="buttons">
-            <button class="btn secondary" @click="rejectCookies">
-              Ohne Analyse fortfahren
-            </button>
-            <button class="btn primary" @click="acceptCookies">
-              Akzeptieren
-            </button>
-          </div>
+      </div>
+      <!-- Right: Text + Divider + Buttons -->
+      <div class="banner-right">
+        <p class="banner-text">
+          Wir verwenden Cookies damit wir die Webseite Schritt für Schritt verbessern können.
+          Und damit du bei uns das findest wonach du suchst. Um zu verstehen, wie ihr euch auf
+          unserer Webseite zurechtfindet verwenden wir ein datenschutzfreundliches Analyse-Tool
+          Sitesight (gehostet in der EU). Du kannst zustimmen oder einfach ohne Analyse
+          weitermachen. Weitere Informationen findest du in unseren
+          <a href="/datenschutz" class="privacy-link" @click="openPrivacy">Datenschutz-Richtlinien</a>.
+        </p>
+        <div class="banner-divider" aria-hidden="true"></div>
+        <div class="banner-buttons">
+          <button class="btn-text" @click="rejectCookies">
+            Ohne Analyse fortfahren
+          </button>
+          <button class="btn-accept" @click="acceptCookies">
+            Alle Akzeptieren
+          </button>
         </div>
       </div>
     </div>
@@ -167,207 +165,251 @@ function openPrivacy(evt) {
   pointer-events: auto;
   touch-action: none;
   z-index: 2000;
-  backdrop-filter: blur(5px) saturate(100%);
 }
 
 /* ============================================================================
  * Cookie Banner
+ *   Positionierung: zentriert, bottom 3.25rem
+ *   Ziel-Abstand links/rechts zur Viewport-Kante: ~6rem (Kontrollwert)
  * ==========================================================================*/
 .cookie-banner {
+  box-sizing: border-box;
   position: fixed;
-  bottom: 3%;
+  bottom: 3.25rem;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 90%;
-  min-width: 80vw;
-  background: #D9D9D9;
-  border-radius: 1rem;
-  padding: 3.5rem;
+  width: calc(100vw - 10rem);
+  max-width: 130rem;
+  background: #FFCC00;
+  border-radius: 1.25rem;
+  padding: 4.8125rem 5.8125rem 3.1875rem 3.8125rem;
   z-index: 3000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: 'LayGrotesk', sans-serif;
+  display: flex;
+  gap: clamp(3rem, 7vw, 8.4375rem);
+  align-items: flex-start;
 }
 
-.cookie-banner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 24.5%;
-  height: 100%;
-  background: #F2B607;
-  border-top-left-radius: 1rem;
-  border-bottom-left-radius: 1rem;
-  z-index: 0;
+.cookie-banner *, .cookie-banner *::before, .cookie-banner *::after {
+  box-sizing: border-box;
 }
 
 /* ============================================================================
- * Layout inside banner
+ * Left: Title + Chair row
  * ==========================================================================*/
-.content {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.left {
-  display: flex;
-  flex-direction: row;
-  gap: 0;
-}
-
-.left h2 {
-  font-size: clamp(2rem, 1.8vw + 1.2rem, 3.5rem);
-  font-weight: 800;
-  letter-spacing: 0.06rem;
-  margin: 0.5rem 0 1rem;
-  z-index: 1;
-}
-
-.chair-image {
-  width: clamp(15rem, 30vw, 25rem);
-  object-fit: contain;
-  margin: -2rem 0 -1rem;
-  max-width: 100%;
-  transform: translateX(-1rem);
-  z-index: 2;
-}
-
-/* Right column */
-.right {
-  flex: 2;
+.banner-left {
+  flex: 0 0 auto;
+  width: clamp(18rem, 25vw, 30rem);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 1.875rem;
 }
 
-.right p {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1.5rem;
-  padding-bottom: 2.5rem;
-  border-bottom: 0.09rem solid #0C0C0C;
-  width: 90%;
-  align-self: flex-end;
-}
-
-/* Privacy link */
-.privacy-link {
-  color: #7b61ff;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.privacy-link:hover {
-  color: #a48cff;
-  text-decoration: underline;
-}
-
-/* Buttons */
-.buttons {
-  display: flex;
-  width: 100%;
-  padding-top: 7%;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-.btn {
+.banner-title {
   font-family: 'LayGrotesk', sans-serif;
-  padding: 0.8rem 1.6rem;
-  border-radius: 9999px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  border: none;
-  transition: background 0.2s ease;
-}
-
-.btn.primary {
-  background: #000;
-  color: #fff;
-}
-
-.btn.secondary {
-  background: transparent;
-  border: 1px solid #000;
+  font-size: clamp(3.5rem, 6vw + 0.5rem, 5.625rem);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0;
   color: #000;
 }
 
+.chair-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0;
+  width: 100%;
+  transform: scaleX(-1);
+}
+
+.chair-image {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transform: scaleX(-1);
+}
+
 /* ============================================================================
- * Tablet
+ * Right: Text + Divider + Buttons
  * ==========================================================================*/
-@media (max-width: 1200px) and (min-width: 769px) {
-  .left {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.banner-right {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4375rem;
+}
 
-  .chair-image {
-    width: 18rem;
-    margin-top: 0.5rem;
-  }
+.banner-text {
+  font-family: 'LayGrotesk', sans-serif;
+  font-size: clamp(1.0625rem, 0.9vw + 0.8rem, 1.5625rem);
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  color: #141414;
+  font-weight: 400;
+  margin: 0;
+}
 
+.privacy-link {
+  color: #141414;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.privacy-link:hover {
+  color: #000;
+}
+
+.banner-divider {
+  height: 0;
+  border-top: 0.0625rem solid #141414;
+  width: 100%;
+}
+
+/* ============================================================================
+ * Buttons
+ *   ⚠ Figma-Design: asymmetrisch (Text-Link vs. solider Button).
+ *   DSGVO/EDPB 03/2022 bewertet das als Dark-Pattern. Umsetzung per Designvorgabe.
+ * ==========================================================================*/
+.banner-buttons {
+  display: flex;
+  gap: 2.3125rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.btn-text {
+  font-family: 'LayGrotesk', sans-serif;
+  background: none;
+  border: none;
+  padding: 0.625rem;
+  font-size: clamp(1rem, 0.4vw + 0.85rem, 1.25rem);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: #141414;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.btn-text:hover {
+  text-decoration: underline;
+}
+
+.btn-accept {
+  font-family: 'LayGrotesk', sans-serif;
+  background: #141414;
+  color: #fff;
+  border: none;
+  border-radius: 0.625rem;
+  padding: 0.8125rem 2.375rem 0.75rem 2.25rem;
+  height: 3.5625rem;
+  min-width: 13.3125rem;
+  font-size: clamp(1rem, 0.4vw + 0.85rem, 1.25rem);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-accept:hover {
+  background: #000;
+  transform: scale(1.015);
+}
+
+.btn-accept:active {
+  transform: scale(0.99);
+}
+
+/* ============================================================================
+ * Tablet (≤ 64rem)
+ * ==========================================================================*/
+@media (min-width: 40.0625rem) and (max-width: 64rem) {
   .cookie-banner {
-    width: min(80vw, 95rem);
-    bottom: 4%;
+    width: calc(100vw - 4rem);
+    padding: 3rem 3rem 2.5rem;
+    gap: 2.5rem;
+    flex-direction: column;
+    bottom: 2rem;
   }
 
-  .cookie-banner::before {
-    width: 28%;
+  .banner-left {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 2rem;
   }
 
-  .right p {
-    width: 97%;
+  .banner-title {
+    flex: 1;
+    font-size: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .chair-row {
+    width: 55%;
+    max-width: 22rem;
+  }
+
+  .banner-right {
+    width: 100%;
   }
 }
 
 /* ============================================================================
- * Mobile
+ * Mobile (≤ 40rem)
  * ==========================================================================*/
-@media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-  }
-
+@media (max-width: 40rem) {
   .cookie-banner {
-    width: 75%;
-    padding: 2.5rem;
+    width: calc(100vw - 2rem);
+    padding: 2rem 1.75rem;
+    gap: 1.5rem;
+    flex-direction: column;
+    bottom: 1rem;
+    border-radius: 1rem;
   }
 
-  .cookie-banner::before {
-    display: none;
-  }
-
-  .left {
-    align-items: center;
-    flex-direction: column-reverse;
-  }
-
-  .chair-image {
-    display: none;
-  }
-
-  .left h2 {
-    font-size: 2.5rem;
-    padding-bottom: 2rem;
-    align-self: flex-start;
-  }
-
-  .right p {
+  .banner-left {
     width: 100%;
-    border-bottom: none;
-    padding-left: 1rem;
-    padding-bottom: 1rem;
   }
 
-  .buttons {
+  .banner-title {
+    font-size: 3rem;
+  }
+
+  .chair-row {
+    display: none;
+  }
+
+  .banner-right {
+    width: 100%;
+    gap: 1.5rem;
+  }
+
+  .banner-text {
+    font-size: 1rem;
+  }
+
+  .banner-buttons {
     flex-direction: column-reverse;
-    align-self: center;
+    align-items: stretch;
+    gap: 1rem;
   }
 
-  .btn {
+  .btn-text {
     width: 100%;
     text-align: center;
+  }
+
+  .btn-accept {
+    width: 100%;
+    min-width: 0;
   }
 }
 </style>

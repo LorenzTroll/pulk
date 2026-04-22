@@ -33,7 +33,7 @@ const router = createRouter({
 
     /* SEO-Seiten (volle Ansicht, indexiert) */
     { path: '/preise', name: 'preise', component: () => import('@/views/PricingPage.vue') },
-    { path: '/miete',  name: 'miete',  component: () => import('@/views/ContactPage.vue') },
+    { path: '/anfragen',  name: 'anfragen',  component: () => import('@/views/ContactPage.vue') },
     { path: '/about',  name: 'about',  component: () => import('@/views/AboutPage.vue') },
 
     /* MODAL-Routen (nicht indexiert, nur UI-State) */
@@ -45,8 +45,8 @@ const router = createRouter({
       meta: { robots: 'noindex' }
     },
     { 
-      path: '/modal/miete',  
-      name: 'modal-miete',  
+      path: '/modal/anfragen',
+      name: 'modal-anfragen',
       component: LandingPage,
       props: { modal: 'contact' },
       meta: { robots: 'noindex' }
@@ -71,7 +71,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // Alle SEO-Seiten, auf denen KEIN Modal laufen soll
-  const seoPaths = ['/datenschutz', '/impressum', '/about', '/preise', '/miete']
+  const seoPaths = ['/datenschutz', '/impressum', '/about', '/preise', '/anfragen']
 
   if (seoPaths.includes(to.path)) {
     destroyLenis()

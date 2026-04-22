@@ -1,23 +1,49 @@
 <script setup>
-import { defineProps, defineEmits, watch } from 'vue'
+import { defineProps, defineEmits, watch, ref, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
-  visible: { type: Boolean, required: true }
+  visible: { type: Boolean, required: true },
+  ariaLabel: { type: String, default: 'Dialog' }
 })
 const emit = defineEmits(['close'])
 
+const dialogRef = ref(null)
+let previousActiveElement = null
+
 function close() {
   emit('close')
+}
+
+function handleKeydown(e) {
+  if (e.key === 'Escape' && props.visible) {
+    e.preventDefault()
+    close()
+  }
 }
 
 watch(
   () => props.visible,
   (val) => {
     if (val) {
-      // Fokus via tabindex
+      previousActiveElement = document.activeElement
+      window.addEventListener('keydown', handleKeydown)
+      requestAnimationFrame(() => {
+        dialogRef.value?.focus?.()
+      })
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        const el = previousActiveElement
+        previousActiveElement = null
+        requestAnimationFrame(() => el.focus())
+      }
     }
   }
 )
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -25,7 +51,13 @@ watch(
     <transition name="overlay-slide">
       <div
         v-if="visible"
+        ref="dialogRef"
         class="overlay-backdrop"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="ariaLabel"
+        tabindex="-1"
+        data-lenis-prevent
         @click.self="close"
       >
         <slot />
@@ -42,6 +74,14 @@ watch(
   display: flex; align-items: center; justify-content: center;
   z-index: 1000;
   overflow: auto;
+  /* Allow modal content to scroll on touch devices; only background is locked */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+.overlay-backdrop:focus {
+  outline: none;
 }
 
 .overlay-slide-enter-active,

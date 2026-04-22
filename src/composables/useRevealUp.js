@@ -7,8 +7,11 @@ console.log('[useRevealUp] File loaded')
 export function useRevealUp(selector = '.reveal-up', defaults = {}) {
   const triggers = []
 
-  // Hilfsfunktion, um evtl. Refs zu entpacken
-  const getEl = v => (v && v.value) ? v.value : v
+  // Hilfsfunktion, um evtl. Refs zu entpacken — fällt auf null zurück wenn kein DOM-Element
+  const getEl = v => {
+    const el = (v && v.value) ? v.value : v
+    return (el && typeof el.querySelectorAll === 'function') ? el : null
+  }
 
   onMounted(async () => {
     console.log('[useRevealUp] onMounted triggered')
@@ -63,19 +66,20 @@ export function useRevealUp(selector = '.reveal-up', defaults = {}) {
           // ✨ SplitText-Variante
           if (SplitText && el.classList.contains('animated-text')) {
             console.log('[useRevealUp] Animating with SplitText', el)
-            const split = new SplitText(el, { type: 'lines', linesClass: 'line' })
+            const split = new SplitText(el, { type: 'words', wordsClass: 'word' })
 
-            gsap.set(split.lines, { color: '#00000034' })
+            gsap.set(split.words, { color: '#00000034' })
 
-            gsap.to(split.lines, {
+            gsap.to(split.words, {
               color: '#141414',
               duration: duration || 1.2,
-              stagger: 0.25,
+              stagger: 0.04,
               ease,
               delay,
               onComplete: () => {
-                // Text wieder normalisieren
-                split.revert()
+                // Wörter sind inline → re-wrappen responsiv natürlich.
+                // Parent-Farbe zusätzlich sichern.
+                el.style.color = '#141414'
               }
             })
           }

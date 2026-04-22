@@ -8,20 +8,9 @@
   font-weight: 400;
   font-display: swap;
   src:
-    url('@/assets/fonts/LayGrotesk-Trial-Regular.woff2') format('woff2'),
-    url('@/assets/fonts/LayGrotesk-Trial-Regular.woff')  format('woff'),
-    url('@/assets/fonts/LayGrotesk-Trial-Regular.otf')  format("opentype");
-}
-
-@font-face {
-  font-family: 'LayGrotesk';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src:
-    url('@/assets/fonts/laygrotesk-trial-medium.woff2') format('woff2'),
-    url('@/assets/fonts/laygrotesk-trial-medium.woff')  format('woff'),
-    url('@/assets/fonts/laygrotesk-trial-medium.otf')  format("opentype");
+    url('@/assets/fonts/LayGrotesk-Regular.woff2') format('woff2'),
+    url('@/assets/fonts/LayGrotesk-Regular.woff')  format('woff'),
+    url('@/assets/fonts/LayGrotesk-Regular.otf')  format("opentype");
 }
 
 @font-face {
@@ -30,35 +19,61 @@
   font-weight: 700;
   font-display: swap;
   src:
-    url('@/assets/fonts/LayGrotesk-Trial-Bold.woff2') format('woff2'),
-    url('@/assets/fonts/LayGrotesk-Trial-Bold.woff')  format('woff'),
-    url('@/assets/fonts/LayGrotesk-Trial-Bold.otf')  format("opentype");
-}
-
-@font-face {
-  font-family: 'LayGrotesk';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src:
-    url('@/assets/fonts/LayGrotesk-Trial-Black.woff2') format('woff2'),
-    url('@/assets/fonts/LayGrotesk-Trial-Black.woff')  format('woff'),
-    url('@/assets/fonts/LayGrotesk-Trial-Black.otf')  format("opentype");
+    url('@/assets/fonts/LayGrotesk-Black.woff2') format('woff2'),
+    url('@/assets/fonts/LayGrotesk-Black.woff')  format('woff'),
+    url('@/assets/fonts/LayGrotesk-Black.otf')  format("opentype");
 }
 
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #9687FF;
+  background-color: #e7e8ec;
 }
 
-body, html, #app.plain-background {
-  background-color: white !important;
+body, html, #app, #app.plain-background {
+  background-color: #e7e8ec !important;
 }
 
 :root {
   --font-heading: 'Inter', sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+ * Accessibility: sichtbarer Fokusring (WCAG 2.4.7)
+ * Nur bei Keyboard-Fokus (:focus-visible), Maus-Klicks bleiben unverändert.
+ * ------------------------------------------------------------------------- */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 0.125rem solid #141414;
+  outline-offset: 0.25rem;
+  border-radius: 0.125rem;
+}
+
+/* Heller Fokusring auf dunklen Flächen */
+.dark :focus-visible,
+[data-theme="dark"] :focus-visible,
+.overlay-backdrop :focus-visible {
+  outline-color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------------
+ * Mobile Tap-Highlight: grauen/blauen Flash auf iOS & Android unterdrücken.
+ * Für Tap-Feedback nutzen wir bestehende :active / :hover Zustände der Komponenten.
+ * ------------------------------------------------------------------------- */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Sanftes eigenes Tap-Feedback auf interaktiven Elementen */
+a:active,
+button:active,
+[role="button"]:active {
+  opacity: 0.75;
+  transition: opacity 0.1s ease;
 }
 
 /* Footer: Default (SEO-Seiten) */

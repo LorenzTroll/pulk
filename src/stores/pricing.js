@@ -7,19 +7,22 @@ export const usePricingStore = defineStore('pricing', () => {
     {
       key:        'business',
       title:      'Business',
-      audience:   '',
-      context:    'Für Team- oder Business-Meetings, Workshops, Präsentationen, Weiterbildungen bis',
+      audience:   'Unternehmen, Agenturen, Verbände',
+      context:    'Gesamter Raum für Team- oder Business-Meetings, Workshops, Präsentationen, Weiterbildungen und Klausurtagungen bis',
       maxPersons: 'max. 40 Personen',
 
-      // Preisinfos
-      price:      50, 
+      price:      50,
       unit:       'Euro / Stunde',
-      priceAlt:   '350 Euro für 8 Stunden',
-      priceNote:  'Preis zzgl. MwSt.',
+      priceAlt:   '1–25 Personen: 50 €/h · 26–40 Personen: 65 €/h',
+      priceNote:  'Preis zzgl. MwSt. · Tagessatz ab 7 Stunden',
+
+      tiers: [
+        { maxPersons: 25, hourRate: 50, dayRate: 350 },
+        { maxPersons: 40, hourRate: 65, dayRate: 455 }
+      ],
 
       buttonText: 'Business-Paket anfragen',
 
-      // Leistungen
       features: [
         'Ganzer Raum 100 qm',
         'Saalbestuhlung',
@@ -35,24 +38,27 @@ export const usePricingStore = defineStore('pricing', () => {
         'Mikrofonierung'
       ],
 
-      // Beschreibungstext
-      description:
-        ''
+      description: ''
     },
 
     {
       key:        'gruppen',
-      title:      'Gruppen',
-      audience:   '',
+      title:      'Community',
+      audience:   'Vereine, Initiativen, Künstler:innen',
       context:    'Für Netzwerktreffen, Workshops, Sprints, Team-Meetings, Seminare und Vorträge bis',
       maxPersons: 'max. 25 Personen',
 
       price:      25,
       unit:       'Euro / Stunde',
-      priceAlt:   'Ab 5 Personen: + 5 Euro pro Person und Stunde',
-      priceNote:  'Preis zzgl. MwSt.',
+      priceAlt:   '1–10 Personen: 25 €/h · 11–25 Personen: 30 €/h',
+      priceNote:  'Preis zzgl. MwSt. · Tagessatz ab 7 Stunden',
 
-      buttonText: 'Gruppen-Paket anfragen',
+      tiers: [
+        { maxPersons: 10, hourRate: 25, dayRate: 175 },
+        { maxPersons: 25, hourRate: 30, dayRate: 210 }
+      ],
+
+      buttonText: 'Community-Paket anfragen',
 
       features: [
         'Workshop-Bereich',
@@ -69,8 +75,7 @@ export const usePricingStore = defineStore('pricing', () => {
         'Beamer'
       ],
 
-      description:
-        ''
+      description: ''
     },
 
     {
@@ -80,10 +85,11 @@ export const usePricingStore = defineStore('pricing', () => {
       context:    'Kein Paket gefunden? Dann fragt uns bitte direkt an. Gemeinsam finden wir ein maßgeschneidertes Angebot, das sowohl deinem Vorhaben als auch unseren Möglichkeiten entspricht.',
       maxPersons: '',
 
-      // Kein fixer Preis
       price:      null,
       unit:       '',
       priceLabel: '',
+
+      tiers: [],
 
       buttonText: 'Individuelle Anfrage schicken',
 
@@ -99,10 +105,30 @@ export const usePricingStore = defineStore('pricing', () => {
 
       onRequest: [],
 
-      description:
-        ''
+      description: ''
     }
   ])
 
-  return { plans }
+  /**
+   * Berechnet den Gesamtpreis für einen Plan.
+   * Ab 8 Stunden gilt der Tagessatz.
+   */
+  function calculatePrice(planKey, persons, hours) {
+    const plan = plans.find(p => p.key === planKey)
+    if (!plan?.tiers?.length) return null
+    const tier = plan.tiers.find(t => persons <= t.maxPersons)
+    if (!tier) return null
+    return hours >= 7 ? tier.dayRate : hours * tier.hourRate
+  }
+
+  /**
+   * Gibt den passenden Tier für eine Personenzahl zurück.
+   */
+  function getTier(planKey, persons) {
+    const plan = plans.find(p => p.key === planKey)
+    if (!plan?.tiers?.length) return null
+    return plan.tiers.find(t => persons <= t.maxPersons) ?? null
+  }
+
+  return { plans, calculatePrice, getTier }
 })

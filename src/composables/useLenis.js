@@ -7,7 +7,18 @@ let _rafId = 0
 
 export function useLenis(options = {}) {
   onMounted(() => {
-    if (_lenisRef.value) return // Singleton
+    if (_lenisRef.value) {
+      // Singleton existiert — RAF neu starten falls er durch onBeforeUnmount gestoppt wurde
+      if (!_rafId) {
+        const lenis = _lenisRef.value
+        const raf = (time) => {
+          lenis.raf(time)
+          _rafId = requestAnimationFrame(raf)
+        }
+        _rafId = requestAnimationFrame(raf)
+      }
+      return
+    }
 
     const prefersReduced =
       typeof window !== 'undefined' &&

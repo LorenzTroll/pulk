@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOverlayStore } from '@/stores/overlay'
 import { destroyLenis, useLenis, getLenis } from '@/composables/useLenis.js'
@@ -44,7 +44,7 @@ const showFooter = computed(() => {
   const current = router.currentRoute.value
   console.log('🧭 Aktuelle Route:', current.name, current.matched)
 
-  return current?.matched?.length > 0 && current?.name !== 'NotFound'
+  return current?.matched?.length > 0 && current?.name !== 'NotFound' && current?.name !== 'preise' && current?.name !== 'anfragen'
 })
 
 const LEGAL_PATHS = ['/datenschutz', '/impressum']
@@ -84,8 +84,30 @@ function unlockScroll() {
   body.style.right = ''
   body.style.width = ''
   body.style.paddingRight = ''
-  window.scrollTo(0, -top || scrollY || 0)
+  const targetY = -top || scrollY || 0
+  window.scrollTo(0, targetY)
+  const lenis = getLenis()
+  if (lenis) {
+    lenis.stop()
+    requestAnimationFrame(() => {
+      window.scrollTo(0, targetY)
+      lenis.start()
+      if (targetY > 0) lenis.scrollTo(targetY, { immediate: true })
+    })
+  }
 }
+
+// Lock body scroll while any BottomMenu modal is open
+watch(
+  () => overlay.current,
+  (current) => {
+    if (current) {
+      lockScroll()
+    } else {
+      unlockScroll()
+    }
+  }
+)
 
 async function hardResetScroll() {
   if (overlay.current) return
@@ -295,7 +317,7 @@ onBeforeUnmount(() => {
       instagram-url="https://instagram.com/pulk.space"
       impressum-href="/impressum"
       datenschutz-href="/datenschutz"
-      company="PULK"
+      company="Pulk"
     />
     <CookieBanner />
   </div>

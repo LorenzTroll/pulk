@@ -16,16 +16,27 @@ import {
 import { useHead } from '@vueuse/head'
 import { useRoute, useRouter } from 'vue-router'
 
-import { getGsap } from '@/composables/lazyGsap'
+import { getGsap, getGsapWithPlugins } from '@/composables/lazyGsap'
 import { useRevealUp } from '@/composables/useRevealUp'
+import { track } from '@/utils/tracking'
 
-import staticGalleryImg from '@/assets/PULK_250513_Foto_Michel_Klehm_03.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+import staticGalleryImg from '@/assets/pulk_room_image-B.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 import pulk05 from '@/assets/PULK_250513_Foto_Michel_Klehm_05.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 import pulk07 from '@/assets/PULK_250513_Foto_Michel_Klehm_07.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
-import pulkArrow from '@/assets/pulk-arrow-accordeon.svg'
+import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
 import pulkHero from '@/assets/Pulk-hero-image_E12.svg'
 import pulkHeroMobile from '@/assets/pulk_heroImage-mobile_E3.svg'
+
+/* Hero chair assets: liegen in /public/ → kein Vite/imagetools Processing */
+const chairBlack = '/hero-chair-black.png'
+const chairPurple = '/hero-chair-purple.png'
+
+import pulkLogoLandingpage from '@/assets/pulk-logo-landingpage.svg'
+const ciStoolContainer = '/ci-elements-stool-container.png'
+const reviewImageA = '/pulk_review_customerA_imageA.png'
+const reviewImageB = '/pulk_review-section_customerA-imageB.png'
+import pulkRoomImageA from '@/assets/pulk_room_image-A.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 import BottomMenu from '@/components/BottomMenu.vue'
 import { useLenis } from '@/composables/useLenis.js'
@@ -37,30 +48,41 @@ useRevealUp('.reveal-up')
  * SEO meta & structured data
  * -------------------------------------------------------------------------- */
 useHead({
-  title: 'PULK – Raum für Workshops, Seminare und kreative Formate in Halle (Saale)',
+  title: 'PULK – Workshop- und Seminarraum in Halle (Saale)',
   meta: [
     {
       name: 'description',
       content:
-        'PULK ist ein flexibler Raum in Halle (Saale) für Workshops, Seminare, Meetings und kreative Formate – ideal für Unternehmen, Firmen, Organisationen und Teams.'
+        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
     },
 
     // Open Graph for social media
     {
       property: 'og:title',
-      content: 'PULK – Raum für Workshops und kreative Formate in Halle (Saale)'
+      content: 'PULK – Workshop- und Seminarraum in Halle (Saale)'
     },
     {
       property: 'og:description',
       content:
-        '100 m² Raum für Ideen, Wandel & Zusammenarbeit. Ideal für Organisationen, Teams & kreative Prozesse.'
+        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: 'PULK – 100 m² Workshop- und Seminarraum in Halle (Saale)' },
     { property: 'og:url', content: 'https://pulk.space/' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:locale', content: 'de_DE' }
+    { property: 'og:locale', content: 'de_DE' },
+
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'PULK – Workshop- und Seminarraum in Halle (Saale)' },
+    {
+      name: 'twitter:description',
+      content:
+        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
+    },
+    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/' },
@@ -74,24 +96,24 @@ useHead({
  * -------------------------------------------------------------------------- */
 const accordionItems = [
   {
-    label: 'Nutzung',
+    label: 'Für welche Formate eignet sich das Pulk?',
     content:
-      'Das Pulk ist ein flexibel nutzbarer Raum in Halle (Saale) für Workshops, Team-Meetings, Klausuren, Netzwerktreffen, Seminare oder kreative Formate. Unternehmen, Organisationen, Initiativen oder Privatpersonen finden hier eine inspirierende Umgebung – ruhig, im privaten Ambiente in einem flexiblen und anpassbaren Raum. Präsentationen, Apéros, Lesungen oder andere Anlässe: Der Raum passt sich euren Anforderungen an, damit ihr euch auf das Wesentliche konzentrieren könnt. Unser Raum liegt direkt an der Kröllwitzbrücke. Straßenbahnanbindung ist mit der Linie 7 bequem möglich und kostenlose Parkplätze sind am Amselgrund vorhanden. Partys gehören nicht zum Repertoire. Unsere Workshops werden stundenweise abgerechnet, jede angefangene Stunde zählt. Für Veranstaltungen mit mehreren Personen oder besonderen Anforderungen gelten individuelle Preise. Bei Vorlage der Gemeinnützigkeit geben wir euch 19 % Rabatt.'
+      'Workshops, Seminare, Klausurtagungen, Netzwerktreffen, Coachings, Fortbildungen, Vereinssitzungen, Lesungen oder Apéros. Alles, was auf 100 Quadratmetern stattfinden kann. Die modularen Möbel lassen sich frei im Raum stellen, das Podest und die Vorhänge schaffen bei Bedarf separate Zonen. Partys gehören nicht zum Repertoire.'
   },
   {
-    label: 'Ausstattung',
+    label: 'Welche Ausstattung bietet ihr?',
     content:
-      'Unser Raum ist mit einem 50-Zoll-Fernseher auf Rollen ausgestattet, Grundstock an Workshopmaterialien ist vorhanden, Pinnwände, Whiteboard und vier Elemente, die ihr als Werkbänke nutzen könnt. Euch stehen insgesamt bis zu 10 Tische zur Verfügung. Die maximale Bestuhlung umfasst 40 Stühle. Basics wie Toilette, Wasser, Strom, Teeküche, und Internet fehlen natürlich auch nicht. Auf Beamer und Mikrofone habt ihr auf Anfrage auch Zugriff.'
+      'Im Raum stehen euch Tische, Stühle, ein 50-Zoll-Fernseher auf Rollen, Whiteboard, Pinnwände, Papierrollen und grundlegendes Moderationsmaterial zur Verfügung. Dazu Teeküche mit Geschirr, Ceran-Kochfeld und WLAN. Beamer und Soundanlage sind im Business-Paket inklusive. Im Community-Paket sind sie nur auf Anfrage und ggf. mit Mehrkosten verbunden. Die Bestuhlung reicht für bis zu 40 Personen, 8 Tische sind modular und frei kombinierbar.'
   },
   {
-    label: 'Catering',
+    label: 'Wie läuft eine Anfrage ab?',
     content:
-      'Die Organisation eines Catering- oder Getränkeservice übernehmt ihr als Mieter:innen. Gerne empfehlen wir euch unsere lokalen Partner: Für vegetarisches und veganes Catering ist das Anna Müller, für Getränke Gunnar Franke – beide ansässig in der Burgstraße.'
+      'Schaut bei den Preisen, welches Paket auf euch zutrifft. Tragt die Personen und Stunden ein und ihr erfahrt direkt den Gesamtpreis. Über das Kontaktformular könnt ihr alle wichtigen Informationen an uns senden. Wir melden uns innerhalb von 24 Stunden. Wenn alles passt, bekommt ihr eine Nutzungsvereinbarung. Die Nutzungsvereinbarung muss vor dem vereinbarten Termin unterschrieben vorliegen. Die Überweisung des Gesamtbetrags erfolgt vorab und muss ebenfalls vor Beginn der Nutzung auf unserem Konto eingehen. Am Tag eurer Veranstaltung öffnen wir euch den Raum oder ermöglichen euch den Zugang. Wer den Raum vorher sehen möchte: Besichtigungen können vereinbart werden.'
   },
   {
-    label: 'Vertrag',
+    label: 'Wo ist das Pulk?',
     content:
-      'Unser Ziel: verbindliche Vereinbarung, transparente Preise, ohne versteckte Kosten. Dazu dient unser Vertrag, der das gewünschte Paket für alle Seiten zusammenfasst. Eine Nutzungsvereinbarung, der Umgang mit Schäden, ob Gegenstände, unbewegliches Mobiliar oder Personen, ist im Vertrag geregelt. Die Bezahlung muss vor deinem Workshop oder deiner Veranstaltung auf unserem Konto eingehen, damit ihr Zutritt zu den Räumlichkeiten habt. Je nach Umfang und Personenanzahl kann eine Kaution erhoben werden und die Reinigungspauschale variieren.'
+      'Talstraße 7 in Halle (Saale), direkt an der Kröllwitzbrücke. Im Hochparterre eines Altbaus gelegen, mit Blick auf die Saale und Burg Giebichenstein, Rieveufer und Saalepromenade. Einen barrierefreien Zugang lässt die Bausubstanz leider nicht zu.'
   }
 ]
 
@@ -120,7 +142,7 @@ watch(
   newName => {
     const modalRoutes = {
       preise: 'pricing',
-      miete: 'contact',
+      anfragen: 'contact',
       about: 'about'
     }
 
@@ -144,10 +166,10 @@ async function toggleAccordion(i) {
   const willOpen = openIndex.value !== i
   openIndex.value = willOpen ? i : null
 
-  if (willOpen && window.MDAL?.event) {
-    MDAL.event({
-      Name: 'accordion-opened',
-      Parameters: [{ Name: 'section', Value: accordionItems[i].label }]
+  if (willOpen) {
+    track('pulk.faq.open', {
+      section: accordionItems[i].label,
+      page: 'landing'
     })
   }
 
@@ -209,12 +231,10 @@ function trackScrollDepth(percent) {
   if (scrollDepth.value[percent]) return // schon getrackt
   scrollDepth.value[percent] = true
 
-  if (window.MDAL?.event) {
-    window.MDAL.event({
-      Name: 'scroll-depth',
-      Parameters: [{ Name: 'percent', Value: percent }]
-    })
-  }
+  track('pulk.scroll.depth', {
+    percent,
+    page: 'landing'
+  })
 }
 
 /**
@@ -417,6 +437,7 @@ function detachScrollSource() {
   scrollSourceBound = false
 }
 
+
 /* --------------------------------------------------------------------------
  * Lifecycle
  * -------------------------------------------------------------------------- */
@@ -462,209 +483,171 @@ const bottomMenuStyle = computed(() => {
   const isMobile = window.matchMedia('(max-width: 640px)').matches
 
 const base = lifted
-  ? (isMobile ? '27rem' : '30rem')
+  ? (isMobile ? '50rem' : '50rem')
   : '2rem'
 
   return {
     bottom: `calc(${base} + env(safe-area-inset-bottom, 0px))`
   }
 })
+
+/* --------------------------------------------------------------------------
+ * TEST: Parallax auf static-preview
+ * Revert: refs aus Template entfernen, diesen Block + CSS-Änderungen rückgängig.
+ * -------------------------------------------------------------------------- */
+const parallaxContainer = ref(null)
+const parallaxImg = ref(null)
+
+onMounted(async () => {
+  const gsap = await getGsapWithPlugins()
+  if (!gsap?.ScrollTrigger || !parallaxContainer.value || !parallaxImg.value) return
+
+  gsap.fromTo(
+    parallaxImg.value,
+    { y: '-8%' },
+    {
+      y: '8%',
+      ease: 'none',
+      scrollTrigger: {
+        trigger: parallaxContainer.value,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 2
+      }
+    }
+  )
+})
+
+/* --------------------------------------------------------------------------
+ * BottomMenu reveal on first scroll
+ * -------------------------------------------------------------------------- */
+const menuVisible = ref(false)
+
+if (typeof window !== 'undefined') {
+  const reveal = () => { menuVisible.value = true }
+  window.addEventListener('wheel', reveal, { once: true, passive: true })
+  window.addEventListener('touchmove', reveal, { once: true, passive: true })
+  window.addEventListener('keydown', function onKey(e) {
+    if ([' ', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.key)) {
+      reveal()
+      window.removeEventListener('keydown', onKey)
+    }
+  }, { passive: true })
+}
+
+const menuRevealStyle = computed(() =>
+  menuVisible.value
+    ? { transition: 'bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1)' }
+    : { bottom: '-8rem', transition: 'none' }
+)
 </script>
 
 <template>
-  <!-- Skip link for keyboard users -->
-  <a href="#faq" class="skip-link">Direkt zu den FAQs</a>
+  <!-- Skip-Navigation für Tastatur- & Screenreader-User -->
+  <nav class="skip-nav" aria-label="Direkt zum Inhaltsbereich springen">
+    <a href="#intro" class="skip-link">Zur Einleitung</a>
+    <a href="#raum" class="skip-link">Zur Raumbeschreibung</a>
+    <a href="#stimmen" class="skip-link">Zur Kundenstimme</a>
+    <a href="#faq" class="skip-link">Zu den FAQs</a>
+  </nav>
   <main class="landing-container">
     <!-- ------------------------------------------------------------------- -->
-    <!-- Mobile layout                                                       -->
+    <!-- Main layout                                                        -->
     <!-- ------------------------------------------------------------------- -->
-    <section class="lp-mobile" aria-label="Landing (mobil)">
-      <header class="m-hero" aria-label="Hero (mobil)">
-        <img
-          :src="pulkHeroMobile"
-          alt="PULK – kreativer Seminar- und Workshopraum in Halle (Saale) für Teams und Institutionen"
-          class="m-hero-img"
-          width="1080"
-          height="1920"
-          loading="eager"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </header>
-      <figure class="m-img reveal-up">
-        <picture>
-          <source
-            v-for="src in pulk07.sources"
-            :key="src.type"
-            :srcset="src.srcset"
-            :type="src.type"
-          />
-          <img
-            :src="pulk07.img.src"
-            :srcset="pulk07.img.srcset"
-            :width="pulk07.img.width"
-            :height="pulk07.img.height"
-            sizes="(max-width: 640px) 100vw, 50vw"
-            alt="Eingangsbereich des PULK Workshopraums mit Blick ins Studio"
-            class="m-img-el"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
-      </figure>
-      <section class="m-section reveal-up">
-        <h2 class="m-h1">
-          Nicht irgend&shy;ein Raum, sondern einer voller Möglich&shy;keiten.
-        </h2>
-        <p class="m-p animated-text">
-          100 Quadratmeter entworfen und gebaut, damit ihr ungestört Großes bewegen könnt.
-          Gemütlich, privat und vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
-          werden aus Team-Meetings Meilensteine und aus Präsentationen Momente, die hängen bleiben.
-        </p>
-      </section>
-      <figure class="m-img reveal-up">
-        <picture>
-          <source
-            v-for="src in pulk05.sources"
-            :key="src.type"
-            :srcset="src.srcset"
-            :type="src.type"
-          />
-          <img
-            :src="pulk05.img.src"
-            :srcset="pulk05.img.srcset"
-            :width="pulk05.img.width"
-            :height="pulk05.img.height"
-            sizes="(max-width: 640px) 100vw, 50vw"
-            alt="Flexible Einrichtung und Möbel im Seminarraum PULK Halle(Saale)"
-            class="m-img-el"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
-      </figure>
-      <figure class="m-img reveal-up">
-        <picture>
-          <source
-            v-for="src in staticGalleryImg.sources"
-            :key="src.type"
-            :srcset="src.srcset"
-            :type="src.type"
-          />
-
-          <img
-            :src="staticGalleryImg.img.src"
-            :srcset="staticGalleryImg.img.srcset"
-            :width="staticGalleryImg.img.width"
-            :height="staticGalleryImg.img.height"
-            sizes="(max-width: 640px) 100vw, 50vw"
-            alt="Heller, wandelbarer Raum für Seminare und Workshops in Halle (Saale)"
-            class="m-img-el"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
-      </figure>
-      <section class="m-section reveal-up">
-        <h2 class="m-h1">
-          Miet Dich bei<br />uns ein
-        </h2>
-        <p class="m-p animated-text">
-          Pulk passt sich euch an: wird Bühne, wird Ideenwerkstatt, wird Zuhörort.
-          Möbel, die sich bewegen. Vorhänge, die den Raum neu zeichnen.
-          Wohnlich, aber professionell. Privat, aber repräsentativ. Strukturiert, aber beweglich.
-          Ein Raum, an dem euer Team nicht nur zusammen sitzt, sondern vorankommt.
-        </p>
-      </section>
-    </section>
-    <!-- ------------------------------------------------------------------- -->
-    <!-- Desktop & tablet layout                                             -->
-    <!-- ------------------------------------------------------------------- -->
-    <section class="lp-desktop" aria-label="Landing (desktop/tablet)">
-      <!-- Hero image -->
-      <div class="hero-container">
-        <img
-          :src="pulkHero"
-          alt="Workshop- und Seminarraum PULK in Halle (Saale) mit 100 m² Fläche"
-        />
+    <section aria-label="Landing">
+      <!-- Hero: Stühle-Arrangement (Figma node 792:87) -->
+      <div
+        class="hero-container"
+        role="img"
+        aria-label="Workshop- und Seminarraum PULK in Halle (Saale) – Stühle Arrangement"
+      >
+        <!-- Logo oben links (Figma node 839:3533): left=5.5%, top=9%, width=29% -->
+        <div class="hero-logo">
+          <img :src="pulkLogoLandingpage" alt="PULK Logo" />
+        </div>
+        <!-- Oben: 4 schwarze Stühle, aspect-ratio-Container skaliert mit Breite -->
+        <div class="hero-chairs-top">
+          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
+          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
+          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
+          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
+        </div>
+        <!-- Unten: 4 Stühle im Flex-Container — selbes Shrink-Verhalten wie Oben -->
+        <div class="hero-chairs-bottom">
+          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairPurple" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
+        </div>
+        <!-- Dritte Reihe: nur Mobile, selbe Bilder wie hero-chairs-top -->
+        <div class="hero-chairs-third">
+          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
+          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
+        </div>
       </div>
-      <!-- Intro section with two side images -->
-      <section class="intro-section">
-        <div
-          class="intro-image intro-image-left reveal-up"
-          data-reveal-delay="0.8"
-        >
+      <!-- Info Section A (Figma node 787:85): Bild links, Text rechts -->
+      <section id="intro" class="intro-section" tabindex="-1">
+        <div class="intro-img-container reveal-up" data-reveal-delay="0.2">
           <picture>
             <source
-              v-for="src in pulk05.sources"
+              v-for="src in pulkRoomImageA.sources"
               :key="src.type"
               :srcset="src.srcset"
               :type="src.type"
             />
             <img
-              :src="pulk05.img.src"
-              :srcset="pulk05.img.srcset"
-              :width="pulk05.img.width"
-              :height="pulk05.img.height"
-              sizes="(max-width: 640px) 100vw, 50vw"
-              alt="Zugang zum PULK Raum für Organisationen, Meetings und Kreativarbeit"
-              class="m-img-el"
+              :src="pulkRoomImageA.img.src"
+              :srcset="pulkRoomImageA.img.srcset"
+              :width="pulkRoomImageA.img.width"
+              :height="pulkRoomImageA.img.height"
+              sizes="(max-width: 640px) 100vw, 44vw"
+              alt="Seminarraum PULK Halle (Saale) – heller Workshopraum für Teams"
               loading="lazy"
               decoding="async"
             />
           </picture>
         </div>
-        <div class="intro-content reveal-up">
+        <div class="intro-text">
+          <span class="intro-deco intro-deco--tl"></span>
+          <span class="intro-deco intro-deco--tr"></span>
           <h1
-            class="static-caption-first reveal-up"
+            class="intro-heading reveal-up"
             data-reveal-start="top 43%"
           >
-            Nicht<wbr />
-            irgend&shy;ein<wbr />
-            Raum,<wbr />
-            sondern<wbr />
-            einer<wbr />
-            voller<wbr />
-            Möglich&shy;keiten
+            Unser Seminar&shy;raum in Halle:<wbr>
+            100 Quadrat&shy;meter bis zu <wbr> 40 Personen
           </h1>
+          <span class="intro-deco intro-deco--bl"></span>
+          <span class="intro-deco intro-deco--br"></span>
+          <!-- Desktop/Tablet: intro-body inside grid -->
           <p
-            class="reveal-up animated-text"
+            class="intro-body intro-body--dt reveal-up animated-text"
             data-reveal-start="top 40%"
+            aria-hidden="true"
           >
-            100 Quadratmeter entworfen und gebaut, damit ihr ungestört Großes bewegen könnt.
-            Gemütlich, privat, und möglichst vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
-            werden aus Team-Meetings Meilensteine und aus Präsentationen Momente, die hängen bleiben.
+            Gebt euren Ideen einen Raum. Ob Workshop, Klausurtagung, Netzwerktreffen oder Seminar:
+            ihr bucht stundenweise, kommt mit eurer Gruppe und habt den Raum ganz für euch.
+            Damit ihr ungestört Großes bewegen könnt. Gemütlich, privat und vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
+            werden aus Team-Meetings Meilensteine und aus Meetings Momente, die hängen bleiben.
           </p>
-          <!-- Trigger node for advanced GSAP/ScrollTrigger animations -->
-          <div class="intro-trigger" ref="introTrigger" />
         </div>
-        <div
-          class="intro-image intro-image-right reveal-up"
-          data-reveal-delay="0.5"
+        <!-- Mobile: intro-body outside grid -->
+        <p
+          class="intro-body intro-body--mb reveal-up animated-text"
+          data-reveal-start="top 40%"
         >
-          <picture>
-            <source
-              v-for="src in pulk07.sources"
-              :key="src.type"
-              :srcset="src.srcset"
-              :type="src.type"
-            />
-            <img
-              :src="pulk07.img.src"
-              :srcset="pulk07.img.srcset"
-              :width="pulk07.img.width"
-              :height="pulk07.img.height"
-              sizes="(max-width: 640px) 100vw, 50vw"
-              alt="Eingangsbereich des PULK Workshopraums mit Blick ins Studio"
-              class="m-img-el"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-        </div>
+          Gebt euren Ideen einen Raum. Ob Workshop, Klausurtagung, Netzwerktreffen oder Seminar:
+          ihr bucht stundenweise, kommt mit eurer Gruppe und habt den Raum ganz für euch.
+          Damit ihr ungestört Großes bewegen könnt. Gemütlich, privat und vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
+          werden aus Team-Meetings Meilensteine und aus Meetings Momente, die hängen bleiben.
+        </p>
+        <!-- Trigger node for advanced GSAP/ScrollTrigger animations -->
+        <div class="intro-trigger" ref="introTrigger" />
       </section>
       <!-- Static gallery / hero preview -->
-      <div class="static-preview">
+      <div class="static-preview" ref="parallaxContainer">
         <picture>
           <source
             v-for="src in staticGalleryImg.sources"
@@ -673,6 +656,7 @@ const base = lifted
             :type="src.type"
           />
           <img
+            ref="parallaxImg"
             :src="staticGalleryImg.img.src"
             :srcset="staticGalleryImg.img.srcset"
             :width="staticGalleryImg.img.width"
@@ -686,29 +670,61 @@ const base = lifted
         </picture>
       </div>
       <!-- Caption block below gallery -->
-      <div class="static-caption reveal-up">
+      <div id="raum" class="static-caption reveal-up" tabindex="-1">
         <h2 class="caption-title">
-          Mietet<wbr />
-          euch<br />
-          im<wbr />
-          Pulk ein
+          Euer Workshop&shy;raum voller Möglichkeiten
         </h2>
         <p class="caption-text reveal-up animated-text">
-          Pulk passt sich euch an: wird Bühne, wird Ideenwerkstatt, wird Zuhörort.
-          Möbel, die sich bewegen. Vorhänge, die den Raum neu zeichnen.
-          Wohnlich, aber professionell. Privat, aber repräsentativ. Strukturiert, aber beweglich.
-          Ein Raum an dem euer Team nicht nur zusammen sitzt, sondern vorankommt.
+          Pulk wird Bühne, wird Ideenwerkstatt, wird Zuhörort. Große Fenster, hohe Decken, Stuck.
+          Darin: modulares Design, viel Holz, Vorhänge, die den Raum neu zeichnen. Wohnlich, aber professionell.
+          Privat, aber repräsentativ. Euer Creative Space und Workshop-Location in Halle (Saale),
+          damit euer Team nicht nur zusammensitzt, sondern vorankommt.
         </p>
       </div>
     </section>
     <!-- ------------------------------------------------------------------- -->
+    <!-- Review Section (Figma node 792:98)                                 -->
+    <!-- ------------------------------------------------------------------- -->
+    <section id="stimmen" class="review-section" tabindex="-1">
+      <div class="review-col review-col--img1 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
+        <img :src="reviewImageA" alt="PULK Workshopraum – Kundenmoment" loading="lazy" decoding="async" />
+      </div>
+      <div class="review-col review-col--img2 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
+        <img :src="reviewImageB" alt="PULK Workshopraum – Kundenmoment" loading="lazy" decoding="async" />
+      </div>
+      <!-- Zitat-Spalte -->
+      <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
+        <span class="review-deco review-deco--tl"></span>
+        <span class="review-deco review-deco--tr"></span>
+        <div class="review-quote-content">
+          <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
+          <h2 class="review-quote-text">
+            Das Pulk ist modular, bestens durchdacht, gemütlich und sehr freundlich<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
+          </h2>
+        </div>
+        <p class="review-attribution">
+          Stadtvorstand Die Linke<br>Halle Saale
+        </p>
+        <span class="review-deco review-deco--bl"></span>
+        <span class="review-deco review-deco--br"></span>
+      </div>
+    </section>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- CI Elements: Stools (Figma node 792:99)                            -->
+    <!-- ------------------------------------------------------------------- -->
+    <div class="ci-stools">
+      <img :src="ciStoolContainer" alt="" aria-hidden="true" class="ci-stools__img" loading="lazy" />
+    </div>
+    <!-- ------------------------------------------------------------------- -->
     <!-- Accordion section                                                   -->
     <!-- ------------------------------------------------------------------- -->
-    <section class="accordion-section">
+    <section id="faq" class="accordion-section" tabindex="-1">
       <div
         v-for="(item, idx) in accordionItems"
         :key="idx"
         class="accordion-item reveal-up"
+        :class="{ 'is-active': openIndex === idx }"
+        data-reveal-start="top 55%"
       >
         <div
           class="accordion-header"
@@ -722,12 +738,14 @@ const base = lifted
           <h2 class="item-title">
             {{ item.label }}
           </h2>
-          <img
-            :src="pulkArrow"
-            alt="toggle"
-            class="icon-chevron"
-            :ref="el => (arrowRefs[idx] = el)"
-          />
+          <div class="icon-chevron-wrap">
+            <img
+              :src="pulkArrow"
+              alt="toggle"
+              class="icon-chevron"
+              :ref="el => (arrowRefs[idx] = el)"
+            />
+          </div>
         </div>
         <div
           class="accordion-content"
@@ -740,7 +758,7 @@ const base = lifted
     <!-- ------------------------------------------------------------------- -->
     <!-- BottomMenu (global CTA tabs)                                        -->
     <!-- ------------------------------------------------------------------- -->
-    <BottomMenu :style="bottomMenuStyle" />
+    <BottomMenu :style="[bottomMenuStyle, menuRevealStyle]" />
   </main>
 </template>
 
@@ -748,8 +766,9 @@ const base = lifted
 /* --------------------------------------------------------------------------
  * Animated text (GSAP SplitText lines)
  * -------------------------------------------------------------------------- */
-.animated-text .line {
-  display: block;
+.animated-text .word {
+  display: inline-block;
+  white-space: normal;
   will-change: color;
 }
 
@@ -765,136 +784,263 @@ const base = lifted
 }
 
 /* --------------------------------------------------------------------------
- * Skip link (accessibility)
+ * Skip navigation (accessibility)
+ * Nav liegt per transform komplett über dem Viewport und fährt erst
+ * ein, wenn einer ihrer Links Fokus bekommt (:focus-within).
  * -------------------------------------------------------------------------- */
-.skip-link {
+.skip-nav {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 0;
-  background: #000;
-  color: #fff;
-  padding: 0.5rem 1rem;
   z-index: 1000;
-  transition: top 0.3s ease;
-  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transform: translateY(calc(-100% - 1rem));
+  transition: transform 0.25s ease;
 }
 
-.skip-link:focus {
-  top: 0;
+.skip-nav:focus-within {
+  transform: translateY(0);
+}
+
+.skip-link {
+  background: #141414;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-weight: 900;
+  text-decoration: underline;
+  border-radius: 0 0 0.5rem 0.5rem;
+  white-space: nowrap;
+}
+
+.skip-link:focus-visible {
+  outline: 0.125rem solid #9687FF;
+  outline-offset: -0.25rem;
 }
 
 /* --------------------------------------------------------------------------
  * Layout: main container
  * -------------------------------------------------------------------------- */
+
 .landing-container {
-  background-color: #9687ff;
+  background-color: #e7e8ec;
   color: #141414;
   font-family: 'LayGrotesk', sans-serif;
   overflow-x: hidden;
   font-display: swap;
 }
 
-/* --------------------------------------------------------------------------
- * Desktop / tablet hero
- * -------------------------------------------------------------------------- */
-.hero-container {
-  padding: 1.5rem 1.5rem 4rem 1.5rem;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Einheitliche h1-Basisgröße: max 3rem, fluid über clamp */
+.landing-container h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
 }
 
-.hero-container img {
+/* --------------------------------------------------------------------------
+ * Desktop / tablet hero — Stühle-Arrangement (Figma node 792:87)
+ *
+ * Koordinaten-Logik:
+ *  - Figma-Hero-Frame: 2317px breit, startet bei x=66 auf der 1920px Seite
+ *  - Kind-Koordinaten sind relativ zum Frame → page_left = (66 + frame_x) / 1920
+ *  - Container: aspect-ratio 1920/1100, overflow hidden, weiß
+ *  - Obere Reihe: 3 Einzelbilder nebeneinander im Flex-Container
+ *  - Untere Stühle: rotate(180deg) scaleY(-1) = horizontale Spiegelung (scaleX -1)
+ * -------------------------------------------------------------------------- */
+.hero-container {
+  position: relative;
   width: 100%;
+  aspect-ratio: 1920 / 1100;
+  overflow: hidden;
+  background: #e7e8ec;
+}
+
+/* ---- Logo oben links ----
+   Figma: left=105px, top=99px, width=556px auf 1920×1100-Frame               */
+.hero-logo {
+  position: absolute;
+  left: 5.5%;
+  top: 4%;
+  width: 30%;
+  z-index: 2;
+}
+
+.hero-logo img {
+  width: 80%;
+  height: auto;
+  display: block;
+  margin: 1rem 0rem 0rem 0rem;
+}
+
+/* ---- Obere Reihe ----
+   Figma: Container w=1585px (=82.6% der 1920px-Seite), aspect-ratio 1686/672
+   Höhe folgt automatisch der Breite — kein fester height-Wert nötig.
+   Figma page-left: (66+424)/1920 = 25.5%                                  */
+.hero-chairs-top {
+  position: absolute;
+  left: 22%;
+  top: -1.5rem;
+  width: 92%;
+  aspect-ratio: 1863 / 704;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.hero-chairs-top__item {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  transform: scaleX(-1);
+}
+
+/* ---- Untere Reihe (Flex-Container) ----
+   Gleiches Shrink-Verhalten wie obere Reihe.
+   Gesamtbreite der 4 Stühle in Figma: x=48 bis x=1911 = 1863px (97% der 1920px-Seite)
+   Höhe: ~64% des Hero (704px von 1100px) → aspect-ratio 1863/704
+   left: page_left des ersten Stuhls - 10rem (Nutzerwunsch)                 */
+.hero-chairs-bottom {
+  position: absolute;
+  left: calc(8% - 4rem);
+  top: 36%;
+  width: 97%;
+  aspect-ratio: 1863 / 704;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.hero-chairs-bottom__item {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
   height: 100%;
   object-fit: contain;
   display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-chairs-bottom__item:nth-child(3) {
+  transform: scale(1);
+}
+
+/* Dritte Stuhllinie — nur Mobile */
+.hero-chairs-third {
+  display: none;
 }
 
 /* --------------------------------------------------------------------------
- * Intro section (desktop/tablet)
+ * Info Section A (Figma 787:85) — Bild links, Text rechts
+ * Figma: left-[144px] = 7.5% margin, gap 140px = 8.75rem
+ * Responsive: flex-wrap → Text wraps unter Bild auf kleinen Screens
  * -------------------------------------------------------------------------- */
 .intro-section {
-  position: relative;
   display: flex;
-  padding: 8rem 4rem;
-  gap: 6rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8.75rem;
+  padding: 5rem 7.5%;
+  background: #e7e8ec;
 }
 
-.intro-image-left {
-  flex: 1 1 100px;
-  max-width: 200px;
+/* Bild-Container: 707/772 Seitenverhältnis, abgerundet, overflow für object-fit */
+.intro-img-container {
+  flex: 0 0 43%;
+  min-width: 16rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
 }
 
-.intro-image-left img {
-  width: 110%;
-  min-width: 20rem;
-  height: auto;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translate(-9rem, 1rem);
+.intro-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.intro-content {
-  flex: 1 1 200px;
-  max-width: 150%;
-  text-align: left;
-  line-height: 1.05;
-  letter-spacing: 0.005rem;
-  word-spacing: 0.02rem;
-  display: flex;
-  gap: 3rem;
-  padding: 15rem 3rem 0 0;
+/* Text-Block: CSS-Grid 3×4 — gelbe Eck-Dekoelemente rahmen die Headline ein
+   Figma col-gap: 55px = 3.4375rem, row-gap: 30px = 1.875rem               */
+.intro-text {
+  flex: 1 1 20rem;
+  display: grid;
+  grid-template-columns: 0.9375rem 1fr 0.9375rem;
+  grid-template-rows: auto auto auto auto;
+  column-gap: 3.4375rem;
+  row-gap: 1.875rem;
+  align-items: start;
 }
 
-.intro-content h1 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
+/* Gelbe Dekoelemente: 15px = 0.9375rem, border-radius 3px = 0.1875rem */
+.intro-deco {
+  display: block;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  background: #ffcc00;
+  border-radius: 0.1875rem;
+  align-self: start;
+}
+
+.intro-deco--tl { grid-column: 1; grid-row: 1; }
+.intro-deco--tr { grid-column: 3; grid-row: 1; }
+.intro-deco--bl { grid-column: 1; grid-row: 3; }
+.intro-deco--br { grid-column: 3; grid-row: 3; }
+
+/* Heading: 58.333px = 3.646rem, line-height 65/58.333 ≈ 1.114 */
+.intro-heading {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 900;
-  font-display: swap;
-  margin-block-start: -0.9rem;
-  margin-block-end: 0;
-  hyphens: manual;
-  word-break: normal;
-  overflow-wrap: normal;
-  max-width: 50%;
-}
-
-.intro-content p {
-  font-size: 1.2rem;
-  line-height: 1.4;
-  width: 90%;
+  line-height: 1.114;
   color: #141414;
-  margin-block-start: 0;
-  max-width: 40%;
-  font-display: swap;
+  margin: 0;
+  hyphens: manual;
 }
 
-.intro-image-right {
-  position: absolute;
-  right: 5%;
-  top: 22rem;
-  width: 18rem;
+.intro-heading sup {
+  font-size: 0.65em;
+  vertical-align: super;
 }
 
-.intro-image-right img {
-  width: 90%;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-31rem);
+.intro-body {
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
+  color: #141414;
+  margin: 0;
+}
+
+.intro-body--dt {
+  grid-column: 2;
+  grid-row: 4;
+}
+
+/* Mobile copy hidden by default; desktop copy shown */
+.intro-body--mb {
+  display: none;
 }
 
 /* --------------------------------------------------------------------------
  * Static gallery preview
  * -------------------------------------------------------------------------- */
 .static-preview {
-  width: 82%;
+  width: 85%;
   height: 50rem;
   overflow: hidden;
-  border-radius: 0.5rem;
-  margin: 4rem auto 4rem;
+  border-radius: 1.25rem;
+  margin: 4rem auto 7rem;
   box-shadow: 0 4px 20px rgba(47, 35, 35, 0.1);
+}
+
+.static-preview picture {
+  display: block;
+  height: 100%;
 }
 
 .static-preview img {
@@ -903,27 +1049,15 @@ const base = lifted
   display: block;
   pointer-events: none;
   object-fit: cover;
+  object-position: center;
+  transform: scale(1.3);
+  will-change: transform;
 }
 
-/* --------------------------------------------------------------------------
- * Layout switches: mobile vs desktop
- * -------------------------------------------------------------------------- */
-.lp-mobile {
-  display: none;
-}
-
-.lp-desktop {
-  display: block;
-}
 
 /* --------------------------------------------------------------------------
  * Static caption blocks below gallery
  * -------------------------------------------------------------------------- */
-.static-caption-first {
-  width: 80%;
-  margin: 5rem 0 2rem;
-  gap: 2rem;
-}
 
 .static-caption {
   display: flex;
@@ -934,7 +1068,7 @@ const base = lifted
 
 .caption-title {
   flex: 0 40%;
-  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
   color: #141414;
   margin: 0;
@@ -950,60 +1084,297 @@ const base = lifted
 
 .caption-text {
   flex: 0 0 48%;
-  font-size: 1.2rem;
-  line-height: 1.4;
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  line-height: 1.375;
   color: #141414;
   margin: 0;
 }
 
 /* --------------------------------------------------------------------------
+ * Review Section (Figma node 792:98)
+ * 3-Spalten-Flex: Bild 1 | Bild 2 | Zitat
+ * Figma: left-[134px] ≈ 7%, gap 16px = 1rem
+ * -------------------------------------------------------------------------- */
+.review-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 5rem 7%;
+}
+
+/* Bild-Spalten: img2 deutlich breiter als img1 (Figma: 405px vs. 534px) */
+.review-col--img1 {
+  flex: 0 0 22%;
+  min-width: 10rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.review-col--img2 {
+  flex: 0 0 30%;
+  min-width: 12rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.review-col--img1 img,
+.review-col--img2 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Zitat-Spalte: 3×4 Grid — Deco | Quote | Attribution | Deco */
+.review-col--quote {
+  flex: 1 1 18rem;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 0.9375rem 1fr 0.9375rem;
+  grid-template-rows: 1fr auto auto 1fr;
+  column-gap: 4rem;
+  row-gap: 1.875rem;
+}
+
+/* Gelbe Dekorquadrate — wie intro-section */
+.review-deco {
+  display: block;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  background: #ffcc00;
+  border-radius: 0.1875rem;
+  align-self: start;
+}
+
+.review-deco--tl { grid-column: 1; grid-row: 1; align-self: start; justify-self: start; }
+.review-deco--tr { grid-column: 3; grid-row: 1; align-self: start; justify-self: end; }
+.review-deco--bl { grid-column: 1; grid-row: 4; align-self: end; justify-self: start; }
+.review-deco--br { grid-column: 3; grid-row: 4; align-self: end; justify-self: end; }
+
+/* Zitat-Inhalt: SVG-Anführungszeichen inline im h2 */
+.review-quote-content {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  padding-top: 0.2rem;
+}
+
+.review-quote-mark svg {
+  display: inline-block;
+  width: clamp(0.75rem, 1.5vw, 1.25rem);
+  height: auto;
+}
+
+/* Opening mark: absolut links außerhalb des h2-Blocks */
+.review-quote-mark--open {
+  position: absolute;
+  right: calc(100% + 0.5rem);
+  top: 0.5rem;
+}
+
+/* Closing mark: inline hinter dem letzten Buchstaben */
+.review-quote-mark--close {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 0.5rem;
+  position: relative;
+  top: -1.3rem;
+}
+
+/* Figma: 58.333px → ~3.625rem, line-height 65/58 ≈ 1.114 */
+.review-quote-text {
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.114;
+  color: #141414;
+  margin: 0;
+}
+
+/* Attribution: row 3 im 4-Zeilen-Grid */
+.review-attribution {
+  grid-column: 2;
+  grid-row: 3;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1rem, 1.8vw, 2.25rem);
+  line-height: 1.25;
+  color: #141414;
+  margin: 0rem;
+}
+
+/* Responsive: ab Tablet in zwei Zeilen, Bilder nebeneinander / Zitat drunter */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .review-section {
+    padding: 4rem 5%;
+    flex-wrap: wrap;
+    row-gap: 2.5rem;
+  }
+
+  .review-col--img1 {
+    flex: 0 0 calc(45% - 0.5rem);
+  }
+
+  .review-col--img2 {
+    flex: 0 0 calc(55% - 0.5rem);
+  }
+
+  .review-col--quote {
+    flex: 0 0 100%;
+    column-gap: 2.5rem;
+  }
+
+  .review-quote-text {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+}
+
+/* Mobile: alles stackt vertikal */
+@media (max-width: 640px) {
+  .review-section {
+    flex-direction: column;
+    padding: 3rem 5%;
+  }
+
+  .review-col--img1,
+  .review-col--img2 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .review-col--quote {
+    flex: 0 0 auto;
+    width: 100%;
+    column-gap: 1.25rem;
+    row-gap: 2rem;
+    padding: 1rem 0;
+  }
+
+  .review-quote-content { grid-column: 2; }
+  .review-attribution   { grid-column: 2; }
+}
+
+/* --------------------------------------------------------------------------
+ * CI Elements: Stools (Figma node 792:99)
+ * Desktop: natürliche Größe, left-aligned bei ~9% (Figma: 181px/1920px)
+ * Tablet: 50% Breite; Mobile: 100%
+ * -------------------------------------------------------------------------- */
+.ci-stools {
+  margin-top: 4rem;
+  margin-bottom: 6.5rem;
+  padding-left: 9%;
+}
+
+.ci-stools__img {
+  display: block;
+  width: auto;
+  max-width: 50%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .ci-stools {
+    padding-left: 5%;
+    margin-top: 1rem;
+    margin-bottom: 4.5rem;
+  }
+
+  .ci-stools__img {
+    width: 60%;
+  }
+}
+
+@media (max-width: 640px) {
+  .ci-stools {
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 0rem;
+    margin-bottom: 4.5rem;
+  }
+
+  .ci-stools__img {
+    width: 80%;
+    margin: 0rem auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
  * Accordion section
  * -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+ * Accordion section (Figma node 800:319)
+ * Breite 85% wie intro-section, border-top pro Item, px 2.875rem / py 2.25rem
+ * -------------------------------------------------------------------------- */
 .accordion-section {
-  width: 74%;
-  margin: 0 auto 32rem;
-  border-top: 1px solid #141414;
+  width: 85%;
+  margin: 0 auto 55rem;
 }
 
 .accordion-item {
-  border-bottom: 2px solid rgba(20, 20, 20, 0.3);
+  border-top: 1px solid rgba(20, 20, 20, 0.3);
+  transition: opacity 0.4s ease;
 }
+
 
 .accordion-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0;
+  gap: 2rem;
+  padding: 2.25rem 2.875rem;
   cursor: pointer;
 }
 
+/* h1 erbt globale font-size (clamp 2rem–3rem), line-height aus Figma: 72/58 ≈ 1.24 */
 .accordion-header .item-title {
   flex: 1;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
-  font-size: 3rem;
+  line-height: 1.24;
   color: #141414;
-  padding-left: 0;
-  letter-spacing: 0.03rem;
+  margin: 0;
+}
+
+/* Arrow: dunkles Quadrat — Figma: #141414, 54px = 3.375rem, border-radius 10px = 0.625rem */
+.icon-chevron-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.375rem;
+  height: 3.375rem;
+  background: #141414;
+  border-radius: 0.625rem;
+  transition: background 0.3s ease;
+}
+
+.is-active .icon-chevron-wrap {
+  background: #9687FF;
 }
 
 .icon-chevron {
-  width: 3rem;
+  width: 1.5625rem;
   transform-origin: center;
-  transition: transform 0.4s ease;
 }
 
+/* Content-Text: wie intro-section p */
 .accordion-content {
   overflow: hidden;
   height: 0;
   opacity: 0;
-  padding: 0 9rem 1rem 0;
+  padding: 0 2.875rem 1rem;
 }
 
 .accordion-content p {
-  margin: 0 0 3rem;
+  margin: 0 0 2rem;
   color: #141414;
-  font-size: 1.2rem;
-  line-height: 1.4;
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
+  width: 80%;
 }
 
 /* Extra padding to make space for BottomMenu on large screens */
@@ -1031,118 +1402,96 @@ main {
  * Tablet breakpoint (641px – 1024px)
  * -------------------------------------------------------------------------- */
 @media (min-width: 641px) and (max-width: 1024px) {
+  .landing-container h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  /* Hero Tablet: kompakteres Verhältnis, Stühle etwas komprimiert */
+  .hero-container {
+    aspect-ratio: 4 / 3;
+  }
+
+  .hero-chairs-top {
+    left: 20%;
+    width: 86%;
+    height: 55%;
+    transform: scale(1.3) translateX(1.7rem) translateY(-0.7rem);
+  }
+
+  .hero-chairs-bottom {
+    transform: scale(1.2) translateX(-1.5rem) translateY(2rem);
+  }
+
+
   .intro-section {
-    gap: 1.25rem 1rem;
-    align-items: flex-start;
-    padding: 5rem 3rem;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 0rem 5% 8rem 5%;
   }
 
-  .intro-image-left,
-  .intro-image-right,
-  .intro-content {
-    position: static !important;
-    transform: none !important;
-    display: none;
-  }
-
-  .intro-content {
-    display: flex;
-    padding: 0;
-    gap: 2rem;
-  }
-
-  .intro-content h1 {
-    line-height: 1.1;
-    margin: 0 0 3rem 0;
-    font-display: swap;
-    text-wrap: balance;
-    max-width: 80%;
-  }
-
-  .intro-content p {
-    width: auto;
-    font-size: 1.2rem;
-    line-height: 1.55;
-    color: #141414;
-  }
-
-  .intro-image-right {
-    grid-column: 9 / span 4;
-  }
-
-  .intro-image-right img {
+  .intro-img-container {
+    flex: 0 0 auto;
     width: 100%;
-    height: auto;
-    transform: none !important;
-    border-radius: 0.5rem;
   }
 
   .static-preview {
-    width: 94%;
+    width: 90%;
     margin: 0 auto 4rem;
   }
 
   .static-caption {
-    width: 100%;
-    margin: 5rem auto 10rem;
+    width: 90%;
+    margin: 5rem auto 6rem;
     gap: 2rem;
   }
 
-  .accordion-header .item-title {
-    padding-left: 2rem;
+  .caption-title {
+    padding-left: 1rem;
+  }
+
+  .caption-text {
+    flex: 0 0 54%;
   }
 
   .accordion-section {
-    width: 95%;
-    margin: 0 auto 18rem;
-  }
-
-  .accordion-content {
-    padding: 0 9rem 1rem 2.2rem;
+    width: 90%;
+    margin: 0 auto 54rem;
   }
 
   .accordion-header {
-    padding-right: 2rem;
+    padding: 1.75rem 1.5rem;
+    gap: 2.2rem;
+  }
+
+  .accordion-content {
+    padding: 0 1.5rem 1rem;
   }
 }
 
 /* --------------------------------------------------------------------------
  * Desktop special (1025px – 1300px)
  * -------------------------------------------------------------------------- */
+@media (min-width: 1025px) {
+  .accordion-header {
+    padding: 3rem 0rem;
+  }
+
+  .accordion-content {
+    padding: 0rem 0rem 0rem;
+  }
+
+  .accordion-content p {
+    margin: 0 0 4rem;
+  }
+}
+
 @media (min-width: 1025px) and (max-width: 1300px) {
   .intro-section {
-    gap: 8rem;
+    gap: 5rem;
   }
 
-  .intro-image-right {
-    top: 25rem;
-    width: 19rem;
-  }
-
-  .intro-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: clamp(1rem, 3vw, 2rem);
-    padding: clamp(6rem, 7vw, 9rem) 0 0 0;
-    max-width: none;
-  }
-
-  .intro-content h1,
-  .intro-content p {
-    width: 80%;
-    max-width: none;
-  }
-
-  .intro-content h1 {
-    text-wrap: balance;
-    line-height: 1.1;
-    padding: 10rem 0 1rem 0;
-  }
-
-  .intro-content p {
-    max-width: 65ch;
-    font-size: 1.2rem;
-    line-height: 1.4;
+  .intro-img-container {
+    flex: 0 0 38%;
   }
 
   .static-preview {
@@ -1154,102 +1503,142 @@ main {
  * Smartphone (max-width: 640px)
  * -------------------------------------------------------------------------- */
 @media (max-width: 640px) {
-  .lp-mobile {
+  /* Hero: höheres Seitenverhältnis auf Mobile */
+  .hero-container {
+    aspect-ratio: 3 / 5;
+  }
+
+  .hero-logo {
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-logo img {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .hero-chairs-top {
+    left: 20%;
+    width: 86%;
+    height: 25%;
+    transform: scale(2) translateX(3.7rem) translateY(3rem);
+  }
+
+  .hero-chairs-bottom {
+    transform: scale(1.9) translateX(2.5rem) translateY(2rem);
+  }
+
+  .hero-chairs-third {
+    display: flex;
+    position: absolute;
+    left: 22%;
+    top: 64%;
+    width: 86%;
+    height: 25%;
+    align-items: stretch;
+    transform: scaleX(-1) scale(2) translateX(2.35rem) translateY(0rem);
+  }
+
+  .hero-chairs-third__item {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    object-fit: contain;
+    object-position: bottom;
     display: block;
+    pointer-events: none;
+    user-select: none;
   }
 
-  .lp-desktop {
-    display: none;
+  /* Intro: einspaltiger Stack */
+  .intro-section {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 3rem 5%;
+    row-gap: 1rem;
   }
 
-  .accordion-section {
+  .intro-img-container {
+    flex: 0 0 auto;
     width: 100%;
   }
 
-  .accordion-header .item-title {
-    font-size: clamp(3rem, 6vw, 3rem);
-    color: #141414;
+  /* Dots bleiben sichtbar, Grid-Spalten beibehalten */
+  .intro-text {
+    column-gap: 1rem;
+    row-gap: 2rem;
+    padding: 0rem 0;
+    grid-template-rows: auto auto;
+  }
+
+  .intro-body--dt {
+    display: none;
+  }
+
+  .intro-body--mb {
+    display: block;
+    margin: auto 0.5rem auto 1.5rem;
+  }
+
+  .intro-heading { grid-column: 2; grid-row: 2; }
+
+  /* Static preview */
+  .static-preview {
+    width: auto;
+    height: 30rem;
+    margin: 0 5% 2rem;
+  }
+
+  .static-preview img {
+    width: 115%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    object-fit: cover;
+    object-position: center -2rem;
+    transform: scale(1.5);
+    will-change: transform;
+  }
+
+  /* Caption unter Gallery */
+  .static-caption {
+    width: auto;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 3rem 5%;
+    margin: 0rem 0.5rem 0rem 1.5rem;
+  }
+
+  .caption-title {
+    padding-left: 0;
+  }
+
+  .caption-text {
+    flex: none;
+    width: 100%;
+  }
+
+  /* Accordion */
+  .accordion-section {
+    width: 90%;
   }
 
   .accordion-header {
-    margin: auto 1rem;
-  }
-
-  .icon-chevron {
-    width: 3rem;
+    padding: 1.5rem 0.5rem;
   }
 
   .accordion-content {
-    padding: 0 0 1rem 0;
+    padding: 0 1rem 0.5rem;
   }
 
   .accordion-content p {
-    font-size: clamp(1.5rem, 3.6vw, 1.05rem);
-    margin: 1rem 1rem 5rem;
-    padding: 0;
-  }
-
-  /* Mobile hero */
-  .m-hero {
-    padding: 0.75rem 0.75rem 0;
-  }
-
-  .m-hero-media {
-    display: block;
+    font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+    line-height: 1.375;
+    margin: 0 0 2rem;
     width: 100%;
-  }
-
-  .m-hero-img {
-    display: block;
-    width: 93svw;
-    max-width: 95vw;
-    margin: 0 auto 0.5rem;
-    padding-bottom: 7rem;
-    padding-top: 0.5rem;
-    height: auto;
-    object-fit: contain;
-  }
-
-  .m-pulk {
-    display: none;
-  }
-
-  .m-img {
-    width: 95svw;
-    margin: 0.75rem auto;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-  }
-
-  .m-img-el {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 14px;
-  }
-
-  .m-section {
-    width: 92%;
-    margin: 1.25rem auto 0;
-  }
-
-  .m-h1 {
-    font-weight: 900;
-    color: #141414;
-    text-wrap: balance;
-    font-size: clamp(3rem, 6vw, 3rem);
-    margin: 5rem 0 2.5rem 0;
-    line-height: 3.3rem;
-  }
-
-  .m-p {
-    color: #141414;
-    font-size: clamp(1.5rem, 3.6vw, 1.05rem);
-    line-height: 1.5;
-    margin: 0 0 6rem 0;
-    width: 90vw;
-    font-weight: 500;
   }
 }
 </style>

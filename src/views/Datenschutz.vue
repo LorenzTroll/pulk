@@ -7,7 +7,8 @@
 import { ref, computed, onMounted, onBeforeUnmount, onActivated, onDeactivated, nextTick } from 'vue'
 import { useHead } from '@vueuse/head'
 import { useLenis } from '@/composables/useLenis.js'
-import pulkArrow from '@/assets/pulk-arrow-accordeon.svg'
+import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
+const heroChairYellow = '/hero-chair-yellow.png'
 
 
 /* ============================================================================
@@ -15,10 +16,39 @@ import pulkArrow from '@/assets/pulk-arrow-accordeon.svg'
  * ============================================================================
  */
 useHead({
-  title: 'Datenschutz · PULK',
+  title: 'Datenschutz · PULK – Raum in Halle (Saale)',
   meta: [
-    { name: 'description', content: 'Datenschutzhinweise von PULK.' },
-    { name: 'robots', content: 'noindex,nofollow' }
+    {
+      name: 'description',
+      content:
+        'Datenschutzerklärung von pulk.space nach DSGVO: Umgang mit personenbezogenen Daten, Cookies, Kontaktformular und Rechte der Besucher:innen.'
+    },
+    { name: 'robots', content: 'noindex,nofollow' },
+
+    // Open Graph
+    { property: 'og:title', content: 'Datenschutz · PULK' },
+    {
+      property: 'og:description',
+      content:
+        'Datenschutzerklärung von pulk.space nach DSGVO: Umgang mit personenbezogenen Daten, Cookies, Kontaktformular und Rechte der Besucher:innen.'
+    },
+    { property: 'og:url', content: 'https://pulk.space/datenschutz' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:locale', content: 'de_DE' },
+    { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: 'PULK – Raum in Halle (Saale)' },
+
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Datenschutz · PULK' },
+    {
+      name: 'twitter:description',
+      content:
+        'Datenschutzerklärung von pulk.space – Umgang mit personenbezogenen Daten nach DSGVO.'
+    },
+    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/datenschutz' }
@@ -76,7 +106,7 @@ const sections = [
   },
   {
     id: 'cookies',
-    title: 'Cookies & Einwilligungen',
+    title: 'Cookies und Einwilligungen',
     body: `
       Unsere Website verwendet Cookies, um bestimmte Funktionen bereitzustellen und die Nutzung zu analysieren. Cookies sind kleine Textdateien, die lokal im Browser gespeichert werden.<br><br>
       <strong>A. Funktionale Cookies</strong><br>
@@ -202,7 +232,26 @@ onMounted(async () => {
   }
 
   document.getElementById('app')?.classList.add('plain-background')
+
+  window.addEventListener('scroll', updateLift, { passive: true })
+  updateLift()
 })
+
+
+/* ============================================================================
+ * Footer-Lift für fixed Close-Button
+ * ============================================================================
+ */
+const footerSentinelRef = ref(null)
+const btnLift = ref(0)
+
+function updateLift() {
+  const footer = document.querySelector('.site-footer')
+  if (!footer) return
+  const rect = footer.getBoundingClientRect()
+  const vh = window.innerHeight
+  btnLift.value = Math.max(0, vh - rect.top)
+}
 
 
 /* ============================================================================
@@ -227,6 +276,7 @@ function collapseAll() {
  * ============================================================================
  */
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateLift)
   document.body.classList.remove('theme-plain')
   document.documentElement.classList.remove('no-bounce-landing', 'lenis-stopped')
   document.body.classList.remove('no-bounce-landing')
@@ -235,19 +285,34 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="legal-wrap" style="background-color: white; min-height: 100vh;">
+  <main class="legal-wrap" style="background-color: #e7e8ec; min-height: 100dvh;">
     <!-- Header -->
     <header class="legal-header">
-      <h1>Datenschutz</h1>
       <div class="legal-tools">
-        <label for="search-datenschutz" class="sr-only">Inhalt durchsuchen</label>
-        <input
-          v-model="query"
-          type="search"
-          placeholder="Inhalt durchsuchen …"
-          aria-label="Datenschutzerklärung durchsuchen"
-        />
-        <div class="spacer"></div>
+        <h1>Datenschutz</h1>
+        <div class="legal-chair-wrap">
+          <img :src="heroChairYellow" alt="" aria-hidden="true" class="legal-chair" />
+        </div>
+      </div>
+      <!-- Controls row above accordion -->
+      <div class="legal-controls">
+        <div class="legal-search-wrap">
+          <label for="search-datenschutz" class="sr-only">Inhalt durchsuchen</label>
+          <input
+            id="search-datenschutz"
+            v-model="query"
+            type="search"
+            placeholder="Inhalt durchsuchen …"
+            aria-label="Datenschutzerklärung durchsuchen"
+          />
+          <button
+            v-if="query"
+            class="legal-search-clear"
+            @click="query = ''"
+            aria-label="Eingabe löschen"
+            type="button"
+          >X</button>
+        </div>
         <div class="expand-toggle">
           <span @click="expandAll" class="toggle-text">Alles ausklappen</span>
           <span @click="collapseAll" class="toggle-text">Alles einklappen</span>
@@ -264,19 +329,28 @@ onBeforeUnmount(() => {
       >
         <summary>
           <h2>{{ s.title }}</h2>
-          <img :src="pulkArrow" alt="" class="icon-chevron" aria-hidden="true" />
+          <div class="icon-chevron-wrap">
+            <img :src="pulkArrow" alt="" class="icon-chevron" aria-hidden="true" />
+          </div>
         </summary>
 
         <div class="legal-body" v-html="s.body"></div>
       </details>
     </section>
-    <!-- Back button -->
-    <div class="back-home-wrapper">
-      <RouterLink to="/" class="back-home-btn">
-        Zurück zur Startseite
-      </RouterLink>
-    </div>
+
+    <!-- Footer sentinel — lets close button lift above the footer -->
+    <div ref="footerSentinelRef" class="ds-sentinel"></div>
   </main>
+
+  <!-- Fixed close button -->
+  <RouterLink
+    to="/"
+    class="ds-close-btn"
+    :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+  >
+    <span>Schließen</span>
+    <span class="ds-close-icon">✕</span>
+  </RouterLink>
 </template>
 
 <style scoped>
@@ -284,11 +358,11 @@ onBeforeUnmount(() => {
  * General Layout
  * ==========================================================================*/
 .legal-wrap {
-  max-width: 75%;
-  margin: 0 auto 40rem;
+  max-width: 85%;
+  margin: 0 auto 50rem;
   padding: 5rem 0 0 0;
   color: #141414;
-  background: #fff;
+  background: #e7e8ec;
   font-family: 'LayGrotesk', sans-serif;
   word-break: normal;
   overflow-wrap: normal;
@@ -298,51 +372,102 @@ onBeforeUnmount(() => {
 /* ============================================================================
  * Header Section
  * ==========================================================================*/
-.legal-header h1 {
+.legal-tools {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin: 0 0 2rem;
+}
+
+.legal-tools h1 {
   font-weight: 900;
-  font-size: clamp(2.7rem, 3vw, 3rem);
-  margin: 0 0 2rem 0;
-  text-transform: uppercase;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.114;
+  margin: 0;
   text-wrap: balance;
 }
 
-.legal-tools {
-  display: flex;
-  justify-content: space-between;
+/* Search wrapper */
+.legal-search-wrap {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  margin: 5rem 0 3rem;
-  flex-wrap: wrap;
 }
 
-.legal-tools input[type="search"] {
-  flex: 0 2 250px;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid rgba(20, 20, 20, 0.2);
-  border-radius: 0.5rem;
-  font: inherit;
+/* Clear button */
+.legal-search-clear {
+  position: absolute;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
   font-size: 1rem;
+  color: #000000;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s ease;
 }
 
-.legal-tools input[type="search"]:focus {
+.legal-search-clear:hover {
+  opacity: 0.6;
+}
+
+/* Search input — ContactModal style */
+.legal-controls input[type="search"] {
+  font-family: 'LayGrotesk', sans-serif;
+  font-size: 1rem;
+  line-height: 2rem;
+  letter-spacing: -0.01rem;
+  color: #141414;
+  padding: 1.25rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.625rem;
+  background: transparent;
   outline: none;
-  border: 2px solid #9687FF;
+  width: 18rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.legal-controls input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+.legal-controls input[type="search"]::placeholder {
+  color: rgba(20, 20, 20, 0.5);
+}
+
+.legal-controls input[type="search"]:focus {
+  border-color: #9687FF;
 }
 
 /* ============================================================================
  * Expand / Collapse Toggle
  * ==========================================================================*/
+.legal-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2rem;
+  margin: 2rem 0 3rem;
+}
+
 .expand-toggle {
   display: flex;
   gap: 2rem;
   align-items: center;
-  font-weight: 600;
   cursor: pointer;
+  margin-left: auto;
 }
 
 .toggle-text {
   color: #141414;
-  font-size: 1rem;
+  font-size: 1.5rem;
+  font-weight: 400;
   display: flex;
   gap: 0.5rem;
   transition: opacity 0.2s ease;
@@ -354,16 +479,34 @@ onBeforeUnmount(() => {
 }
 
 /* ============================================================================
- * Accordion
+ * Chair image
+ * ==========================================================================*/
+.legal-chair-wrap {
+  flex: 0 0 auto;
+}
+
+.legal-chair {
+  width: 100%;
+  height: auto;
+  transform: scaleX(-1);
+  margin: -2rem 0rem 5rem 0rem;
+}
+
+/* ============================================================================
+ * Accordion — LandingPage style
  * ==========================================================================*/
 .legal-accordion {
-  border-top: 1px solid #141414;
+  border-top: 1px solid rgba(20, 20, 20, 0.3);
   margin-top: 1rem;
+  padding-bottom: 5rem;
 }
 
 .legal-item {
-  border-bottom: 2px solid rgba(20, 20, 20, 0.3);
-  padding: 2.5rem 0;
+  border-top: 1px solid rgba(20, 20, 20, 0.3);
+}
+
+.legal-item:first-child {
+  border-top: none;
 }
 
 summary {
@@ -372,6 +515,8 @@ summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
+  padding: 2.25rem 2.875rem;
 }
 
 summary::-webkit-details-marker {
@@ -379,13 +524,33 @@ summary::-webkit-details-marker {
 }
 
 summary h2 {
-  font-size: clamp(2rem, 5vw, 2rem);
+  flex: 1;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
+  line-height: 1.24;
+  color: #141414;
   margin: 0;
 }
 
+/* Chevron wrap — LandingPage style */
+.icon-chevron-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.375rem;
+  height: 3.375rem;
+  background: #141414;
+  border-radius: 0.625rem;
+  transition: background 0.3s ease;
+}
+
+details[open] .icon-chevron-wrap {
+  background: #9687FF;
+}
+
 .icon-chevron {
-  width: 3rem;
+  width: 1.5625rem;
   transform-origin: center;
   transition: transform 0.4s ease-in-out;
 }
@@ -395,63 +560,157 @@ details[open] .icon-chevron {
 }
 
 .legal-body {
-  padding: 3rem 0 3rem;
-  line-height: 1.6;
-  font-size: 1.2rem;
-  width: 90%;
+  padding: 0 2.875rem 2.875rem;
+  line-height: 1.375;
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  letter-spacing: -0.015625rem;
   color: #141414;
+  width: 80%;
 }
 
 /* ============================================================================
- * Back-to-home Button
+ * Sentinel + Fixed Close Button
  * ==========================================================================*/
-.back-home-wrapper {
-  margin-top: 6rem;
-  text-align: center;
+.ds-sentinel {
+  height: 0;
 }
 
-.back-home-btn {
-  background-color: #9687FF;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 1rem 2.5rem;
-  border-radius: 999px;
+.ds-close-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  background: #9687FF;
+  color: #fff;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
   text-decoration: none;
-  transition: background-color 0.25s ease, transform 0.2s ease;
-  display: inline-block;
+  z-index: 2000;
+  white-space: nowrap;
 }
 
-.back-home-btn:hover {
-  background-color: #7e6fe0;
-  transform: translateY(-2px);
+.ds-close-btn:hover {
+  transform: translateX(-50%) scale(1.05);
 }
 
 /* ============================================================================
- * Responsive (Mobile)
+ * Tablet (641px – 1024px)
  * ==========================================================================*/
-@media (max-width: 640px) {
+@media (min-width: 641px) and (max-width: 1024px) {
   .legal-wrap {
-    max-width: 92%;
-    padding: 3rem 0 6rem;
-  }
-
-  .legal-header h1 {
-    font-size: clamp(2rem, 5vw, 2.7rem);
-    margin: 1rem 0 2rem;
-  }
-
-  summary h2 {
-    font-size: clamp(1.5rem, 5vw, 2rem);
-  }
-
-  .legal-body {
-    font-size: clamp(1rem, 4vw, 1.2rem);
-    line-height: 1.65;
+    max-width: 90%;
   }
 
   .legal-tools {
-    gap: 2rem;
+    display: block;
+  }
+
+  .legal-chair {
+    margin: 2rem 0rem 3rem 0rem;
+  }
+
+  .legal-controls input[type="search"] {
+    height: 50%;
+  }
+
+  summary {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .legal-body {
+    padding: 0 1.5rem 1.75rem;
+  }
+}
+
+/* ============================================================================
+ * Desktop (> 1024px)
+ * ==========================================================================*/
+@media (min-width: 1025px) {
+  summary {
+    padding: 3rem 0;
+  }
+
+  .legal-body {
+    padding: 0 0 3rem;
+  }
+}
+
+/* ============================================================================
+ * Mobile (≤ 640px)
+ * ==========================================================================*/
+@media (max-width: 640px) {
+  .legal-wrap {
+    max-width: 90%;
+    padding: 3rem 0 6rem;
+  }
+
+  .legal-tools h1 {
+    font-size: clamp(2rem, 7vw, 2.5rem);
+    width: 100%;
+  }
+
+  summary {
+    padding: 1.5rem 0.5rem;
+  }
+
+
+  .icon-chevron-wrap {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .icon-chevron {
+    width: 1.25rem;
+  }
+
+  .legal-body {
+    padding: 0 1rem 1.5rem;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    width: 100%;
+  }
+
+  .legal-tools {
+    display: flex;
+    flex-flow: column-reverse;
+  }
+
+  .legal-chair-wrap {
+    overflow: hidden;
+    transform: translateX(1.5rem);
+  }
+
+  .legal-chair {
+    width: 150%;
+    height: auto;
+    transform: scaleX(-1) scale(1.3) translateX(5rem);
+    margin: 1rem 0rem 2rem 0rem;
+  }
+
+  .legal-controls {
+    flex-wrap: wrap;
+  }
+
+  .legal-search-wrap {
+    width: 100%;
+  }
+
+  .legal-controls input[type="search"] {
+    width: 100%;
+    height: 50%;
+  }
+
+  .expand-toggle {
+    display: none;
+  }
+
+  .toggle-text {
+    font-size: clamp(0.875rem, 3.5vw, 1.125rem);
   }
 }
 </style>

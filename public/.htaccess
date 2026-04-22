@@ -1,0 +1,81 @@
+RewriteEngine On
+
+# ---------------------------------------------------------
+# 1) Zuerst: www → non-www + http → https
+# ---------------------------------------------------------
+RewriteCond %{HTTP_HOST} ^www\.pulk\.space$ [NC,OR]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://pulk.space/$1 [L,R=301]
+
+DirectoryIndex index.html
+
+# ---------------------------------------------------------
+# 2) Wenn Datei oder Ordner existiert → direkt laden
+# ---------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ---------------------------------------------------------
+# 3) Alles andere → 404.html mit echtem HTTP-404-Status
+# ---------------------------------------------------------
+ErrorDocument 404 /404.html
+RewriteRule ^ - [R=404,L]
+
+# ---------------------------------------------------------
+# 4) Hetzner/Performance: Directory Listing deaktivieren
+# ---------------------------------------------------------
+IndexIgnore *
+
+# GZIP Fallback
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
+
+# Brotli (falls verfügbar)
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
+
+# ---------------------------------------------------------
+# 5) Security-Header
+# ---------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://app-static.sitesights.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.sitesights.io; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# ---------------------------------------------------------
+# 6) Cache-Control
+# ---------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                      "access plus 1 hour"
+  ExpiresByType text/html             "access plus 0 seconds"
+  ExpiresByType text/css              "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/avif            "access plus 1 year"
+  ExpiresByType image/webp            "access plus 1 year"
+  ExpiresByType image/jpeg            "access plus 1 year"
+  ExpiresByType image/png             "access plus 1 year"
+  ExpiresByType image/svg+xml         "access plus 1 year"
+  ExpiresByType image/x-icon          "access plus 1 year"
+  ExpiresByType font/woff2            "access plus 1 year"
+  ExpiresByType font/woff             "access plus 1 year"
+  ExpiresByType application/manifest+json "access plus 1 week"
+  ExpiresByType text/plain            "access plus 1 day"
+  ExpiresByType application/xml       "access plus 1 day"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|avif|webp|jpg|jpeg|png|svg|ico|woff|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

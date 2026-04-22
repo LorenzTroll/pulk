@@ -2,14 +2,18 @@
 /* ============================================================================
  * Imports
  * ===========================================================================*/
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useHead } from '@vueuse/head'
 import gsap from 'gsap'
 
 import { usePricingStore } from '@/stores/pricing'
-import SeoClose from '@/components/SeoClose.vue'
+import { track, trackDebounced, attachScrollDepthTracker } from '@/utils/tracking'
+import SiteFooter from '@/components/SiteFooter.vue'
 
-import pulkLogo from '@/assets/pulk-logo-black_E3.svg'
+import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
+import imgPricingA from '@/assets/pulk_pricing-imageA.png?format=avif;webp;png&as=picture'
+import imgPricingB from '@/assets/pulk_pricing-imageB.png?format=avif;webp;png&as=picture'
+import imgChairsMixed from '@/assets/hero-chair-mixed-row.png?format=avif;webp;png&as=picture'
 
 /* ============================================================================
  * SEO / Meta
@@ -91,6 +95,49 @@ useHead({
         ],
         url: 'https://pulk.space/preise'
       })
+    },
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        '@id': 'https://pulk.space/preise#faq',
+        url: 'https://pulk.space/preise',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Was wenn kein Paket passt?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee in einer Anfrage mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Kann ich Catering oder Getränke organisieren?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Ihr organisiert das Catering selbst. Entweder über eigene Anbieter oder über unsere lokalen Partner: Anna Müller für vegetarisches und veganes Catering, Gunnar Franke für Getränke, beide in der Burgstraße. Die Teeküche im Raum steht euch zur Verfügung, inklusive Ceran-Kochfeld und Geschirr.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Was passiert bei einer Stornierung?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Business-Paket: Bis 48 Stunden vor dem vereinbarten Termin könnt ihr kostenlos stornieren. Bei späterer Stornierung stellen wir 50 % des vereinbarten Entgelts inkl. MwSt. in Rechnung. Community-Paket: Bis 48 Stunden vor dem vereinbarten Termin könnt ihr kostenlos stornieren. Sollten auf unserer Seite bereits Aufwände für Vorbereitung oder Kommunikation entstanden sein, behalten wir uns vor, bis zu 20 % des vereinbarten Entgelts inkl. MwSt. in Rechnung zu stellen. Bei Nichterscheinen zum vereinbarten Termin werden bei beiden Paketen 50 % des vereinbarten Entgelts inkl. MwSt. fällig.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Habt ihr einen Veranstaltungsservice?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Wir unterstützen euch bei der Planung und Vorbereitung des Raums. Wir geben Ideen für die Aufstellung und zeigen euch, wo ihr alles Wichtige im Raum findet. Alles im Rahmen unserer Möglichkeiten und Kapazitäten. Wir unterstützen euch, den Raum ideal vorzubereiten, übernehmen aber nicht eure komplette Planung. Für die darüber hinausgehende Veranstaltungsplanung vermitteln wir gerne an den Service „Besser Tagen" des Stadtmarketings Halle (Saale).'
+            }
+          }
+        ]
+      })
     }
   ]
 })
@@ -101,61 +148,201 @@ useHead({
 const pricing = usePricingStore()
 
 /* ============================================================================
- * State
+ * Price plans (Business + Community only — Individuell → FAQ)
+ * ===========================================================================*/
+const pricingPlans = pricing.plans.filter(p => p.key !== 'individuell')
+
+/* ============================================================================
+ * Preiskalkulator
+ * ===========================================================================*/
+const calc = reactive(
+  Object.fromEntries(
+    pricingPlans
+      .filter(p => p.tiers?.length)
+      .map(p => [p.key, { persons: 1, hours: 1 }])
+  )
+)
+
+function stepPersons(planKey, delta) {
+  const plan = pricing.plans.find(p => p.key === planKey)
+  const max = plan.tiers[plan.tiers.length - 1].maxPersons
+  calc[planKey].persons = Math.max(1, Math.min(max, calc[planKey].persons + delta))
+  trackPricingAdjust(planKey)
+}
+
+function stepHours(planKey, delta) {
+  calc[planKey].hours = Math.max(1, Math.min(8, calc[planKey].hours + delta))
+  trackPricingAdjust(planKey)
+}
+
+function trackPricingAdjust(planKey) {
+  const c = calc[planKey]
+  trackDebounced('pulk.pricing.adjust', {
+    package: planKey,
+    persons: c.persons,
+    hours: c.hours,
+    total: pricing.calculatePrice(planKey, c.persons, c.hours),
+    source: 'pricing-page'
+  })
+}
+
+function calcTotal(planKey) {
+  const c = calc[planKey]
+  return pricing.calculatePrice(planKey, c.persons, c.hours)
+}
+
+function hoursLabel(planKey) {
+  const h = calc[planKey].hours
+  if (h >= 8) return 'Ganztag (8 Std.)'
+  return h === 1 ? '1 Stunde' : `${h} Stunden`
+}
+
+function personsLabel(planKey) {
+  const p = calc[planKey].persons
+  return p === 1 ? '1 Person' : `${p} Personen`
+}
+
+/* ============================================================================
+ * Card detail toggle
+ * ===========================================================================*/
+const expandedPlan = ref(null)
+const cardDetailRefs = {}
+const cardArrowRefs = {}
+
+async function togglePlan(key) {
+  const willOpen = expandedPlan.value !== key
+  expandedPlan.value = willOpen ? key : null
+  if (willOpen) {
+    track('pulk.pricing.expand-card', { package: key, source: 'pricing-page' })
+  }
+  await nextTick()
+  const el = cardDetailRefs[key]
+  const arrowEl = cardArrowRefs[key]
+  if (!el || !arrowEl) return
+  if (willOpen) {
+    gsap.set(el, { height: 0, opacity: 0 })
+    gsap.to(arrowEl, { rotation: 180, duration: 0.2, ease: 'power1.out' })
+    gsap.to(el, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power1.out' })
+  } else {
+    gsap.to(arrowEl, { rotation: 0, duration: 0.4, ease: 'power1.in' })
+    gsap.to(el, { height: 0, opacity: 0, duration: 0.4, ease: 'power1.in' })
+  }
+}
+
+/* ============================================================================
+ * FAQ Accordion
+ * ===========================================================================*/
+const openFaqIndex = ref(null)
+const faqContentRefs = []
+const faqArrowRefs = []
+
+const faqItems = [
+  {
+    q: 'Was wenn kein Paket passt?',
+    a: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee in einer Anfrage mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.'
+  },
+  {
+    q: 'Kann ich Catering oder Getränke organisieren?',
+    a: 'Ihr organisiert das Catering selbst. Entweder über eigene Anbieter oder über unsere lokalen Partner: Anna Müller für vegetarisches und veganes Catering, Gunnar Franke für Getränke, beide in der Burgstraße. Die Teeküche im Raum steht euch zur Verfügung, inklusive Ceran-Kochfeld und Geschirr.'
+  },
+  {
+    q: 'Was passiert bei einer Stornierung?',
+    a: `Business-Paket: Bis 48 Stunden vor dem vereinbarten Termin könnt ihr kostenlos stornieren. Bei späterer Stornierung stellen wir 50 % des vereinbarten Entgelts inkl. MwSt. in Rechnung.
+    Community-Paket: Bis 48 Stunden vor dem vereinbarten Termin könnt ihr kostenlos stornieren. Sollten auf unserer Seite bereits Aufwände für Vorbereitung oder Kommunikation entstanden sein, behalten wir uns vor, bis zu 20 % des vereinbarten Entgelts inkl. MwSt. in Rechnung zu stellen.
+    Bei Nichterscheinen zum vereinbarten Termin werden bei beiden Paketen 50 % des vereinbarten Entgelts inkl. MwSt. fällig.`
+  },
+  {
+    q: 'Habt ihr einen Veranstaltungsservice?',
+    a: 'Wir unterstützen euch bei der Planung und Vorbereitung des Raums. Wir geben Ideen für die Aufstellung und zeigen euch, wo ihr alles Wichtige im Raum findet. Alles im Rahmen unserer Möglichkeiten und Kapazitäten. Wir unterstützen euch, den Raum ideal vorzubereiten, übernehmen aber nicht eure komplette Planung. Für die darüber hinausgehende Veranstaltungsplanung vermitteln wir gerne an den Service „Besser Tagen" des Stadtmarketings Halle (Saale).'
+  }
+]
+
+async function toggleFaq(i) {
+  const willOpen = openFaqIndex.value !== i
+  openFaqIndex.value = willOpen ? i : null
+  if (willOpen) {
+    track('pulk.faq.open', { section: faqItems[i]?.q || '', page: 'pricing' })
+  }
+  await nextTick()
+  const el = faqContentRefs[i]
+  const arrowEl = faqArrowRefs[i]
+  if (!el || !arrowEl) return
+  if (willOpen) {
+    gsap.set(el, { height: 0, opacity: 0 })
+    gsap.to(arrowEl, { rotation: 180, duration: 0.2, ease: 'power1.out' })
+    gsap.to(el, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power1.out' })
+  } else {
+    gsap.to(arrowEl, { rotation: 0, duration: 0.4, ease: 'power1.in' })
+    gsap.to(el, { height: 0, opacity: 0, duration: 0.4, ease: 'power1.in' })
+  }
+}
+
+/* ============================================================================
+ * GSAP Page Reveal
  * ===========================================================================*/
 const rootRef = ref(null)
 let tl = null
 
 /* ============================================================================
- * GSAP Page Reveal (Modal-Style)
+ * Footer-Lift für fixed Close-Button
  * ===========================================================================*/
+const footerSentinelRef = ref(null)
+const btnLift = ref(0)
+let scrollCleanup = null
+let scrollDepthCleanup = null
+
+function updateLift() {
+  const sentinel = footerSentinelRef.value
+  if (!sentinel) return
+  const rect = sentinel.getBoundingClientRect()
+  const vh = window.innerHeight
+  btnLift.value = Math.max(0, vh - rect.top)
+}
+
 onMounted(async () => {
   await nextTick()
   const root = rootRef.value
   if (!root) return
+
+  // Scroll-Listener für Footer-Lift
+  root.addEventListener('scroll', updateLift, { passive: true })
+  scrollCleanup = () => root.removeEventListener('scroll', updateLift)
+
+  // Scroll-Depth Tracking (pulk.scroll.depth)
+  scrollDepthCleanup = attachScrollDepthTracker('pricing', root)
 
   const cards = [...root.querySelectorAll('.card')]
   if (!cards.length) return
 
   tl?.kill()
   tl = gsap.timeline({
-    defaults: { duration: 0.8, ease: 'power2.out' },
+    defaults: { duration: 0.35, ease: 'power2.out' },
     delay: 0.25
   })
 
-  gsap.set(cards, {
-    opacity: 0,
-    y: 32,
-    willChange: 'transform,opacity'
-  })
+  gsap.set(cards, { opacity: 0, y: 32, willChange: 'transform,opacity' })
 
   tl.to(cards, {
     opacity: 1,
     y: 0,
-    stagger: 0.25,
-    clearProps: 'willChange',
-    onStart() {
-      const card = this.targets()[0]
-      const chunks = card.querySelectorAll(
-        '.card-header, .card-price, .card-price-extra, .card-features, .card-features .features-list li, .card-description'
-      )
-
-      gsap.set(chunks, {
-        opacity: 0,
-        y: 10,
-        willChange: 'transform,opacity'
-      })
-
-      gsap.to(chunks, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.06,
-        ease: 'power2.out',
-        clearProps: 'willChange',
-        delay: 0.25
-      })
-    }
+    stagger: {
+      each: 0.25,
+      onStart() {
+        const card = this.targets()[0]
+        const chunks = card.querySelectorAll(
+          '.card-header, .pm-card-price, .pm-card-desc'
+        )
+        gsap.set(chunks, { opacity: 0, y: 10, willChange: 'transform,opacity' })
+        gsap.to(chunks, {
+          opacity: 1,
+          y: 0,
+          duration: 0.45,
+          stagger: 0.08,
+          clearProps: 'willChange'
+        })
+      }
+    },
+    clearProps: 'willChange'
   })
 })
 
@@ -165,122 +352,219 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   tl?.kill()
   tl = null
+  scrollCleanup?.()
+  scrollDepthCleanup?.()
 })
 </script>
 
 <template>
   <main ref="rootRef" class="pricing-page">
-    <router-link to="/" class="seo-logo">
-      <img :src="pulkLogo" alt="Pulk Logo" class="logo-img" />
+    <!-- Fixed close button — lifts above footer when scrolled down -->
+    <router-link
+      to="/"
+      class="pp-close-btn"
+      :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+    >
+      <span>Schließen</span>
+      <span class="pp-close-icon">✕</span>
     </router-link>
-    <SeoClose />
 
-    <div class="cards-wrapper">
-      <div
-        v-for="plan in pricing.plans"
-        :key="plan.key"
-        :class="['card', { 'card--highlight': plan.key === 'gruppen' }]"
-      >
-        <!-- Header -->
-        <header class="card-header">
-          <h2 class="card-title">{{ plan.title }}</h2>
+    <!-- ======================================================================
+         HERO: Intro + Preiskarten
+         ====================================================================== -->
+    <section class="pm-hero">
 
-          <!-- Zielgruppe / Kontext / max. Personen -->
-          <p
-            v-if="plan.audience"
-            class="card-subtitle card-subtitle--audience"
-          >
-            {{ plan.audience }}
-          </p>
-          <p
-            v-if="plan.context"
-            class="card-subtitle card-subtitle--context"
-          >
-            {{ plan.context }}
-          </p>
-          <p
-            v-if="plan.maxPersons"
-            class="card-subtitle card-subtitle--max"
-          >
-            {{ plan.maxPersons }}
-          </p>
-
-          <!-- Fallback für alte subtitle-Daten -->
-          <p
-            v-if="!plan.audience && !plan.context && !plan.maxPersons && plan.subtitle"
-            class="card-subtitle"
-          >
-            {{ plan.subtitle }}
-          </p>
-        </header>
-
-        <!-- Price (Zahlenpreis oder "Preis auf Anfrage") -->
-        <div class="card-price" v-if="plan.price || plan.priceLabel">
-          <!-- Business / Gruppen (Zahlenpreis) -->
-          <template v-if="plan.price">
-            <span class="price-amount">
-              {{ plan.price }} €
-            </span>
-            <span class="price-unit">
-              {{ plan.unit }}
-            </span>
-          </template>
-
-          <!-- Individuell (Textpreis) -->
-          <template v-else-if="plan.priceLabel">
-            <span class="price-amount">
-              {{ plan.priceLabel }}
-            </span>
-          </template>
-        </div>
-
-        <!-- Zusätzliche Preisinfos: zweite Zeile + MwSt-Hinweis -->
-        <div class="card-price-extra" v-if="plan.priceAlt || plan.priceNote">
-          <p v-if="plan.priceAlt" class="price-alt">
-            {{ plan.priceAlt }}
-          </p>
-          <p v-if="plan.priceNote" class="price-note">
-            {{ plan.priceNote }}
+      <!-- LEFT: Intro text + Stühle-Bild -->
+      <div class="pm-intro">
+        <div class="pm-intro-text">
+          <h1 class="pm-intro-title">Preise und Pakete</h1>
+          <p class="pm-intro-heading">
+            Mietet stundenweise, ohne Mindest­buchung ohne Cateringzwang. Alle Preise zzgl. 19 % MwSt.
           </p>
         </div>
-
-        <!-- Included features -->
-        <section class="card-features" v-if="plan.features?.length">
-          <h3 class="features-heading">
-            {{ plan.key === 'individuell' ? 'Beispielsweise:' : 'Was enthalten ist:' }}
-          </h3>
-          <ul aria-label="Enthaltene Leistungen" class="features-list">
-            <li
-              v-for="(feature, i) in plan.features"
-              :key="i"
-              class="feature-item"
-            >
-              <font-awesome-icon icon="check" class="feature-check" />
-              <span class="feature-text">{{ feature }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <!-- On request -->
-        <section class="card-features" v-if="plan.onRequest?.length">
-          <h3 class="features-heading">Auf Anfrage:</h3>
-          <ul class="features-list">
-            <li
-              v-for="(item, i) in plan.onRequest"
-              :key="i"
-              class="feature-item"
-            >
-              <font-awesome-icon icon="check" class="feature-check" />
-              <span class="feature-text">{{ item }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <!-- Beschreibungstext -->
-        <section class="card-description" v-if="plan.description">
-          <p>{{ plan.description }}</p>
-        </section>
+        <div class="pm-chairs-wrap">
+          <!-- Hocker (B) links, kleiner -->
+          <picture class="pm-chairs-picture pm-chairs-picture--b">
+            <source
+              v-for="s in imgPricingB.sources"
+              :key="s.srcset"
+              :srcset="s.srcset"
+              :type="s.type"
+            />
+            <img
+              :src="imgPricingB.img.src"
+              alt="PULK Lila Hocker"
+              class="pm-chairs-img"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <!-- Stühle-Stapel (A) rechts, größer -->
+          <picture class="pm-chairs-picture pm-chairs-picture--a">
+            <source
+              v-for="s in imgPricingA.sources"
+              :key="s.srcset"
+              :srcset="s.srcset"
+              :type="s.type"
+            />
+            <img
+              :src="imgPricingA.img.src"
+              alt="PULK Stühle gestapelt"
+              class="pm-chairs-img pm-chairs-img--flipped"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <!-- Tablet-only: Stühle-Reihe als Full-Bleed -->
+          <picture class="pm-chairs-mixed-picture">
+            <source
+              v-for="s in imgChairsMixed.sources"
+              :key="s.srcset"
+              :srcset="s.srcset"
+              :type="s.type"
+            />
+            <img
+              :src="imgChairsMixed.img.src"
+              alt="PULK Stühle Reihe"
+              class="pm-chairs-mixed"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
       </div>
+
+      <!-- RIGHT: Preiskarten -->
+      <div class="pm-cards">
+        <div
+          v-for="plan in pricingPlans"
+          :key="plan.key"
+          class="pm-card-wrap"
+        >
+          <!-- Karte -->
+          <div class="card pm-card">
+            <header class="card-header pm-card-header">
+              <h2 class="pm-card-title">{{ plan.key === 'gruppen' ? 'Community' : plan.title }}</h2>
+              <p class="pm-card-desc">
+                <template v-if="plan.key === 'gruppen'">Vereine, Initiativen, freie Gruppen, Einzelpersonen bis 25 Personen.</template>
+                <template v-else-if="plan.key === 'business'">Unternehmen, Agenturen, Verbände, Stiftungen, Unis und Hochschulen bis 40 Personen.</template>
+                <template v-else>{{ plan.context }} {{ plan.maxPersons }}</template>
+              </p>
+            </header>
+            <div class="card-price pm-card-price">
+              <span class="pm-price-amount"><span class="pm-price-prefix">ab</span> {{ plan.price }} EUR</span>
+              <span class="pm-price-unit">/Stunde</span>
+            </div>
+
+            <!-- Preiskalkulator -->
+            <div v-if="plan.tiers?.length" class="pm-calc">
+              <div class="pm-calc-row">
+                <button class="pm-step-btn" type="button" :disabled="calc[plan.key].persons <= 1" @click="stepPersons(plan.key, -1)">−</button>
+                <span class="pm-calc-label">{{ personsLabel(plan.key) }}</span>
+                <button class="pm-step-btn" type="button" :disabled="calc[plan.key].persons >= plan.tiers[plan.tiers.length - 1].maxPersons" @click="stepPersons(plan.key, 1)">+</button>
+              </div>
+              <div class="pm-calc-row">
+                <button class="pm-step-btn" type="button" :disabled="calc[plan.key].hours <= 1" @click="stepHours(plan.key, -1)">−</button>
+                <span class="pm-calc-label">{{ hoursLabel(plan.key) }}</span>
+                <button class="pm-step-btn" type="button" :disabled="calc[plan.key].hours >= 8" @click="stepHours(plan.key, 1)">+</button>
+              </div>
+              <div class="pm-calc-total">
+                <span class="pm-calc-total-label">{{ calc[plan.key].hours >= 8 ? 'Tagessatz' : 'Gesamt' }}</span>
+                <span class="pm-calc-total-price">{{ calcTotal(plan.key) }} EUR</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Details-Toggle + Expanded (gemeinsame Border) -->
+          <div class="pm-toggle-wrap">
+            <button
+              class="pm-toggle"
+              type="button"
+              :aria-expanded="expandedPlan === plan.key"
+              @click="togglePlan(plan.key)"
+            >
+              <span class="pm-toggle-label">Details anzeigen</span>
+              <div class="pm-chevron-wrap">
+                <img
+                  :src="pulkArrow"
+                  :ref="el => { if (el) cardArrowRefs[plan.key] = el }"
+                  class="pm-chevron"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
+
+            <div
+              class="pm-details"
+              :ref="el => { if (el) cardDetailRefs[plan.key] = el }"
+            >
+              <ul class="pm-features-list">
+                <li v-for="(f, i) in plan.features" :key="i">
+                  <span class="pm-feature-dot"></span>{{ f }}
+                </li>
+              </ul>
+              <template v-if="plan.onRequest?.length">
+                <p class="pm-features-heading">Auf Anfrage:</p>
+                <ul class="pm-features-list">
+                  <li v-for="(f, i) in plan.onRequest" :key="i">
+                    <span class="pm-feature-dot"></span>{{ f }}
+                  </li>
+                </ul>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         FAQ Accordion
+         ====================================================================== -->
+    <section class="pm-faq">
+      <div
+        v-for="(item, i) in faqItems"
+        :key="i"
+        class="pm-faq-item"
+        :class="{ 'pm-faq-item--active': openFaqIndex === i }"
+      >
+        <div
+          class="pm-faq-header"
+          role="button"
+          tabindex="0"
+          :aria-expanded="openFaqIndex === i"
+          @click="toggleFaq(i)"
+          @keydown.enter="toggleFaq(i)"
+          @keydown.space.prevent="toggleFaq(i)"
+        >
+          <h2 class="pm-faq-question">{{ item.q }}</h2>
+          <div class="pm-faq-chevron-wrap">
+            <img
+              :src="pulkArrow"
+              :ref="el => { if (el) faqArrowRefs[i] = el }"
+              class="pm-faq-chevron"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+        <div
+          class="pm-faq-content"
+          :ref="el => { if (el) faqContentRefs[i] = el }"
+        >
+          <p>{{ item.a }}</p>
+        </div>
+      </div>
+    </section>
+
+    <div ref="footerSentinelRef"></div>
+    <div class="pp-footer-wrap">
+      <SiteFooter
+        instagram-url="https://instagram.com/pulk.space"
+        impressum-href="/impressum"
+        datenschutz-href="/datenschutz"
+        company="Pulk"
+      />
     </div>
   </main>
 </template>
@@ -291,231 +575,649 @@ onBeforeUnmount(() => {
  * ============================================================================*/
 .pricing-page {
   background: #e7e8ec;
-  width: 100%;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow-y: auto;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
-  padding: 2rem;
-  position: relative;
+  padding: 5rem 7.25% 8rem;
 }
 
-/* Logo positioning SEO */
-.seo-logo {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  display: block;
-  z-index: 5000;
-}
-
-.logo-img {
-  width: max(7rem, 9%);
-}
-
-/* Optional: .absolute wie im Modal */
-.absolute {
-  margin: 0;
-  width: max(7rem, 9%);
-}
-
-/* Card grid */
-.cards-wrapper {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: no-wrap;
-  justify-content: center;
-  margin-top: 6rem;
-}
-
-/* Card base */
-.card {
-  background: linear-gradient(
-    to top left,
-    rgb(237, 238, 245) 0.5%,
-    #ffffff 100%
-  );
+/* Fixed close button */
+.pp-close-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 3rem;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 20rem;
-  width: 85%;
-  max-width: 20rem;
-  opacity: 0; /* initial state for GSAP */
-  transform: translateY(50px); /* initial offset */
+  background: #ED691C;
+  color: #fff;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  text-decoration: none;
+  z-index: 2000;
+  white-space: nowrap;
 }
 
-.card:hover {
-  transform: translateY(-0.5rem);
-  transition: transform 0.2s ease;
+.pp-close-btn:hover {
+  transform: translateX(-50%) scale(1.05);
 }
 
-/* Highlight card (Gruppen) */
-.card--highlight {
-  background: #141414;
-}
-.card--highlight .card-title,
-.card--highlight .card-subtitle,
-.card--highlight .price-amount,
-.card--highlight .price-unit,
-.card--highlight .feature-text,
-.card--highlight .features-heading,
-.card--highlight .price-alt,
-.card--highlight .price-note,
-.card--highlight .card-description {
-  color: #fff;
-}
-.card--highlight .feature-check {
-  color: #fff;
-}
-.card--highlight .price-amount {
-  color: #ff5a00;
+.pp-close-icon {
+  font-size: 1rem;
 }
 
 /* ============================================================================
- * Typography & Layout: Card Content
+ * Hero: Intro + Karten
  * ============================================================================*/
-.card-header {
-  margin-bottom: 1.3rem;
-}
-
-.card-title {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.06rem;
-  line-height: 1.1;
-  color: #141414;
-  margin: 0.5rem 0 1.1rem;
-}
-
-.card-subtitle {
-  font-size: 1rem;
-  color: #666666;
-  margin: 0.15rem 0;
-  line-height: 1.4;
-}
-
-.card-subtitle--audience {
-  font-weight: 600;
-}
-.card-subtitle--context {
-  font-style: normal;
-}
-.card-subtitle--max {
-  font-weight: 400;
-}
-
-.card-price {
+.pm-hero {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  margin: 1.25rem 0 0.5rem;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 5rem;
 }
 
-.price-amount {
-  font-size: 2rem;
+/* Left: Intro */
+.pm-intro {
+  flex: 0 0 36%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 36rem;
+}
+
+.pm-intro-text {
+  margin: 2.6rem auto;
+}
+
+.pm-intro-title {
+  font-size: clamp(2.5rem, 3.5vw, 3.625rem);
   font-weight: 900;
-  color: #ff5a00;
-  line-height: 1;
-}
-
-.price-unit {
-  font-size: 0.9rem;
-  color: #888;
-}
-
-.card-price-extra {
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.price-alt {
-  margin: 0;
-}
-
-.price-note {
-  margin: 0.25rem 0 0;
-  font-style: normal;
-}
-
-.features-heading {
-  font-size: 1rem;
-  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.015625rem;
   color: #141414;
-  margin: 0.5rem 0 1rem;
+  margin: 0 0 1.5rem;
 }
 
-.features-list {
-  list-style: none;
-  padding: 0;
+.pm-intro-heading {
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  font-weight: 400;
+  line-height: 2rem;
+  letter-spacing: -0.015625rem;
+  color: #141414;
   margin: 0;
+  width: 80%;
 }
 
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #666;
+@media (max-width: 64rem) {
+  .pm-intro-heading {
+    width: 100%;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pm-intro-heading {
+    width: 70%;
+  }
+}
+
+.pm-intro-heading strong {
+  font-size: clamp(1.5rem, 2vw, 1.5625rem);
+  font-weight: 900;
+  display: block;
   margin-bottom: 0.75rem;
 }
 
-.feature-check {
-  font-size: 1rem;
-  color: #141414;
-  padding-right: 0.75rem;
+.pm-chairs-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0;
+  min-height: 20rem;
+  overflow: hidden;
+  transform: translateX(-7.5rem) translateY(6.5rem) scale(1.3);
 }
 
-.feature-text {
+.pm-chairs-picture {
+  display: block;
+  flex-shrink: 0;
+}
+
+.pm-chairs-picture--b {
+  width: clamp(5rem, 7.5vw, 13rem);
+}
+
+.pm-chairs-picture--a {
+  width: clamp(9rem, 20vw, 26rem);
+}
+
+.pm-chairs-img {
+  width: 95%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.pm-chairs-img--flipped {
+  transform: scaleX(1);
+}
+
+/* Tablet-only Full-Bleed Chair-Row */
+.pm-chairs-mixed-picture {
+  display: none;
+}
+
+/* Right: Cards */
+.pm-cards {
+  flex: 1;
+  display: flex;
+  gap: 1.625rem;
+  align-items: flex-start;
+}
+
+.pm-card-wrap {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.625rem;
+}
+
+/* Card */
+.card.pm-card {
+  border: 2px solid #141414;
+  border-radius: 0.625rem;
+  padding: 1.6875rem 2.1875rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 34rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.pm-card-header {
   flex: 1;
 }
 
-/* Beschreibungstext */
-.card-description {
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #444;
+.pm-card-title {
+  font-size: clamp(2.5rem, 3.5vw, 3.625rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #141414;
+  margin: 0.75rem 0 2.125rem;
+}
+
+.pm-card-desc {
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  font-weight: 400;
+  line-height: 2rem;
+  letter-spacing: -0.015625rem;
+  color: #141414;
+  margin: 0;
+}
+
+.card-price.pm-card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.pm-price-amount {
+  font-size: clamp(1.75rem, 2.25vw, 2.25rem);
+  font-weight: 900;
+  color: #141414;
+  line-height: 1;
+}
+
+.pm-price-unit {
+  font-size: clamp(1rem, 1.5vw, 1.6875rem);
+  font-weight: 400;
+  color: #141414;
+}
+
+.pm-price-prefix {
+  font-size: clamp(1rem, 1.5vw, 1.6875rem);
+  font-weight: 400;
+}
+
+/* Wrapper trägt die Border — Toggle und Details sind borderlos darin */
+.pm-toggle-wrap {
+  border: 2px solid #141414;
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+/* Details toggle button */
+.pm-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: none;
+  padding: 1.625rem 2.1875rem;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'LayGrotesk', sans-serif;
+  transition: background 0.2s ease;
+}
+
+.pm-toggle:hover {
+  background: rgba(20, 20, 20, 0.04);
+}
+
+.pm-toggle-label {
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  font-weight: 400;
+  color: #141414;
+  letter-spacing: -0.015625rem;
+}
+
+.pm-chevron-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.375rem;
+  height: 3.375rem;
+  background: #141414;
+  border-radius: 0.625rem;
+}
+
+.pm-chevron {
+  width: 1.5625rem;
+  transform-origin: center;
+}
+
+/* Expanded details */
+.pm-details {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  padding: 0 2.1875rem;
+}
+
+.pm-features-list {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.pm-features-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  color: #141414;
+  line-height: 1.4;
+}
+
+.pm-feature-dot {
+  flex-shrink: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: #141414;
+}
+
+.pm-features-heading {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #141414;
+  margin: 0.5rem 0 0.5rem;
 }
 
 /* ============================================================================
- * Responsive Layout
+ * FAQ Accordion
  * ============================================================================*/
-@media (max-width: 1024px) {
-  .cards-wrapper {
-    flex-direction: column;
-    align-items: center;
+.pm-faq {
+  width: 100%;
+  margin-top: 12rem;
+  margin-bottom: 12rem;
+}
+
+.pm-faq-item {
+  border-top: 1px solid rgba(20, 20, 20, 0.3);
+}
+
+
+.pm-faq-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.25rem 0;
+  cursor: pointer;
+}
+
+.pm-faq-question {
+  flex: 1;
+  font-size: clamp(1.5rem, 3vw, 3.625rem);
+  font-weight: 900;
+  line-height: 1.2;
+  color: #141414;
+  margin: 0;
+}
+
+.pm-faq-chevron-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.375rem;
+  height: 3.375rem;
+  background: #141414;
+  border-radius: 0.625rem;
+  transition: background 0.3s ease;
+}
+
+.pm-faq-item--active .pm-faq-chevron-wrap {
+  background: #9687FF;
+}
+
+.pm-faq-chevron {
+  width: 1.5625rem;
+  transform-origin: center;
+}
+
+.pm-faq-content {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  padding: 0;
+}
+
+.pm-faq-content p {
+  margin: 0 0 2rem;
+  color: #141414;
+  font-size: clamp(1.25rem, 1.4vw, 1.5rem);
+  line-height: 1.5;
+  letter-spacing: -0.015625rem;
+  width: 70%;
+}
+
+/* ============================================================================
+ * Tablet
+ * ============================================================================*/
+@media (min-width: 1025px) {
+  .pm-faq-header {
+    padding: 3rem 0rem;
   }
 
-  .card {
-    max-width: 22rem;
+  .pm-faq-content {
+    padding: 0rem 0rem 0rem;
+  }
+
+  .pm-faq-content p {
+    margin: 0 0 4rem;
   }
 }
 
-@media (max-width: 640px) {
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pm-faq-header {
+    padding: 1.75rem 0.5rem;
+    gap: 2.2rem;
+  }
+
+  .pm-faq-content {
+    padding: 0 0.5rem 1rem;
+  }
+
+  .pm-faq-question {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+}
+
+@media (max-width: 64rem) {
+  .pm-hero {
+    flex-direction: column;
+    row-gap: 1rem;
+  }
+
+  .pm-intro {
+    flex: none;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .pm-chairs-wrap {
+    display: none;
+  }
+
+  .pm-cards {
+    width: 100%;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pm-intro {
+    display: contents;
+  }
+
+  .pm-intro-text {
+    order: 1;
+    margin: 0.6rem auto 2.6rem;
+  }
+
+  .pm-cards {
+    order: 2;
+  }
+
+  .pm-chairs-wrap {
+    display: block;
+    order: 3;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: 3rem;
+    min-height: auto;
+    overflow: hidden;
+    transform: none;
+  }
+
+  .pm-chairs-picture--a,
+  .pm-chairs-picture--b {
+    display: none;
+  }
+
+  .pm-chairs-mixed-picture {
+    display: block;
+    width: 100%;
+    height: 27rem;
+  }
+
+  .pm-chairs-mixed {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    transform: translate(15rem, 4.5rem) scale(-1.5, 1.5);
+  }
+
+  .pm-hero {
+    margin-bottom: 0rem;
+  }
+
+  .pm-faq {
+    margin-top: 8rem;
+  }
+}
+
+/* ============================================================================
+ * Mobile
+ * ============================================================================*/
+@media (max-width: 40rem) {
   .pricing-page {
-    padding: 2rem;
-    gap: 1.25rem;
+    padding: 3rem 6% 6rem;
   }
 
-  .logo-img {
-    width: max(7rem, 9%);
+  .pm-hero {
+    gap: 1rem;
   }
 
-  .card {
+  .pm-intro {
+    display: contents;
+  }
+
+  .pm-intro-text {
+    order: 1;
+  }
+
+  .pm-cards {
+    flex-direction: column;
+    order: 2;
+  }
+
+  .card.pm-card {
+    min-height: 20rem;
+  }
+
+  .pm-chairs-wrap {
+    display: block;
+    order: 3;
+    width: 100%;
     max-width: 100%;
-    padding: 2rem;
-    margin: 0 1rem;
+    margin: 3rem 0 0;
+    min-height: auto;
+    overflow: hidden;
+    transform: none;
   }
 
-  .feature-text,
-  .card-subtitle {
-    font-size: clamp(1.3rem, 3.6vw, 1.05rem);
-    line-height: 1.5rem;
-    font-weight: 200;
+  .pm-chairs-picture--b,
+  .pm-chairs-mixed-picture {
+    display: none;
+  }
+
+  .pm-chairs-picture--a {
+    display: block;
+    width: 100%;
+  }
+
+  .pm-chairs-img--flipped {
+    width: 100%;
+    height: auto;
+    transform: scaleX(1) translateX(-0.5rem);
+  }
+
+  .pm-faq {
+    margin-top: 7rem;
+  }
+
+  .pm-faq-content p {
+    width: 100%;
+    font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+    line-height: 1.375;
+  }
+
+  .pm-faq-question {
+    font-size: clamp(2rem, 5vw, 3rem);
+    min-width: 0;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+/* ============================================================================
+ * Preiskalkulator
+ * ============================================================================*/
+.pm-calc {
+  border-top: 1px solid rgba(20, 20, 20, 0.15);
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.pm-calc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pm-step-btn {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1.5px solid #141414;
+  border-radius: 0.5rem;
+  background: transparent;
+  font-size: 1.125rem;
+  line-height: 1;
+  font-family: 'LayGrotesk', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #141414;
+  transition: background 0.15s ease;
+}
+
+.pm-step-btn:hover:not(:disabled) {
+  background: rgba(20, 20, 20, 0.07);
+}
+
+.pm-step-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.pm-calc-label {
+  flex: 1;
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 500;
+  color: #141414;
+  text-align: center;
+}
+
+.pm-calc-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-top: 1px solid rgba(20, 20, 20, 0.15);
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+}
+
+.pm-calc-total-label {
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 400;
+  color: #141414;
+}
+
+.pm-calc-total-price {
+  font-size: clamp(1.25rem, 1.4vw, 1.5rem);
+  font-weight: 900;
+  color: #141414;
+}
+
+/* ============================================================================
+ * Footer Breakout
+ * ============================================================================*/
+.pp-footer-wrap {
+  margin-left: -7.25vw;
+  margin-right: -7.25vw;
+  margin-bottom: -8rem;
+}
+
+@media (max-width: 40rem) {
+  .pp-footer-wrap {
+    margin-left: -6vw;
+    margin-right: -6vw;
+    margin-bottom: -6rem;
   }
 }
 </style>

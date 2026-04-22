@@ -3,17 +3,46 @@
  * Imports
  * ============================================================================ */
 import { useHead } from '@vueuse/head'
-import { onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useLenis } from '@/composables/useLenis.js'
 
 /* ============================================================================
  * SEO Metadata
  * ============================================================================ */
 useHead({
-  title: 'Impressum · PULK',
+  title: 'Impressum · PULK – Raum in Halle (Saale)',
   meta: [
-    { name: 'description', content: 'Impressum von PULK – Anbieterkennzeichnung gemäß § 5 TMG.' },
-    { name: 'robots', content: 'noindex,follow' }
+    {
+      name: 'description',
+      content:
+        'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für pulk.space – Kontaktinformationen der Betreiber des PULK Raums in Halle (Saale).'
+    },
+    { name: 'robots', content: 'noindex,follow' },
+
+    // Open Graph
+    { property: 'og:title', content: 'Impressum · PULK' },
+    {
+      property: 'og:description',
+      content:
+        'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für pulk.space – Kontaktinformationen der Betreiber des PULK Raums in Halle (Saale).'
+    },
+    { property: 'og:url', content: 'https://pulk.space/impressum' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:locale', content: 'de_DE' },
+    { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: 'PULK – Raum in Halle (Saale)' },
+
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'Impressum · PULK' },
+    {
+      name: 'twitter:description',
+      content:
+        'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für pulk.space.'
+    },
+    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/impressum' }
@@ -44,6 +73,20 @@ useHead({
  * ============================================================================ */
 const { lenis } = useLenis()
 
+/* ============================================================================
+ * Footer-Lift für fixed Close-Button
+ * ============================================================================ */
+const footerSentinelRef = ref(null)
+const btnLift = ref(0)
+
+function updateLift() {
+  const footer = document.querySelector('.site-footer')
+  if (!footer) return
+  const rect = footer.getBoundingClientRect()
+  const vh = window.innerHeight
+  btnLift.value = Math.max(0, vh - rect.top)
+}
+
 onMounted(async () => {
   /* Start Lenis safely */
   try {
@@ -70,12 +113,16 @@ onMounted(async () => {
 
   /* Activate plain layout background */
   document.getElementById('app')?.classList.add('plain-background')
+
+  window.addEventListener('scroll', updateLift, { passive: true })
+  updateLift()
 })
 
 /* ============================================================================
  * Cleanup
  * ============================================================================ */
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateLift)
   document.body.classList.remove('theme-plain')
   document.documentElement.classList.remove('no-bounce-landing', 'lenis-stopped')
   document.body.classList.remove('no-bounce-landing')
@@ -84,7 +131,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="legal-wrap">
+  <main class="legal-wrap" style="background-color: #e7e8ec; min-height: 100dvh;">
     <!-- Header -->
     <header class="legal-header">
       <h1>Impressum</h1>
@@ -105,7 +152,7 @@ onBeforeUnmount(() => {
       </p>
       <p>
         E-Mail:
-        <a href="mailto:kontakt@pulk.space">kontakt@pulk.de</a>
+        <a href="mailto:kontakt@pulk.space">kontakt@pulk.space</a>
       </p>
       <p>
         Inhaltlich verantwortlich gemäß § 18 Abs. 2 MStV:<br>
@@ -124,13 +171,20 @@ onBeforeUnmount(() => {
         <br>vor einer Verbraucherschlichtungsstelle teilzunehmen.<br />
       </p>
     </section>
-    <!-- Back Button -->
-    <div class="back-home-wrapper">
-      <RouterLink to="/" class="back-home-btn">
-        Zurück zur Startseite
-      </RouterLink>
-    </div>
+
+    <!-- Footer sentinel — lets close button lift above the footer -->
+    <div ref="footerSentinelRef" class="ds-sentinel"></div>
   </main>
+
+  <!-- Fixed close button -->
+  <RouterLink
+    to="/"
+    class="ds-close-btn"
+    :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+  >
+    <span>Schließen</span>
+    <span class="ds-close-icon">✕</span>
+  </RouterLink>
 </template>
 
 <style scoped>
@@ -139,9 +193,9 @@ onBeforeUnmount(() => {
  * ============================================================================ */
 .legal-wrap {
   max-width: 75%;
-  margin: 0 auto 40rem;
+  margin: 0 auto 35rem;
   padding: 5rem 0 0 0;
-  background: #fff;
+  background: #e7e8ec;
   color: #141414;
   font-family: 'LayGrotesk', sans-serif;
   word-break: normal;
@@ -154,9 +208,8 @@ onBeforeUnmount(() => {
  * ============================================================================ */
 .legal-header h1 {
   font-weight: 900;
-  font-size: clamp(2.7rem, 3vw, 3rem);
+  font-size: clamp(2rem, 6vw, 3rem);
   margin: 0 0 2rem;
-  text-transform: uppercase;
   text-align: center;
   text-wrap: balance;
 }
@@ -165,10 +218,11 @@ onBeforeUnmount(() => {
  * Body Content
  * ============================================================================ */
 .legal-body {
-  padding: 3rem 0 0;
+  padding: 1rem 0 3rem;
   text-align: center;
-  font-size: 1.2rem;
-  line-height: 1.6;
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
   color: #141414;
 }
 
@@ -179,50 +233,56 @@ address {
 .legal-body a {
   color: #141414;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 0.125rem;
 }
 
 /* ============================================================================
- * Back-to-home Button
+ * Sentinel + Fixed Close Button
  * ============================================================================ */
-.back-home-wrapper {
-  margin-top: 6rem;
-  text-align: center;
+.ds-sentinel {
+  height: 0;
 }
 
-.back-home-btn {
-  background-color: #9687FF;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 1rem 2.5rem;
-  border-radius: 999px;
+.ds-close-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  background: #9687FF;
+  color: #fff;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
   text-decoration: none;
-  transition: background-color 0.25s ease, transform 0.2s ease;
-  display: inline-block;
+  z-index: 2000;
+  white-space: nowrap;
 }
 
-.back-home-btn:hover {
-  background-color: #7e6fe0;
-  transform: translateY(-2px);
+.ds-close-btn:hover {
+  transform: translateX(-50%) scale(1.05);
 }
 
 /* ============================================================================
- * Mobile Layout
+ * Mobile Layout (≤ 40rem)
  * ============================================================================ */
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .legal-wrap {
     max-width: 92%;
     padding: 3rem 0 6rem;
   }
 
   .legal-header h1 {
-    font-size: clamp(2rem, 5vw, 2.7rem);
+    font-size: clamp(2rem, 7vw, 2.5rem);
     margin: 1rem 0 2rem;
   }
 
   .legal-body {
-    font-size: clamp(1rem, 4vw, 1.2rem);
+    font-size: clamp(1rem, 4vw, 1.25rem);
     line-height: 1.65;
   }
 }

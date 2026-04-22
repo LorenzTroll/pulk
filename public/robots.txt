@@ -1,0 +1,44 @@
+# PULK robots.txt
+
+User-agent: *
+Allow: /
+
+# Blockiere Modal-Varianten (Duplicate Content vermeiden)
+Disallow: /*?modal=about
+Disallow: /*?modal=preise
+Disallow: /*?modal=anfragen
+
+# AI-Crawler / LLM-Training — explizit erlaubt
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# LLM-Informationen
+# llms.txt: https://pulk.space/llms.txt
+# llms-full.txt: https://pulk.space/llms-full.txt
+
+# Sitemap
+Sitemap: https://pulk.space/sitemap.xml
