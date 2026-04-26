@@ -78,9 +78,28 @@ try {
       })
       await new Promise((r) => setTimeout(r, 400))
 
-      const html = await page.evaluate(
+      let html = await page.evaluate(
         () => '<!DOCTYPE html>\n' + document.documentElement.outerHTML,
       )
+
+      // Strip runtime-injected modulepreload hints for chunks that are only
+      // needed on user interaction (modals) or on other routes (lazy views).
+      // These don't help LCP on the current page and compete for bandwidth.
+      html = html.replace(
+        /<link\s+rel="modulepreload"[^>]*href="[^"]*\/(AboutModal|ContactModal|PricingModal|AboutPage|ContactPage|PricingPage|calendar|gl|icons|Modal)-[^"]+\.js"[^>]*>/g,
+        ''
+      )
+
+      // The homepage FAQPage (identified by its @id) can leak into
+      // sibling prerendered routes via @vueuse/head. Scrub only that
+      // specific schema block from non-root routes — page-specific
+      // FAQPages (e.g. /preise) are kept.
+      if (route.path !== '/') {
+        html = html.replace(
+          /<script[^>]*type="application\/ld\+json"[^>]*>\s*\{[^{}]*"@id"\s*:\s*"https:\/\/pulk\.space\/#faq"[\s\S]*?<\/script>/g,
+          ''
+        )
+      }
 
       const outPath = path.join(DIST, route.out)
       fs.mkdirSync(path.dirname(outPath), { recursive: true })

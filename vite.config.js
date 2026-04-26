@@ -26,6 +26,14 @@ export default defineConfig({
     }
   },
   build: {
+    modulePreload: {
+      resolveDependencies: (filename, deps, ctx) => {
+        if (ctx?.hostType !== 'html') return deps
+        return deps.filter(dep =>
+          !/\/(calendar|gl|icons|AboutModal|ContactModal|PricingModal|AboutPage|ContactPage|PricingPage)-/i.test(dep)
+        )
+      }
+    },
     rollupOptions: {
       output: {
         manualChunks: {

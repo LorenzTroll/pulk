@@ -26,7 +26,7 @@ useHead({
       content:
         'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für pulk.space – Kontaktinformationen der Betreiber des PULK Raums in Halle (Saale).'
     },
-    { property: 'og:url', content: 'https://pulk.space/impressum' },
+    { property: 'og:url', content: 'https://pulk.space/impressum/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
@@ -45,7 +45,7 @@ useHead({
     { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
   link: [
-    { rel: 'canonical', href: 'https://pulk.space/impressum' }
+    { rel: 'canonical', href: 'https://pulk.space/impressum/' }
   ],
   script: [
     {
@@ -54,7 +54,7 @@ useHead({
         "@context": "https://schema.org",
         "@type": "LegalService",
         name: "PULK",
-        url: "https://pulk.space/impressum",
+        url: "https://pulk.space/impressum/",
         address: {
           "@type": "PostalAddress",
           streetAddress: "Talstraße 7",

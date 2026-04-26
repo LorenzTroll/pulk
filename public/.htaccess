@@ -7,6 +7,12 @@ RewriteCond %{HTTP_HOST} ^www\.pulk\.space$ [NC,OR]
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://pulk.space/$1 [L,R=301]
 
+# ---------------------------------------------------------
+# 1b) Legacy URLs → neue Struktur (301)
+#     /miete wurde von Google indexiert → /anfragen
+# ---------------------------------------------------------
+RewriteRule ^miete/?$ /anfragen/ [L,R=301]
+
 DirectoryIndex index.html
 
 # ---------------------------------------------------------
@@ -46,7 +52,7 @@ IndexIgnore *
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://app-static.sitesights.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.sitesights.io; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://app-static.sitesights.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.sitesights.io https://*.sitesights.de https://api.web3forms.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.web3forms.com"
 </IfModule>
 
 # ---------------------------------------------------------

@@ -28,10 +28,13 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #e7e8ec;
 }
 
-body, html, #app, #app.plain-background {
+html {
+  background-color: #242424;
+}
+
+body, #app, #app.plain-background {
   background-color: #e7e8ec !important;
 }
 

@@ -28,14 +28,16 @@ import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
 import pulkHero from '@/assets/Pulk-hero-image_E12.svg'
 import pulkHeroMobile from '@/assets/pulk_heroImage-mobile_E3.svg'
 
-/* Hero chair assets: liegen in /public/ → kein Vite/imagetools Processing */
-const chairBlack = '/hero-chair-black.png'
-const chairPurple = '/hero-chair-purple.png'
+/* Hero chair + review assets: aus src/assets.
+   ?format=png&as=src zwingt imagetools zu einer EINZELNEN PNG-URL
+   (sonst Array via defaultDirectives → Komma-String in :src). */
+import chairBlack from '@/assets/hero-chair-black.png?format=png&as=src'
+import chairPurple from '@/assets/hero-chair-purple.png?format=png&as=src'
 
 import pulkLogoLandingpage from '@/assets/pulk-logo-landingpage.svg'
-const ciStoolContainer = '/ci-elements-stool-container.png'
-const reviewImageA = '/pulk_review_customerA_imageA.png'
-const reviewImageB = '/pulk_review-section_customerA-imageB.png'
+import ciStoolContainer from '@/assets/ci-elements-stool-container.png?format=png&as=src'
+import reviewImageA from '@/assets/pulk_review_customerA_imageA.png?format=png&as=src'
+import reviewImageB from '@/assets/pulk_review-section_customerA-imageB.png?format=png&as=src'
 import pulkRoomImageA from '@/assets/pulk_room_image-A.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 import BottomMenu from '@/components/BottomMenu.vue'
@@ -86,7 +88,7 @@ useHead({
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/' },
-    { rel: 'preload', as: 'image', href: staticGalleryImg, fetchpriority: 'high' }
+    { rel: 'preload', as: 'image', href: staticGalleryImg.img.src, fetchpriority: 'high' }
   ],
   script: []
 })
@@ -484,7 +486,7 @@ const bottomMenuStyle = computed(() => {
 
 const base = lifted
   ? (isMobile ? '50rem' : '50rem')
-  : '2rem'
+  : (isMobile ? '1rem' : '2rem')
 
   return {
     bottom: `calc(${base} + env(safe-area-inset-bottom, 0px))`
@@ -703,7 +705,7 @@ const menuRevealStyle = computed(() =>
           </h2>
         </div>
         <p class="review-attribution">
-          Stadtvorstand Die Linke<br>Halle Saale
+          Unterstützer:innen<br>Die Linke Halle Saale
         </p>
         <span class="review-deco review-deco--bl"></span>
         <span class="review-deco review-deco--br"></span>
@@ -1241,6 +1243,23 @@ const menuRevealStyle = computed(() =>
   .review-col--img2 {
     flex: 0 0 auto;
     width: 100%;
+    border-radius: 1.25rem;
+    overflow: hidden;
+  }
+
+  .review-col--img1 img,
+  .review-col--img2 img {
+    border-radius: 1.25rem;
+  }
+
+  .intro-img-container,
+  .intro-img-container img {
+    border-radius: 1.25rem;
+  }
+
+  .static-preview,
+  .static-preview img {
+    border-radius: 1.25rem;
   }
 
   .review-col--quote {
@@ -1296,8 +1315,8 @@ const menuRevealStyle = computed(() =>
   }
 
   .ci-stools__img {
-    width: 80%;
-    margin: 0rem auto;
+    max-width: 80%;
+    margin-left: 9%;
   }
 }
 
@@ -1520,11 +1539,16 @@ main {
     margin: 0 auto;
   }
 
+  .hero-container {
+    overflow: visible;
+  }
+
   .hero-chairs-top {
+    position: static;
     left: 20%;
     width: 86%;
     height: 25%;
-    transform: scale(2) translateX(3.7rem) translateY(3rem);
+    transform: scale(2) translateX(5.5rem) translateY(2rem);
   }
 
   .hero-chairs-bottom {
@@ -1557,21 +1581,24 @@ main {
   .intro-section {
     flex-direction: column;
     gap: 2rem;
-    padding: 3rem 5%;
+    padding: 3rem 5% 6rem 5%;
     row-gap: 1rem;
   }
 
   .intro-img-container {
     flex: 0 0 auto;
     width: 100%;
+    padding-bottom: 2rem;
   }
 
-  /* Dots bleiben sichtbar, Grid-Spalten beibehalten */
+  /* Mobile: gleiche Struktur wie review-col--quote — Grid-Rows aus Base behalten,
+     nur Spacing + Spalten-Snap auf 100% Breite */
   .intro-text {
+    flex: 0 0 auto;
+    width: 100%;
     column-gap: 1rem;
     row-gap: 2rem;
-    padding: 0rem 0;
-    grid-template-rows: auto auto;
+    padding: 1rem 0;
   }
 
   .intro-body--dt {
@@ -1583,7 +1610,10 @@ main {
     margin: auto 0.5rem auto 1.5rem;
   }
 
-  .intro-heading { grid-column: 2; grid-row: 2; }
+  .intro-heading {
+    grid-column: 2;
+    transform: none !important;
+  }
 
   /* Static preview */
   .static-preview {
@@ -1608,7 +1638,7 @@ main {
     width: auto;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 3rem 5%;
+    padding: 3rem 5% 3rem 2%;
     margin: 0rem 0.5rem 0rem 1.5rem;
   }
 

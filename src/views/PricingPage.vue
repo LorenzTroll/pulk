@@ -9,6 +9,7 @@ import gsap from 'gsap'
 import { usePricingStore } from '@/stores/pricing'
 import { track, trackDebounced, attachScrollDepthTracker } from '@/utils/tracking'
 import SiteFooter from '@/components/SiteFooter.vue'
+import InlineLink from '@/components/InlineLink.vue'
 
 import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
 import imgPricingA from '@/assets/pulk_pricing-imageA.png?format=avif;webp;png&as=picture'
@@ -20,6 +21,9 @@ import imgChairsMixed from '@/assets/hero-chair-mixed-row.png?format=avif;webp;p
  * ===========================================================================*/
 useHead({
   title: 'Preise & Pakete · PULK Raum Halle (Saale)',
+  link: [
+    { rel: 'canonical', href: 'https://pulk.space/preise/' }
+  ],
   meta: [
     {
       name: 'description',
@@ -37,7 +41,7 @@ useHead({
         'Transparente Preise im PULK: Business-Paket für Unternehmen, Gruppen-Paket für Organisationen und individuelle Angebote für besondere Formate in Halle (Saale).'
     },
     { property: 'og:image', content: 'https://pulk.space/og-image-preise.jpg' },
-    { property: 'og:url', content: 'https://pulk.space/preise' }
+    { property: 'og:url', content: 'https://pulk.space/preise/' }
   ],
   script: [
     {
@@ -93,7 +97,7 @@ useHead({
             priceValidUntil: '2026-12-31'
           }
         ],
-        url: 'https://pulk.space/preise'
+        url: 'https://pulk.space/preise/'
       })
     },
     {
@@ -101,15 +105,15 @@ useHead({
       children: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
-        '@id': 'https://pulk.space/preise#faq',
-        url: 'https://pulk.space/preise',
+        '@id': 'https://pulk.space/preise/#faq',
+        url: 'https://pulk.space/preise/',
         mainEntity: [
           {
             '@type': 'Question',
             name: 'Was wenn kein Paket passt?',
             acceptedAnswer: {
               '@type': 'Answer',
-              text: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee in einer Anfrage mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.'
+              text: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee über das Anfrageformular mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.'
             }
           },
           {
@@ -136,6 +140,17 @@ useHead({
               text: 'Wir unterstützen euch bei der Planung und Vorbereitung des Raums. Wir geben Ideen für die Aufstellung und zeigen euch, wo ihr alles Wichtige im Raum findet. Alles im Rahmen unserer Möglichkeiten und Kapazitäten. Wir unterstützen euch, den Raum ideal vorzubereiten, übernehmen aber nicht eure komplette Planung. Für die darüber hinausgehende Veranstaltungsplanung vermitteln wir gerne an den Service „Besser Tagen" des Stadtmarketings Halle (Saale).'
             }
           }
+        ]
+      })
+    },
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Start', item: 'https://pulk.space/' },
+          { '@type': 'ListItem', position: 2, name: 'Preise & Pakete', item: 'https://pulk.space/preise/' }
         ]
       })
     }
@@ -239,7 +254,11 @@ const faqArrowRefs = []
 const faqItems = [
   {
     q: 'Was wenn kein Paket passt?',
-    a: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee in einer Anfrage mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.'
+    parts: [
+      { text: 'Schreibt uns, was ihr vorhabt. Ob spezielles Ausstellungskonzept, Lesungsreihe oder ein anderes Kulturformat. Wir schauen gemeinsam, was sich im Pulk realisieren lässt. Teilt uns eure Idee über das ' },
+      { text: 'Anfrageformular', to: '/anfragen' },
+      { text: ' mit, dann stecken wir die Köpfe zusammen und versuchen, ein passendes Konzept mit euch zu finden.' }
+    ]
   },
   {
     q: 'Kann ich Catering oder Getränke organisieren?',
@@ -393,7 +412,7 @@ onBeforeUnmount(() => {
             />
             <img
               :src="imgPricingB.img.src"
-              alt="PULK Lila Hocker"
+              alt="Grafik eines dreibeinigen Hockers in Lila aus der Corporate Identity des Pulk"
               class="pm-chairs-img"
               loading="lazy"
               decoding="async"
@@ -409,7 +428,7 @@ onBeforeUnmount(() => {
             />
             <img
               :src="imgPricingA.img.src"
-              alt="PULK Stühle gestapelt"
+              alt="Grafik verschiedenfarbiger Stühle im Profil aus der Corporate Identity des Pulk"
               class="pm-chairs-img pm-chairs-img--flipped"
               loading="lazy"
               decoding="async"
@@ -425,7 +444,7 @@ onBeforeUnmount(() => {
             />
             <img
               :src="imgChairsMixed.img.src"
-              alt="PULK Stühle Reihe"
+              alt="Reihe verschiedenfarbiger Stuhlsilhouetten als Grafikelement der Corporate Identity des Pulk"
               class="pm-chairs-mixed"
               loading="lazy"
               decoding="async"
@@ -552,7 +571,13 @@ onBeforeUnmount(() => {
           class="pm-faq-content"
           :ref="el => { if (el) faqContentRefs[i] = el }"
         >
-          <p>{{ item.a }}</p>
+          <p v-if="item.parts">
+            <template v-for="(seg, sIdx) in item.parts" :key="sIdx">
+              <InlineLink v-if="seg.to" :to="seg.to">{{ seg.text }}</InlineLink>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+          </p>
+          <p v-else>{{ item.a }}</p>
         </div>
       </div>
     </section>
@@ -579,7 +604,7 @@ onBeforeUnmount(() => {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  height: 100dvh;
   overflow-y: auto;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
@@ -650,7 +675,7 @@ onBeforeUnmount(() => {
 .pm-intro-heading {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -758,7 +783,7 @@ onBeforeUnmount(() => {
 .pm-card-desc {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -809,10 +834,20 @@ onBeforeUnmount(() => {
   cursor: pointer;
   font-family: 'LayGrotesk', sans-serif;
   transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pm-toggle:hover {
   background: rgba(20, 20, 20, 0.04);
+}
+
+.pm-toggle:focus {
+  outline: none;
+}
+
+.pm-toggle:focus-visible {
+  outline: 2px solid #141414;
+  outline-offset: 2px;
 }
 
 .pm-toggle-label {
@@ -978,6 +1013,13 @@ onBeforeUnmount(() => {
   .pm-faq-question {
     font-size: clamp(2rem, 5vw, 3rem);
   }
+
+  .pm-intro-heading,
+  .pm-card-desc,
+  .pm-toggle-label,
+  .pm-faq-content p {
+    font-size: clamp(1.5rem, 1.4vw, 1.6rem);
+  }
 }
 
 @media (max-width: 64rem) {
@@ -1061,7 +1103,7 @@ onBeforeUnmount(() => {
  * ============================================================================*/
 @media (max-width: 40rem) {
   .pricing-page {
-    padding: 3rem 6% 6rem;
+    padding: 1rem 6% 6rem;
   }
 
   .pm-hero {

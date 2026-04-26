@@ -99,7 +99,7 @@ const isAbsolute = computed(() =>
           />
           <img
             :src="footerChairs.img.src"
-            alt="PULK Raum"
+            alt="Reihe lila Stühle als Grafik aus der Corporate Identity des Pulk"
             class="footer-chairs"
             loading="lazy"
             decoding="async"

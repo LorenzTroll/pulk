@@ -10,6 +10,7 @@ import {
   Renderer, Camera, Transform,
   Plane as OGLPlane, Mesh, Program, Texture, Vec2
 } from 'ogl'
+import InlineLink from '@/components/InlineLink.vue'
 
 
 /* -----------------------------------------------------------------------------
@@ -36,7 +37,7 @@ useHead({
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'PULK – Creative Space in Halle-Kröllwitz' },
-    { property: 'og:url', content: 'https://pulk.space/about' },
+    { property: 'og:url', content: 'https://pulk.space/about/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
 
@@ -50,7 +51,7 @@ useHead({
     },
     { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
-  link: [{ rel: 'canonical', href: 'https://pulk.space/about' }],
+  link: [{ rel: 'canonical', href: 'https://pulk.space/about/' }],
   script: [
     {
       type: 'application/ld+json',
@@ -60,7 +61,9 @@ useHead({
         name: 'Über den Raum · PULK Halle (Saale)',
         description:
           'Entstehungsgeschichte und Designphilosophie des PULK Raums – ein wandelbarer Ort für Austausch und Zusammenarbeit in Halle (Saale).',
-        url: 'https://pulk.space/about',
+        url: 'https://pulk.space/about/',
+        datePublished: '2026-04-23',
+        dateModified: '2026-04-23',
         mainEntity: {
           '@type': 'Place',
           name: 'PULK Raum Halle',
@@ -79,7 +82,7 @@ useHead({
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Start', item: 'https://pulk.space/' },
-          { '@type': 'ListItem', position: 2, name: 'Über den Raum', item: 'https://pulk.space/about' }
+          { '@type': 'ListItem', position: 2, name: 'Über den Raum', item: 'https://pulk.space/about/' }
         ]
       })
     },
@@ -230,6 +233,8 @@ const GL_FRAG = /* glsl */`
     vec4 color = texture2D(tMap, uv);
     float d     = roundedBox(vUv, uPlaneSizes, uRadius);
     float alpha = 1.0 - smoothstep(-1.0, 1.0, d);
+    // Mobile-fix: maskierte Fragments verwerfen, sonst leaken auf TBR-GPUs (iOS) RGB-Werte durch
+    if (alpha <= 0.001) discard;
     gl_FragColor = vec4(color.rgb, color.a * alpha * uAlpha);
   }
 `
@@ -596,68 +601,68 @@ onBeforeUnmount(() => {
 
       <!-- Photo Grid — figures are visibility:hidden; WebGL planes mirror them -->
       <section class="photo-grid">
-        <figure class="gl-item img-a" :data-gl-src="gridImgA.img.src">
+        <figure class="gl-item img-a reveal-up" :data-gl-src="gridImgA.img.src">
           <picture>
-            <source v-for="src in gridImgA.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgA.img.src" :srcset="gridImgA.img.srcset" alt="PULK Innenansicht 1" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgA.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgA.img.src" :srcset="gridImgA.img.srcset" alt="Heller Innenraum des Pulk in Halle mit drei großen Fenstern und halbtransparenten Vorhängen" loading="eager" fetchpriority="high" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-b" :data-gl-src="gridImgB.img.src">
+        <figure class="gl-item img-b reveal-up" :data-gl-src="gridImgB.img.src">
           <picture>
-            <source v-for="src in gridImgB.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgB.img.src" :srcset="gridImgB.img.srcset" alt="PULK Innenansicht 2" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgB.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgB.img.src" :srcset="gridImgB.img.srcset" alt="Blick durch die Schiebetür vom Podest in den Hauptbereich des Pulk mit aufgebauten Stuhlreihen" loading="eager" fetchpriority="high" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-c" :data-gl-src="gridImgC.img.src">
+        <figure class="gl-item img-c reveal-up" :data-gl-src="gridImgC.img.src">
           <picture>
-            <source v-for="src in gridImgC.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgC.img.src" :srcset="gridImgC.img.srcset" alt="PULK Innenansicht 3" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgC.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgC.img.src" :srcset="gridImgC.img.srcset" alt="Geöffnete Teeküche im Pulk mit Kaffeemaschine, Spülbecken und Geschirr für Workshops" loading="eager" fetchpriority="high" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-j" :data-gl-src="gridImgJ.img.src">
+        <figure class="gl-item img-j reveal-up" :data-gl-src="gridImgJ.img.src">
           <picture>
-            <source v-for="src in gridImgJ.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgJ.img.src" :srcset="gridImgJ.img.srcset" alt="PULK Innenansicht 10" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgJ.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgJ.img.src" :srcset="gridImgJ.img.srcset" alt="Treppe hinauf zum Podest im Pulk mit Kisten und halb zugezogenem Vorhang" loading="lazy" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-d" :data-gl-src="gridImgD.img.src">
+        <figure class="gl-item img-d reveal-up" :data-gl-src="gridImgD.img.src">
           <picture>
-            <source v-for="src in gridImgD.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgD.img.src" :srcset="gridImgD.img.srcset" alt="PULK Innenansicht 4" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgD.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgD.img.src" :srcset="gridImgD.img.srcset" alt="Weitwinkelansicht des Pulk Richtung Eingangstür mit einzelnen Tischen und Sitzgelegenheiten" loading="lazy" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-e" :data-gl-src="gridImgE.img.src">
+        <figure class="gl-item img-e reveal-up" :data-gl-src="gridImgE.img.src">
           <picture>
-            <source v-for="src in gridImgE.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgE.img.src" :srcset="gridImgE.img.srcset" alt="PULK Innenansicht 5" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgE.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgE.img.src" :srcset="gridImgE.img.srcset" alt="Podestbereich im Pulk mit Tischen und Sitzgelegenheiten, abgetrennt vom Hauptraum" loading="lazy" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-f" :data-gl-src="gridImgF.img.src">
+        <figure class="gl-item img-f reveal-up" :data-gl-src="gridImgF.img.src">
           <picture>
-            <source v-for="src in gridImgF.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgF.img.src" :srcset="gridImgF.img.srcset" alt="PULK Innenansicht 6" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgF.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgF.img.src" :srcset="gridImgF.img.srcset" alt="Eingangsperspektive im Pulk mit drei einzelnen Tischen, eine Person läuft durchs Bild" loading="lazy" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-g" :data-gl-src="gridImgG.img.src">
+        <figure class="gl-item img-g reveal-up" :data-gl-src="gridImgG.img.src">
           <picture>
-            <source v-for="src in gridImgG.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgG.img.src" :srcset="gridImgG.img.srcset" alt="PULK Innenansicht 7" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgG.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgG.img.src" :srcset="gridImgG.img.srcset" alt="Aufgestellte Stuhlreihen im Pulk mit Blick auf das Rednerpult für Seminare und Vorträge" loading="lazy" decoding="async" />
           </picture>
         </figure>
-        <figure class="gl-item img-h" :data-gl-src="gridImgH.img.src">
+        <figure class="gl-item img-h reveal-up" :data-gl-src="gridImgH.img.src">
           <picture>
-            <source v-for="src in gridImgH.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgH.img.src" :srcset="gridImgH.img.srcset" alt="PULK Innenansicht 8" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgH.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgH.img.src" :srcset="gridImgH.img.srcset" alt="Offenes Podest im Pulk ohne Raumtrennung mit einer Reihe Tische, Lampen und Sitzgelegenheiten" loading="lazy" decoding="async" />
           </picture>
         </figure>
       </section>
 
       <!-- Bottom Section: Foto links · Text-Card rechts -->
       <section class="about-bottom">
-        <figure class="gl-item img-i" :data-gl-src="gridImgI.img.src">
+        <figure class="gl-item img-i reveal-up" :data-gl-src="gridImgI.img.src">
           <picture>
-            <source v-for="src in gridImgI.sources" :key="src.type" :srcset="src.srcset" :type="src.type" />
-            <img :src="gridImgI.img.src" :srcset="gridImgI.img.srcset" alt="PULK Innenansicht 9" loading="lazy" decoding="async" />
+            <source v-for="(srcset, format) in gridImgI.sources" :key="format" :srcset="srcset" :type="`image/${format}`" />
+            <img :src="gridImgI.img.src" :srcset="gridImgI.img.srcset" alt="Lorenz und Michel, die Gründer des Pulk, gemeinsam an einem Tisch im Workshopraum" loading="lazy" decoding="async" />
           </picture>
         </figure>
         <div class="text-card-inner">
@@ -671,6 +676,7 @@ onBeforeUnmount(() => {
               und nüchtern ist. Pulk ist ein Ort, an dem Produktivität und Gemütlichkeit sich nicht ausschließen. Ein Raum, der euch in die Lage versetzt,
               euch auf das Wesentliche zu konzentrieren. Das möchten wir mit euch teilen. Pulk ist gemacht, um sich anzupassen: an Gruppen, an Formate,
               an Ideen. Ein Stück Handwerk. Ein Stück Design. Stundenweise zur Miete, damit eure Projekte den passenden Raum finden.
+              Alle Pakete und Tarife findet ihr auf unserer Seite <InlineLink to="/preise">Preise & Pakete</InlineLink>.
             </p>
           </div>
           <span class="dot dot-bl"></span>
@@ -704,6 +710,7 @@ onBeforeUnmount(() => {
   color: #fff;
   background: #141414;
   padding-bottom: 6rem;
+  min-height: 100dvh;
 }
 
 /* ---- Close button ---- */
@@ -955,6 +962,11 @@ onBeforeUnmount(() => {
   }
 
   .img-i { flex: none; width: 100%; aspect-ratio: 16 / 9; }
+
+  .about-description,
+  .text-card-body {
+    font-size: clamp(1.5rem, 1.4vw, 1.6rem);
+  }
 }
 
 /* ---- Mobile ---- */
@@ -962,7 +974,7 @@ onBeforeUnmount(() => {
   .about-wrap { padding-bottom: 4rem; }
 
   .about-header {
-    padding: 7rem 7.5% 0rem;
+    padding: 6rem 7.5% 0rem;
     flex-direction: column;
     gap: 1.5rem;
   }
@@ -976,6 +988,7 @@ onBeforeUnmount(() => {
   .about-bottom {
     padding: 0rem 4% 0;
     flex-direction: column;
+    gap: 1rem;
     margin-top: -1rem;
   }
 
@@ -991,10 +1004,17 @@ onBeforeUnmount(() => {
   .img-i { flex: none; width: 100%; aspect-ratio: 4 / 3; }
 
   .text-card-inner {
-    column-gap: 0rem;
-    row-gap: 0rem;
-    padding: 2.5rem 0;
+    flex: 1 1 44rem;
+    column-gap: 1rem;
+    row-gap: 3rem;
+    padding: 0rem 0;
+    grid-template-rows: auto auto;
   }
+
+  .text-card-content {
+    grid-row: 2;
+  }
+
 }
 
 /* ---- Desktop ---- */

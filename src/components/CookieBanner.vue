@@ -74,12 +74,14 @@ function acceptCookies() {
   localStorage.setItem('cookieConsent', 'accepted')
   window.dispatchEvent(new Event('cookie-consent-changed'))
   showBanner.value = false
+  getLenis()?.start()
 }
 
 function rejectCookies() {
   localStorage.setItem('cookieConsent', 'rejected')
   window.dispatchEvent(new Event('cookie-consent-changed'))
   showBanner.value = false
+  getLenis()?.start()
 }
 
 /* ============================================================================

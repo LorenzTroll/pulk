@@ -8,7 +8,7 @@ import { ref, computed, onMounted, onBeforeUnmount, onActivated, onDeactivated, 
 import { useHead } from '@vueuse/head'
 import { useLenis } from '@/composables/useLenis.js'
 import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
-const heroChairYellow = '/hero-chair-yellow.png'
+import heroChairYellow from '@/assets/hero-chair-yellow.png?format=png&as=src'
 
 
 /* ============================================================================
@@ -32,7 +32,7 @@ useHead({
       content:
         'Datenschutzerklärung von pulk.space nach DSGVO: Umgang mit personenbezogenen Daten, Cookies, Kontaktformular und Rechte der Besucher:innen.'
     },
-    { property: 'og:url', content: 'https://pulk.space/datenschutz' },
+    { property: 'og:url', content: 'https://pulk.space/datenschutz/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
@@ -51,7 +51,7 @@ useHead({
     { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
   link: [
-    { rel: 'canonical', href: 'https://pulk.space/datenschutz' }
+    { rel: 'canonical', href: 'https://pulk.space/datenschutz/' }
   ]
 })
 

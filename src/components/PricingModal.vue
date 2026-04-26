@@ -279,7 +279,7 @@ async function toggleFaq(i) {
               />
               <img
                 :src="imgPricingB.img.src"
-                alt="PULK Lila Hocker"
+                alt="Grafik eines dreibeinigen Hockers in Lila aus der Corporate Identity des Pulk"
                 class="pm-chairs-img"
                 loading="lazy"
                 decoding="async"
@@ -295,7 +295,7 @@ async function toggleFaq(i) {
               />
               <img
                 :src="imgPricingA.img.src"
-                alt="PULK Stühle gestapelt"
+                alt="Grafik verschiedenfarbiger Stühle im Profil aus der Corporate Identity des Pulk"
                 class="pm-chairs-img pm-chairs-img--flipped"
                 loading="lazy"
                 decoding="async"
@@ -311,7 +311,7 @@ async function toggleFaq(i) {
               />
               <img
                 :src="imgChairsMixed.img.src"
-                alt="PULK Stühle Reihe"
+                alt="Reihe verschiedenfarbiger Stuhlsilhouetten als Grafikelement der Corporate Identity des Pulk"
                 class="pm-chairs-mixed"
                 loading="lazy"
                 decoding="async"
@@ -497,7 +497,7 @@ async function toggleFaq(i) {
 .pm-intro-heading {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -607,7 +607,7 @@ async function toggleFaq(i) {
 .pm-card-desc {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -658,10 +658,20 @@ async function toggleFaq(i) {
   cursor: pointer;
   font-family: 'LayGrotesk', sans-serif;
   transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pm-toggle:hover {
   background: rgba(20, 20, 20, 0.04);
+}
+
+.pm-toggle:focus {
+  outline: none;
+}
+
+.pm-toggle:focus-visible {
+  outline: 2px solid #141414;
+  outline-offset: 2px;
 }
 
 .pm-toggle-label {
@@ -827,6 +837,13 @@ async function toggleFaq(i) {
   .pm-faq-question {
     font-size: clamp(2rem, 5vw, 3rem);
   }
+
+  .pm-intro-heading,
+  .pm-card-desc,
+  .pm-toggle-label,
+  .pm-faq-content p {
+    font-size: clamp(1.5rem, 1.4vw, 1.6rem);
+  }
 }
 
 @media (max-width: 64rem) {
@@ -910,7 +927,7 @@ async function toggleFaq(i) {
  * ============================================================================*/
 @media (max-width: 40rem) {
   .pricing-modal {
-    padding: 3rem 6% 6rem;
+    padding: 1rem 6% 6rem;
   }
 
   .pm-hero {

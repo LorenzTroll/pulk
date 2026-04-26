@@ -5,8 +5,23 @@ import Lenis from 'lenis'
 const _lenisRef = ref(null)
 let _rafId = 0
 
+// Touch-Geräte (iOS/Android) nutzen nativen Scroll:
+// Lenis syncTouch ist v1.3 standardmäßig aus, bringt also keinen Mehrwert,
+// kann aber via `lenis-stopped` Klasse Scroll blockieren.
+function isTouchDevice() {
+  if (typeof window === 'undefined') return false
+  return (
+    'ontouchstart' in window ||
+    (navigator && navigator.maxTouchPoints > 0) ||
+    window.matchMedia?.('(pointer: coarse)').matches
+  )
+}
+
 export function useLenis(options = {}) {
   onMounted(() => {
+    // Auf Touch-Geräten Lenis komplett überspringen — native Scrolling.
+    if (isTouchDevice()) return
+
     if (_lenisRef.value) {
       // Singleton existiert — RAF neu starten falls er durch onBeforeUnmount gestoppt wurde
       if (!_rafId) {
@@ -31,7 +46,7 @@ export function useLenis(options = {}) {
           duration: 0.4,
           easing: (t) => 1 - Math.pow(1 - t, 2),
           smoothWheel: true,
-          smoothTouch: false,
+          syncTouch: false,
           wheelMultiplier: 0.8,
           touchMultiplier: 0.7,
           ...options,

@@ -69,7 +69,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .overlay-backdrop {
   position: fixed;
-  top: 0.7rem; left: 0; right: 0; bottom: 0;
+  top: 0.7rem; left: 0; right: 0;
+  height: calc(100dvh - 0.7rem);
   background: rgba(0,0,0,1);
   display: flex; align-items: center; justify-content: center;
   z-index: 1000;
@@ -95,5 +96,13 @@ onBeforeUnmount(() => {
 .overlay-slide-enter-to,
 .overlay-slide-leave-from {
   transform: translateY(0); opacity: 1;
+}
+
+/* Mobile & Tablet: Lücke oben schließen */
+@media (max-width: 64rem) {
+  .overlay-backdrop {
+    top: 0;
+    height: 100dvh;
+  }
 }
 </style>

@@ -23,7 +23,7 @@ import { useRevealUp } from '@/composables/useRevealUp'
 import { track } from '@/utils/tracking'
 
 import 'hkanev-vue-calendar/dist/style.css'
-import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;png&as=picture'
+import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 /* -----------------------------------------------------------------------------
  * Props & Emits
@@ -391,13 +391,13 @@ function handleFormSubmit() {
   const submitDelay = Date.now() - openTimestamp.value
   if (submitDelay < 1200) {
     console.warn('Blocked bot: submission too fast', submitDelay)
-    showToast('Verdächtige Anfrage blockiert.')
+    if (typeof showToast === 'function') showToast('Verdächtige Anfrage blockiert.')
     return
   }
 
   if (!jsChallenge.value) {
     console.warn('Blocked bot: JS challenge missing')
-    showToast('Verdächtige Anfrage blockiert.')
+    if (typeof showToast === 'function') showToast('Verdächtige Anfrage blockiert.')
     return
   }
 
@@ -424,7 +424,7 @@ function handleFormSubmit() {
           status: res.status,
           source: 'contact-modal'
         })
-        showToast('Fehler beim Senden. Bitte versuche es erneut.')
+        if (typeof showToast === 'function') showToast('Fehler beim Senden. Bitte versuche es erneut.')
       }
     })
     .catch(err => {
@@ -433,7 +433,7 @@ function handleFormSubmit() {
         message: err?.message || 'unknown-network-error',
         source: 'contact-modal'
       })
-      showToast('Netzwerkfehler. Bitte später erneut versuchen.')
+      if (typeof showToast === 'function') showToast('Netzwerkfehler. Bitte später erneut versuchen.')
     })
 }
 </script>
@@ -454,17 +454,17 @@ function handleFormSubmit() {
         <div class="co-image-wrap">
           <picture>
             <source
-              v-for="src in pulkContactImage.sources"
-              :key="src.type"
-              :srcset="src.srcset"
-              :type="src.type"
+              v-for="(srcset, format) in pulkContactImage.sources"
+              :key="format"
+              :srcset="srcset"
+              :type="`image/${format}`"
             />
             <img
               :src="pulkContactImage.img.src"
               :srcset="pulkContactImage.img.srcset"
               :width="pulkContactImage.img.width"
               :height="pulkContactImage.img.height"
-              alt="PULK Raum"
+              alt="Stuhlreihen im Hauptbereich des Pulk, im Hintergrund Whiteboard und Pinnwand"
               class="co-image"
               loading="lazy"
               decoding="async"
@@ -475,9 +475,9 @@ function handleFormSubmit() {
         <!-- Formularbereich -->
         <div class="co-form-wrap">
           <div class="co-text-block">
-            <h1 class="co-title">Plant ihr was?</h1>
+            <h1 class="co-title">Anfrage senden</h1>
             <p class="co-subtitle">
-              Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
+              Plant ihr was? Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
               Auf Wunsch könnt ihr den Raum vorher besichtigen.
             </p>
           </div>
@@ -673,7 +673,7 @@ function handleFormSubmit() {
 .co-subtitle {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -978,6 +978,12 @@ function handleFormSubmit() {
   }
 }
 
+@media (min-width: 40.0625rem) and (max-width: 64rem) {
+  .co-subtitle {
+    font-size: clamp(1.5rem, 1.4vw, 1.6rem);
+  }
+}
+
 /* ============================================================================
  * Mobile
  * ============================================================================*/
@@ -988,6 +994,10 @@ function handleFormSubmit() {
 
   .co-content {
     gap: 0rem;
+  }
+
+  .co-title {
+    padding-top: 1rem;
   }
 
   .co-row {

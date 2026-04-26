@@ -12,14 +12,14 @@ import SiteFooter from '@/components/SiteFooter.vue'
 import { track } from '@/utils/tracking'
 
 import 'hkanev-vue-calendar/dist/style.css'
-import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;png&as=picture'
+import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 /* -----------------------------------------------------------------------------
  * SEO / Meta
  * ---------------------------------------------------------------------------*/
 useHead({
   title: 'PULK anfragen – Workshopraum mieten in Halle (Saale)',
-  link: [{ rel: 'canonical', href: 'https://pulk.space/anfragen' }],
+  link: [{ rel: 'canonical', href: 'https://pulk.space/anfragen/' }],
   meta: [
     {
       name: 'description',
@@ -39,7 +39,7 @@ useHead({
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { property: 'og:image:alt', content: 'PULK – Workshopraum in Halle (Saale) anfragen' },
-    { property: 'og:url', content: 'https://pulk.space/anfragen' },
+    { property: 'og:url', content: 'https://pulk.space/anfragen/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
 
@@ -61,7 +61,9 @@ useHead({
         '@type': 'ContactPage',
         name: 'Anfrage · PULK Halle (Saale)',
         description: 'Kontaktformular für Anfragen zur Miete des PULK Raums in Halle (Saale).',
-        url: 'https://pulk.space/anfragen',
+        url: 'https://pulk.space/anfragen/',
+        datePublished: '2026-04-23',
+        dateModified: '2026-04-23',
         mainEntity: {
           '@type': 'Organization',
           name: 'PULK',
@@ -76,7 +78,7 @@ useHead({
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Start', item: 'https://pulk.space/' },
-          { '@type': 'ListItem', position: 2, name: 'Raum mieten', item: 'https://pulk.space/anfragen' }
+          { '@type': 'ListItem', position: 2, name: 'Raum mieten', item: 'https://pulk.space/anfragen/' }
         ]
       })
     }
@@ -511,17 +513,17 @@ function handleFormSubmit() {
       <div class="image-section reveal-up">
         <picture>
           <source
-            v-for="src in pulkContactImage.sources"
-            :key="src.type"
-            :srcset="src.srcset"
-            :type="src.type"
+            v-for="(srcset, format) in pulkContactImage.sources"
+            :key="format"
+            :srcset="srcset"
+            :type="`image/${format}`"
           />
           <img
             :src="pulkContactImage.img.src"
             :srcset="pulkContactImage.img.srcset"
             :width="pulkContactImage.img.width"
             :height="pulkContactImage.img.height"
-            alt="PULK Raum"
+            alt="Stuhlreihen im Hauptbereich des Pulk, im Hintergrund Whiteboard und Pinnwand"
             class="contact-image"
             loading="lazy"
             decoding="async"
@@ -532,10 +534,10 @@ function handleFormSubmit() {
       <!-- Formularbereich -->
       <div class="form-section reveal-up">
         <div class="cp-text-block">
-          <h1 class="contact-title">Planst du was?</h1>
+          <h1 class="contact-title">Anfrage senden</h1>
           <p class="cp-subtitle">
-            Schreibt uns, was ihr plant und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
-            Auf Wunsch könnt ihr den Raum vorher besichtigen.
+            Plant ihr was? Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
+              Auf Wunsch könnt ihr den Raum vorher besichtigen.
           </p>
         </div>
 
@@ -709,7 +711,7 @@ function handleFormSubmit() {
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  height: 100dvh;
   overflow-y: auto;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
@@ -776,7 +778,7 @@ function handleFormSubmit() {
 .cp-subtitle {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
-  line-height: 2rem;
+  line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
@@ -1171,6 +1173,12 @@ function handleFormSubmit() {
   .cp-footer-wrap {
     margin-left: -7.25vw;
     margin-right: -7.25vw;
+  }
+}
+
+@media (min-width: 40.0625rem) and (max-width: 64rem) {
+  .cp-subtitle {
+    font-size: clamp(1.5rem, 1.4vw, 1.6rem);
   }
 }
 

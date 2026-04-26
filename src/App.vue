@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="main-container relative min-h-screen">
+  <div class="main-container relative" style="min-height: 100vh; min-height: 100dvh;">
     <router-view />
     <!-- About -->
     <AboutModal
@@ -337,6 +337,6 @@ body.no-bounce-landing {
 html.lenis, html.lenis-smooth,
 body.lenis, body.lenis-smooth {
   overflow-y: auto !important;
-  overscroll-behavior-y: auto !important;
+  overscroll-behavior-y: contain !important;
 }
 </style>
