@@ -486,7 +486,7 @@ const bottomMenuStyle = computed(() => {
 
 const base = lifted
   ? (isMobile ? '50rem' : '50rem')
-  : (isMobile ? '1rem' : '2rem')
+  : (isMobile ? '0.5rem' : '2rem')
 
   return {
     bottom: `calc(${base} + env(safe-area-inset-bottom, 0px))`
@@ -831,6 +831,7 @@ const menuRevealStyle = computed(() =>
   font-family: 'LayGrotesk', sans-serif;
   overflow-x: hidden;
   font-display: swap;
+  min-height: 100dvh;
 }
 
 /* Einheitliche h1-Basisgröße: max 3rem, fluid über clamp */
@@ -1501,6 +1502,10 @@ main {
 
   .accordion-content p {
     margin: 0 0 4rem;
+  }
+
+  .ci-stools__img {
+    max-width: 40%;
   }
 }
 

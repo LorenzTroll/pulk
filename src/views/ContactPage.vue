@@ -227,11 +227,8 @@ onMounted(async () => {
   calendar.fetchEvents()
   runPageReveal()
 
-  const root = rootRef.value
-  if (!root) return
-
-  root.addEventListener('scroll', updateLift, { passive: true })
-  scrollCleanup = () => root.removeEventListener('scroll', updateLift)
+  window.addEventListener('scroll', updateLift, { passive: true })
+  scrollCleanup = () => window.removeEventListener('scroll', updateLift)
 })
 
 function contactStage() {
@@ -683,7 +680,7 @@ function handleFormSubmit() {
     <!-- Bottom Nav -->
     <nav
       class="cp-bottom-nav"
-      :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+      :style="{ '--cp-btn-lift': `${btnLift}px` }"
     >
       <button
         class="cp-tab cp-submit"
@@ -707,12 +704,7 @@ function handleFormSubmit() {
  * ============================================================================*/
 .contact-page {
   background: #e7e8ec;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100dvh;
-  overflow-y: auto;
+  min-height: 100dvh;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
   padding: 2rem 7.25% 1.5rem 2rem;
@@ -1058,6 +1050,7 @@ function handleFormSubmit() {
 .cp-bottom-nav {
   position: fixed;
   left: 50%;
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px) + var(--cp-btn-lift, 0px));
   transform: translateX(-50%);
   transition: bottom 0.3s ease, transform 0.2s ease;
   display: flex;
@@ -1223,11 +1216,13 @@ function handleFormSubmit() {
 
   .cp-bottom-nav {
     gap: 0.5rem;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--cp-btn-lift, 0px));
   }
 
   .cp-tab {
-    padding: 1rem;
+    padding: 1rem 1rem;
     font-size: 0.95rem;
+    gap: 0.5rem;
   }
 
   .cp-footer-wrap {

@@ -693,7 +693,7 @@ onBeforeUnmount(() => {
     <router-link
       to="/"
       class="about-close-btn"
-      :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+      :style="{ '--ap-btn-lift': `${btnLift}px` }"
     >
       <span>Schließen</span>
       <span class="about-close-icon">✕</span>
@@ -717,6 +717,7 @@ onBeforeUnmount(() => {
 .about-close-btn {
   position: fixed;
   left: 50%;
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px) + var(--ap-btn-lift, 0px));
   transform: translateX(-50%);
   z-index: 5000;
   display: inline-flex;
@@ -798,6 +799,10 @@ onBeforeUnmount(() => {
   pointer-events: none;
   z-index: 1;
   opacity: 0;
+  /* Safari 26 Toolbar-Sampling: explicit transparent damit Safari diesen
+     fixed Canvas nicht für Color-Tinting heranzieht (sonst werden die
+     gerenderten Photo-Pixel als Toolbar-Tönung interpretiert). */
+  background-color: transparent;
 }
 
 /* All content floats above the canvas */
@@ -972,6 +977,13 @@ onBeforeUnmount(() => {
 /* ---- Mobile ---- */
 @media (max-width: 640px) {
   .about-wrap { padding-bottom: 4rem; }
+
+  .about-close-btn {
+    padding: 1rem 1rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--ap-btn-lift, 0px));
+  }
 
   .about-header {
     padding: 6rem 7.5% 0rem;

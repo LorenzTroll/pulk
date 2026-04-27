@@ -323,12 +323,11 @@ onMounted(async () => {
   const root = rootRef.value
   if (!root) return
 
-  // Scroll-Listener für Footer-Lift
-  root.addEventListener('scroll', updateLift, { passive: true })
-  scrollCleanup = () => root.removeEventListener('scroll', updateLift)
+  window.addEventListener('scroll', updateLift, { passive: true })
+  scrollCleanup = () => window.removeEventListener('scroll', updateLift)
 
-  // Scroll-Depth Tracking (pulk.scroll.depth)
-  scrollDepthCleanup = attachScrollDepthTracker('pricing', root)
+  // Scroll-Depth Tracking (pulk.scroll.depth) — window-scroll
+  scrollDepthCleanup = attachScrollDepthTracker('pricing')
 
   const cards = [...root.querySelectorAll('.card')]
   if (!cards.length) return
@@ -382,7 +381,7 @@ onBeforeUnmount(() => {
     <router-link
       to="/"
       class="pp-close-btn"
-      :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+      :style="{ '--pp-btn-lift': `${btnLift}px` }"
     >
       <span>Schließen</span>
       <span class="pp-close-icon">✕</span>
@@ -600,12 +599,7 @@ onBeforeUnmount(() => {
  * ============================================================================*/
 .pricing-page {
   background: #e7e8ec;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100dvh;
-  overflow-y: auto;
+  min-height: 100dvh;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
   padding: 5rem 7.25% 8rem;
@@ -615,6 +609,7 @@ onBeforeUnmount(() => {
 .pp-close-btn {
   position: fixed;
   left: 50%;
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0px) + var(--pp-btn-lift, 0px));
   transform: translateX(-50%);
   transition: bottom 0.3s ease, transform 0.2s ease;
   display: inline-flex;
@@ -1104,6 +1099,13 @@ onBeforeUnmount(() => {
 @media (max-width: 40rem) {
   .pricing-page {
     padding: 1rem 6% 6rem;
+  }
+
+  .pp-close-btn {
+    padding: 1rem 1rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--pp-btn-lift, 0px));
   }
 
   .pm-hero {
