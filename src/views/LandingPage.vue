@@ -552,7 +552,7 @@ const menuRevealStyle = computed(() =>
     <a href="#stimmen" class="skip-link">Zur Kundenstimme</a>
     <a href="#faq" class="skip-link">Zu den FAQs</a>
   </nav>
-  <main class="landing-container">
+  <main class="landing-container" style="background-color: #e7e8ec; min-height: 100dvh;">
     <!-- ------------------------------------------------------------------- -->
     <!-- Main layout                                                        -->
     <!-- ------------------------------------------------------------------- -->
@@ -826,12 +826,10 @@ const menuRevealStyle = computed(() =>
  * -------------------------------------------------------------------------- */
 
 .landing-container {
-  background-color: #e7e8ec;
   color: #141414;
   font-family: 'LayGrotesk', sans-serif;
   overflow-x: hidden;
   font-display: swap;
-  min-height: 100dvh;
 }
 
 /* Einheitliche h1-Basisgröße: max 3rem, fluid über clamp */
