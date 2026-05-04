@@ -10,3 +10,13 @@ node_modules
 CLAUDE.md
 **/.DS_Store
 /.qodo/
+
+# Screenshots & lokale Test-Bilder
+IMG_*.PNG
+IMG_*.png
+IMG_*.JPG
+IMG_*.jpg
+
+# SEO-Output (lokal generiert, nicht im Repo)
+/seo-audit-reports/
+/seo-output/
