@@ -176,11 +176,12 @@ onBeforeUnmount(() => {
     <div ref="footerSentinelRef" class="ds-sentinel"></div>
   </main>
 
-  <!-- Fixed close button -->
+  <!-- Fixed close button — bottom-Position wird in CSS aufgelöst
+       (Default 1.5rem, Mobile 0.5rem analog zu BottomMenu auf LandingPage). -->
   <RouterLink
     to="/"
     class="ds-close-btn"
-    :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+    :style="{ '--ds-btn-lift': `${btnLift}px` }"
   >
     <span>Schließen</span>
     <span class="ds-close-icon">✕</span>
@@ -246,6 +247,10 @@ address {
 .ds-close-btn {
   position: fixed;
   left: 50%;
+  /* bottom analog zum BottomMenu auf LandingPage: 1.5rem Default,
+     0.5rem auf Mobile. var(--ds-btn-lift) wird per inline-style aus
+     der updateLift-Logik gefüttert (Footer-Sentinel-Distance). */
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px) + var(--ds-btn-lift, 0px));
   transform: translateX(-50%);
   transition: bottom 0.3s ease, transform 0.2s ease;
   display: inline-flex;
@@ -259,7 +264,9 @@ address {
   font-weight: 500;
   font-size: 1rem;
   text-decoration: none;
-  z-index: 2000;
+  /* z-index 5000: muss über CookieBanner-Overlay (z-index 2000) liegen,
+     sonst schluckt der Overlay den Click. Analog zu AboutPage. */
+  z-index: 5000;
   white-space: nowrap;
 }
 
@@ -274,6 +281,13 @@ address {
   .legal-wrap {
     max-width: 92%;
     padding: 3rem 0 6rem;
+  }
+
+  .ds-close-btn {
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--ds-btn-lift, 0px));
+    padding: 1rem 1rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
   }
 
   .legal-header h1 {

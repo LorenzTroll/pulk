@@ -342,11 +342,13 @@ onBeforeUnmount(() => {
     <div ref="footerSentinelRef" class="ds-sentinel"></div>
   </main>
 
-  <!-- Fixed close button -->
+  <!-- Fixed close button — bottom-Position wird in CSS aufgelöst
+       (Default 1.5rem, Mobile 0.5rem analog zu BottomMenu auf LandingPage).
+       Nur die dynamische Lift-Komponente kommt als CSS-Custom-Property. -->
   <RouterLink
     to="/"
     class="ds-close-btn"
-    :style="{ bottom: `calc(2rem + env(safe-area-inset-bottom, 0px) + ${btnLift}px)` }"
+    :style="{ '--ds-btn-lift': `${btnLift}px` }"
   >
     <span>Schließen</span>
     <span class="ds-close-icon">✕</span>
@@ -525,7 +527,7 @@ summary::-webkit-details-marker {
 
 summary h2 {
   flex: 1;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 900;
   line-height: 1.24;
   color: #141414;
@@ -578,6 +580,10 @@ details[open] .icon-chevron {
 .ds-close-btn {
   position: fixed;
   left: 50%;
+  /* bottom analog zum BottomMenu auf LandingPage: 1.5rem Default,
+     0.5rem auf Mobile. var(--ds-btn-lift) wird per inline-style aus
+     der updateLift-Logik gefüttert (Footer-Sentinel-Distance). */
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px) + var(--ds-btn-lift, 0px));
   transform: translateX(-50%);
   transition: bottom 0.3s ease, transform 0.2s ease;
   display: inline-flex;
@@ -591,7 +597,9 @@ details[open] .icon-chevron {
   font-weight: 500;
   font-size: 1rem;
   text-decoration: none;
-  z-index: 2000;
+  /* z-index 5000: muss über CookieBanner-Overlay (z-index 2000) liegen,
+     sonst schluckt der Overlay den Click. Analog zu AboutPage. */
+  z-index: 5000;
   white-space: nowrap;
 }
 
@@ -645,9 +653,16 @@ details[open] .icon-chevron {
  * Mobile (≤ 640px)
  * ==========================================================================*/
 @media (max-width: 640px) {
+  /* LandingPage-Pattern: .legal-wrap nimmt volle Viewport-Breite, jede
+     Section setzt eigenes padding-inline. So kann .legal-accordion mit
+     width:95% + margin:auto sauber zentrieren wie auf LandingPage. */
   .legal-wrap {
-    max-width: 90%;
+    max-width: none;
     padding: 3rem 0 6rem;
+  }
+
+  .legal-header {
+    padding-inline: 5%;
   }
 
   .legal-tools h1 {
@@ -655,14 +670,19 @@ details[open] .icon-chevron {
     width: 100%;
   }
 
+  .legal-accordion {
+    width: 95%;
+    margin: 0 auto;
+  }
+
   summary {
-    padding: 1.5rem 0.5rem;
+    padding: 1.5rem 1rem;
   }
 
 
   .icon-chevron-wrap {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
   }
 
   .icon-chevron {
@@ -673,6 +693,13 @@ details[open] .icon-chevron {
     padding: 0 1rem 1.5rem;
     font-size: clamp(1rem, 4vw, 1.25rem);
     width: 100%;
+  }
+
+  .ds-close-btn {
+    bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--ds-btn-lift, 0px));
+    padding: 1rem 1rem;
+    font-size: 0.95rem;
+    gap: 0.5rem;
   }
 
   .legal-tools {

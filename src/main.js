@@ -6,8 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 library.add(faCheck)
 
-import hkanevCalendar from 'hkanev-vue-calendar'
-import 'hkanev-vue-calendar/dist/style.css'
+// hkanev-vue-calendar wird NICHT global registriert — er wird nur in
+// ContactModal.vue und ContactPage.vue gebraucht und dort jeweils lokal
+// importiert (`import { Calendar } from 'hkanev-vue-calendar'` + style.css).
+// Globale Registrierung würde 135 KB ins initial Bundle ziehen, obwohl der
+// Calendar auf der Startseite nie gebraucht wird.
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -131,5 +134,4 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.use(head)
 app.use(createPinia())
-app.use(hkanevCalendar)
 app.mount('#app')

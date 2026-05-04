@@ -90,6 +90,16 @@ try {
         ''
       )
 
+      // Strip render-blocking <link rel="stylesheet"> für lazy-loaded
+      // Modal-/Page-Komponenten. Vue lädt deren scoped CSS sonst eager
+      // im <head> (~880 ms render-blocking laut PageSpeed). Wenn das
+      // Modal/Page tatsächlich geöffnet wird, kommt deren CSS via JS-
+      // Chunk-Loading nach — kein Bedarf im initial render.
+      html = html.replace(
+        /<link\s+rel="stylesheet"[^>]*href="[^"]*\/(AboutModal|ContactModal|PricingModal|AboutPage|ContactPage|PricingPage|Modal)-[^"]+\.css"[^>]*>/g,
+        ''
+      )
+
       // The homepage FAQPage (identified by its @id) can leak into
       // sibling prerendered routes via @vueuse/head. Scrub only that
       // specific schema block from non-root routes — page-specific

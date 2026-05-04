@@ -557,7 +557,7 @@ async function toggleFaq(i) {
 
 .pm-chairs-img--flipped {
   width: 85%;
-  transform: scaleX(1);
+  transform: scaleX(1) translateY(0.3125rem);
 }
 
 /* Tablet-only Full-Bleed Chair-Row */
@@ -763,7 +763,7 @@ async function toggleFaq(i) {
 
 .pm-faq-question {
   flex: 1;
-  font-size: clamp(1.5rem, 3vw, 3.625rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 900;
   line-height: 1.2;
   color: #141414;
@@ -835,7 +835,7 @@ async function toggleFaq(i) {
   }
 
   .pm-faq-question {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.8rem, 5vw, 3rem);
   }
 
   .pm-intro-heading,
@@ -926,12 +926,17 @@ async function toggleFaq(i) {
  * Mobile
  * ============================================================================*/
 @media (max-width: 40rem) {
+  /* LandingPage-Pattern: .pricing-modal hat KEIN horizontales Padding,
+     jede Section setzt eigenes padding-inline. So kann .pm-faq mit
+     width:95% + margin:auto sauber zentrieren — analog zur LandingPage
+     `.accordion-section`. Kein negative-margin-Hack mehr nötig. */
   .pricing-modal {
-    padding: 1rem 6% 6rem;
+    padding: 1rem 0 6rem;
   }
 
   .pm-hero {
     gap: 1rem;
+    padding-inline: 6%;
   }
 
   .pm-intro {
@@ -978,8 +983,24 @@ async function toggleFaq(i) {
     transform: scaleX(1) translateX(-0.5rem);
   }
 
+  /* FAQ analog zur LandingPage `.accordion-section`:
+     95% Viewport-Breite, zentriert via margin auto. */
   .pm-faq {
-    margin-top: 7rem;
+    width: 95%;
+    margin: 7rem auto 0;
+  }
+
+  .pm-faq-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .pm-faq-chevron-wrap {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .pm-faq-content {
+    padding: 0rem 1rem;
   }
 
   .pm-faq-content p {
@@ -989,7 +1010,7 @@ async function toggleFaq(i) {
   }
 
   .pm-faq-question {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.8rem, 5vw, 3rem);
     min-width: 0;
     overflow-wrap: break-word;
     hyphens: auto;

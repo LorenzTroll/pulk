@@ -28,6 +28,10 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  /* Globaler Hard-Cap: keine horizontale Scrollbar, egal welche Page-
+     Children versehentlich überschwappen. clip statt hidden, weil hidden
+     einen neuen Scroll-Context anlegt (Lenis-relevant). */
+  overflow-x: clip;
 }
 
 html {
@@ -38,6 +42,15 @@ body, #app, #app.plain-background {
   /* Solid Color statt Gradient: Safari iOS rendert in der oberen
      Safe-Area (Notch) sonst weiß, weil der Gradient dort nicht greift. */
   background: #E7E8EC !important;
+}
+
+/* Globaler Width-Cap auf den Page-Wrapper. Verhindert horizontale
+   Overflows (insb. auf Mobile) — egal von welcher Page sie ausgehen.
+   overflow-x: clip stoppt überlaufende Children ohne neuen Scroll-
+   Container anzulegen (cleaner als overflow: hidden). */
+.main-container {
+  max-width: 100vw;
+  overflow-x: clip;
 }
 
 /* AboutPage und AboutModal: dunkler Body-Background nur auf Mobile, damit

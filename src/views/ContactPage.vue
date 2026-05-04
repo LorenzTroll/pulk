@@ -1056,7 +1056,9 @@ function handleFormSubmit() {
   display: flex;
   align-items: center;
   gap: 1rem;
-  z-index: 2000;
+  /* z-index 5000: muss über CookieBanner-Overlay (z-index 2000) liegen,
+     sonst schluckt der Overlay den Click. Analog zu AboutPage. */
+  z-index: 5000;
   white-space: nowrap;
 }
 

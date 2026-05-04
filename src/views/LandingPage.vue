@@ -28,18 +28,19 @@ import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
 import pulkHero from '@/assets/Pulk-hero-image_E12.svg'
 import pulkHeroMobile from '@/assets/pulk_heroImage-mobile_E3.svg'
 
-/* Hero chair + review assets: aus src/assets.
-   ?format=png&as=src zwingt imagetools zu einer EINZELNEN PNG-URL
-   (sonst Array via defaultDirectives → Komma-String in :src). */
-import chairBlack from '@/assets/hero-chair-black.png?format=png&as=src'
-import chairPurple from '@/assets/hero-chair-purple.png?format=png&as=src'
+/* Hero chair + review assets: durch imagetools-Pipeline mit AVIF/WebP/PNG
+   und responsive sizes. as=picture liefert {sources, img} → wird an die
+   <Pic>-Komponente übergeben (rendert <picture> mit allen Sources). */
+import chairBlack from '@/assets/hero-chair-black.png?w=200;400&format=avif;webp;png&as=picture'
+import chairPurple from '@/assets/hero-chair-purple.png?w=200;400&format=avif;webp;png&as=picture'
 
 import pulkLogoLandingpage from '@/assets/pulk-logo-landingpage.svg'
-import ciStoolContainer from '@/assets/ci-elements-stool-container.png?format=png&as=src'
-import reviewImageA from '@/assets/pulk_review_customerA_imageA.png?format=png&as=src'
-import reviewImageB from '@/assets/pulk_review-section_customerA-imageB.png?format=png&as=src'
+import ciStoolContainer from '@/assets/ci-elements-stool-container.png?w=600;1200&format=avif;webp;png&as=picture'
+import reviewImageA from '@/assets/pulk_review_customerA_imageA.png?w=640;1200&format=avif;webp;png&as=picture'
+import reviewImageB from '@/assets/pulk_review-section_customerA-imageB.png?w=640;1200&format=avif;webp;png&as=picture'
 import pulkRoomImageA from '@/assets/pulk_room_image-A.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
+import Pic from '@/components/Pic.vue'
 import BottomMenu from '@/components/BottomMenu.vue'
 import { useLenis } from '@/composables/useLenis.js'
 import { useOverlayStore } from '@/stores/overlay'
@@ -256,8 +257,11 @@ function updateNearFooterWindow() {
   const vh = window.innerHeight || doc.clientHeight || 0
 
   const rem = parseFloat(getComputedStyle(doc).fontSize) || 16
-  const onT = 10 * rem
-  const offT = 12 * rem
+  const isMobile = window.matchMedia('(max-width: 640px)').matches
+  // Mobile: BottomMenu früher ausblenden vor Footer, damit Page-Inhalt
+  // (Footer-Links etc.) sich nicht mit den BottomMenu-Tabs überschneidet.
+  const onT  = (isMobile ? 30 : 10) * rem
+  const offT = (isMobile ? 34 : 12) * rem
 
   const dist = pageHeight - (scrollTop + vh)
 
@@ -282,8 +286,9 @@ function handleLenisScroll(e) {
 
   // existing footer logic
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-  const onT  = 14 * rem
-  const offT = 16 * rem
+  const isMobile = window.matchMedia('(max-width: 640px)').matches
+  const onT  = (isMobile ? 30 : 14) * rem
+  const offT = (isMobile ? 34 : 16) * rem
   const dist = Math.max(0, limit - y)
 
   if (!nearFooter.value && dist <= onT) nearFooter.value = true
@@ -309,8 +314,9 @@ function recalcNearFooterNow() {
   const doc = document.documentElement
   const vh = window.innerHeight || doc.clientHeight || 0
   const rem = parseFloat(getComputedStyle(doc).fontSize) || 16
-  const onT = 14 * rem
-  const offT = 16 * rem
+  const isMobile = window.matchMedia('(max-width: 640px)').matches
+  const onT  = (isMobile ? 30 : 14) * rem
+  const offT = (isMobile ? 34 : 16) * rem
 
   const dist = doc.scrollHeight - (window.scrollY + vh)
 
@@ -571,28 +577,28 @@ const menuRevealStyle = computed(() =>
       >
         <!-- Logo oben links (Figma node 839:3533): left=5.5%, top=9%, width=29% -->
         <div class="hero-logo">
-          <img :src="pulkLogoLandingpage" alt="PULK Logo" />
+          <img :src="pulkLogoLandingpage" alt="PULK Logo" width="320" height="120" />
         </div>
         <!-- Oben: 4 schwarze Stühle, aspect-ratio-Container skaliert mit Breite -->
         <div class="hero-chairs-top">
-          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" fetchpriority="high" />
-          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
-          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
-          <img :src="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" />
+          <Pic :image="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" fetchpriority="high" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-top__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
         </div>
         <!-- Unten: 4 Stühle im Flex-Container — selbes Shrink-Verhalten wie Oben -->
         <div class="hero-chairs-bottom">
-          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairPurple" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairPurple" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
         </div>
         <!-- Dritte Reihe: nur Mobile, selbe Bilder wie hero-chairs-top -->
         <div class="hero-chairs-third">
-          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
-          <img :src="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" />
+          <Pic :image="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-third__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
         </div>
       </div>
       <!-- Info Section A (Figma node 787:85): Bild links, Text rechts -->
@@ -695,10 +701,10 @@ const menuRevealStyle = computed(() =>
     <!-- ------------------------------------------------------------------- -->
     <section id="stimmen" class="review-section" tabindex="-1">
       <div class="review-col review-col--img1 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
-        <img :src="reviewImageA" alt="PULK Workshopraum – Kundenmoment" loading="lazy" decoding="async" />
+        <Pic :image="reviewImageA" alt="PULK Workshopraum – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
       </div>
       <div class="review-col review-col--img2 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
-        <img :src="reviewImageB" alt="PULK Workshopraum – Kundenmoment" loading="lazy" decoding="async" />
+        <Pic :image="reviewImageB" alt="PULK Workshopraum – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
       </div>
       <!-- Zitat-Spalte -->
       <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
@@ -721,7 +727,7 @@ const menuRevealStyle = computed(() =>
     <!-- CI Elements: Stools (Figma node 792:99)                            -->
     <!-- ------------------------------------------------------------------- -->
     <div class="ci-stools">
-      <img :src="ciStoolContainer" alt="" aria-hidden="true" class="ci-stools__img" loading="lazy" />
+      <Pic :image="ciStoolContainer" alt="" aria-hidden="true" class="ci-stools__img" loading="lazy" sizes="(max-width: 1024px) 100vw, 60vw" />
     </div>
     <!-- ------------------------------------------------------------------- -->
     <!-- Accordion section                                                   -->
@@ -751,6 +757,8 @@ const menuRevealStyle = computed(() =>
               :src="pulkArrow"
               alt="toggle"
               class="icon-chevron"
+              width="45"
+              height="43"
               :ref="el => (arrowRefs[idx] = el)"
             />
           </div>
@@ -899,7 +907,9 @@ const menuRevealStyle = computed(() =>
   align-items: stretch;
 }
 
-.hero-chairs-top__item {
+/* :deep() weil .hero-chairs-top__item via Pic-Component durchgereicht wird —
+   das img liegt in einem child-component und hat keinen LandingPage-scope-attr. */
+:deep(.hero-chairs-top__item) {
   flex: 1 1 0;
   min-width: 0;
   min-height: 0;
@@ -928,7 +938,7 @@ const menuRevealStyle = computed(() =>
   align-items: stretch;
 }
 
-.hero-chairs-bottom__item {
+:deep(.hero-chairs-bottom__item) {
   flex: 1 1 0;
   min-width: 0;
   min-height: 0;
@@ -939,7 +949,7 @@ const menuRevealStyle = computed(() =>
   user-select: none;
 }
 
-.hero-chairs-bottom__item:nth-child(3) {
+:deep(.hero-chairs-bottom__item:nth-child(3)) {
   transform: scale(1);
 }
 
@@ -1131,8 +1141,8 @@ const menuRevealStyle = computed(() =>
   overflow: hidden;
 }
 
-.review-col--img1 img,
-.review-col--img2 img {
+.review-col--img1 :deep(img),
+.review-col--img2 :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1296,7 +1306,7 @@ const menuRevealStyle = computed(() =>
   padding-left: 9%;
 }
 
-.ci-stools__img {
+:deep(.ci-stools__img) {
   display: block;
   width: auto;
   max-width: 50%;
@@ -1312,7 +1322,7 @@ const menuRevealStyle = computed(() =>
     margin-bottom: 4.5rem;
   }
 
-  .ci-stools__img {
+  :deep(.ci-stools__img) {
     width: 60%;
   }
 }
@@ -1325,7 +1335,7 @@ const menuRevealStyle = computed(() =>
     margin-bottom: 4.5rem;
   }
 
-  .ci-stools__img {
+  :deep(.ci-stools__img) {
     max-width: 80%;
     margin-left: 9%;
   }
@@ -1361,7 +1371,7 @@ const menuRevealStyle = computed(() =>
 /* h1 erbt globale font-size (clamp 2rem–3rem), line-height aus Figma: 72/58 ≈ 1.24 */
 .accordion-header .item-title {
   flex: 1;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 900;
   line-height: 1.24;
   color: #141414;
@@ -1534,7 +1544,7 @@ main {
     margin: 0 0 4rem;
   }
 
-  .ci-stools__img {
+  :deep(.ci-stools__img) {
     max-width: 40%;
   }
 }
@@ -1601,7 +1611,7 @@ main {
     transform: scaleX(-1) scale(2) translateX(2.35rem) translateY(0rem);
   }
 
-  .hero-chairs-third__item {
+  :deep(.hero-chairs-third__item) {
     flex: 1 1 0;
     min-width: 0;
     min-height: 0;
@@ -1688,11 +1698,17 @@ main {
 
   /* Accordion */
   .accordion-section {
-    width: 90%;
+    width: 95%;
+    margin: 0 auto 45rem;
   }
 
   .accordion-header {
-    padding: 1.5rem 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .icon-chevron-wrap {
+    width: 3rem;
+    height: 3rem;
   }
 
   .accordion-content {

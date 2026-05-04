@@ -107,7 +107,10 @@ function openPrivacy(evt) {
 </script>
 
 <template>
-  <div v-if="showBanner">
+  <!-- Wrapper v-if-mounted erst wenn showBanner true wird. Position:fixed
+       ohne inset entzieht ihn dem normal flow (Größe 0×0), die Children
+       (cookie-overlay, cookie-banner) haben eigene fixed-Positioning. -->
+  <div v-if="showBanner" style="position: fixed;">
     <!-- Background blocker (prevents scrolling) -->
     <div
       class="cookie-overlay"
@@ -128,9 +131,9 @@ function openPrivacy(evt) {
       <div class="banner-left">
         <h2 class="banner-title">Cookies</h2>
         <div class="chair-row" aria-hidden="true">
-          <img :src="chairImage.src" alt="" class="chair-image" />
-          <img :src="chairImage.src" alt="" class="chair-image" />
-          <img :src="chairImage.src" alt="" class="chair-image" />
+          <img :src="chairImage.src" alt="" class="chair-image" width="120" height="172" />
+          <img :src="chairImage.src" alt="" class="chair-image" width="120" height="172" />
+          <img :src="chairImage.src" alt="" class="chair-image" width="120" height="172" />
         </div>
       </div>
       <!-- Right: Text + Divider + Buttons -->

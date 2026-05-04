@@ -37,13 +37,39 @@ function trackAssociateClick(name) {
 
 const copied = ref(false)
 
+function onCopySuccess(url) {
+  copied.value = true
+  track('pulk.footer.copy-link', { url })
+  setTimeout(() => { copied.value = false }, 2000)
+}
+
 async function copyPageUrl() {
+  const url = 'https://pulk.space/'
+
+  // 1. Moderne Clipboard API (nur HTTPS / secure contexts)
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(url)
+      onCopySuccess(url)
+      return
+    } catch {
+      // Fall through zum execCommand-Fallback unten
+    }
+  }
+
+  // 2. Legacy-Fallback via execCommand (greift auch in LAN-Preview ohne HTTPS)
   try {
-    await navigator.clipboard.writeText('https://pulk.space/')
-    copied.value = true
-    track('pulk.footer.copy-link', { url: 'https://pulk.space/' })
-    setTimeout(() => { copied.value = false }, 2000)
-  } catch {}
+    const ta = document.createElement('textarea')
+    ta.value = url
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;'
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    onCopySuccess(url)
+  } catch (err) {
+    console.warn('[SiteFooter] copy failed:', err)
+  }
 }
 
 const route = useRoute()
@@ -145,7 +171,7 @@ const isAbsolute = computed(() =>
             <ul>
               <li><router-link to="/anfragen">Anfrage senden</router-link></li>
               <li><router-link to="/about">Über uns</router-link></li>
-              <li><router-link to="/preise">Preise und Pakete</router-link></li>
+              <li><router-link to="/preise">Preise / Pakete</router-link></li>
             </ul>
           </div>
 
@@ -495,11 +521,18 @@ const isAbsolute = computed(() =>
   .site-footer {
     padding: 4rem 7.5% 3rem;
     gap: 3rem;
+    /* Hartes Width-Cap: Footer darf nie über den Viewport wachsen.
+       overflow-x: clip stoppt zusätzlich Overflow aus Children ohne
+       neuen Scroll-Container anzulegen. */
+    max-width: 100vw;
+    overflow-x: clip;
   }
 
   .footer-cta {
-    font-size: clamp(1.75rem, 9vw, 2.5rem);
+    font-size: clamp(1.5rem, 7vw, 2rem);
     white-space: normal;
+    overflow-wrap: anywhere;
+    min-width: 0;
   }
 
   .footer-chairs-wrap {
@@ -520,6 +553,21 @@ const isAbsolute = computed(() =>
   .footer-group h3 {
     font-size: 0.9375rem;
     font-weight: 400;
+  }
+
+  .footer-group li {
+    font-size: 1.1rem;
+    line-height: 2rem;
+  }
+
+  .footer-group a {
+    font-size: 1.1rem;
+    /* line-height + min-height beide auf 2rem, weil .footer-group a
+       per default display:inline-flex ist (für Icon+Text-Layout) und
+       die Box-Höhe dann durch Flex-Items bestimmt wird, nicht vom
+       line-height-Property. min-height greift. */
+    line-height: 2rem;
+    min-height: 2rem;
   }
 
   .footer-legal {

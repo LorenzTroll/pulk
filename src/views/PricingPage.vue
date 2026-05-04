@@ -623,7 +623,9 @@ onBeforeUnmount(() => {
   font-weight: 500;
   font-size: 1rem;
   text-decoration: none;
-  z-index: 2000;
+  /* z-index 5000: muss über CookieBanner-Overlay (z-index 2000) liegen,
+     sonst schluckt der Overlay den Click. Analog zu AboutPage. */
+  z-index: 5000;
   white-space: nowrap;
 }
 
@@ -728,7 +730,8 @@ onBeforeUnmount(() => {
 }
 
 .pm-chairs-img--flipped {
-  transform: scaleX(1);
+  width: 85%;
+  transform: scaleX(1) translateY(0.3125rem);
 }
 
 /* Tablet-only Full-Bleed Chair-Row */
@@ -934,7 +937,7 @@ onBeforeUnmount(() => {
 
 .pm-faq-question {
   flex: 1;
-  font-size: clamp(1.5rem, 3vw, 3.625rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 900;
   line-height: 1.2;
   color: #141414;
@@ -1006,7 +1009,7 @@ onBeforeUnmount(() => {
   }
 
   .pm-faq-question {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.8rem, 5vw, 3rem);
   }
 
   .pm-intro-heading,
@@ -1097,8 +1100,14 @@ onBeforeUnmount(() => {
  * Mobile
  * ============================================================================*/
 @media (max-width: 40rem) {
+  /* LandingPage-Pattern: .pricing-page hat KEIN horizontales Padding,
+     jede Section setzt eigenes padding-inline. So kann .pm-faq mit
+     width:95% + margin:auto sauber zentrieren — analog LandingPage.
+     overflow-x: clip ist Safety-Net gegen horizontale Overflows aus
+     Children (z.B. transform-translatable Bilder). */
   .pricing-page {
-    padding: 1rem 6% 6rem;
+    padding: 1rem 0 6rem;
+    overflow-x: clip;
   }
 
   .pp-close-btn {
@@ -1110,6 +1119,7 @@ onBeforeUnmount(() => {
 
   .pm-hero {
     gap: 1rem;
+    padding-inline: 6%;
   }
 
   .pm-intro {
@@ -1157,7 +1167,17 @@ onBeforeUnmount(() => {
   }
 
   .pm-faq {
-    margin-top: 7rem;
+    width: 95%;
+    margin: 7rem auto 7rem;
+  }
+
+  .pm-faq-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .pm-faq-chevron-wrap {
+    width: 3rem;
+    height: 3rem;
   }
 
   .pm-faq-content p {
@@ -1167,7 +1187,7 @@ onBeforeUnmount(() => {
   }
 
   .pm-faq-question {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: clamp(1.8rem, 5vw, 3rem);
     min-width: 0;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -1251,6 +1271,12 @@ onBeforeUnmount(() => {
 /* ============================================================================
  * Footer Breakout
  * ============================================================================*/
+/* .pp-footer-wrap Full-Bleed-Pattern: Footer bricht via negativen Margins
+   aus dem .pricing-page-Padding aus. Tablet/Desktop hat .pricing-page
+   { padding: 5rem 7.25% 8rem } → -7.25vw kompensiert das.
+   Auf Mobile hat .pricing-page { padding: 1rem 0 6rem } (kein H-Padding),
+   daher müssen die negativen H-Margins dort 0 sein, sonst würde der
+   Footer breiter als der Viewport. */
 .pp-footer-wrap {
   margin-left: -7.25vw;
   margin-right: -7.25vw;
@@ -1259,8 +1285,8 @@ onBeforeUnmount(() => {
 
 @media (max-width: 40rem) {
   .pp-footer-wrap {
-    margin-left: -6vw;
-    margin-right: -6vw;
+    margin-left: 0;
+    margin-right: 0;
     margin-bottom: -6rem;
   }
 }

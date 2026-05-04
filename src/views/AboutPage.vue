@@ -1024,6 +1024,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
     gap: 1rem;
     margin-top: -1rem;
+    margin-bottom: 15rem;
   }
 
   .img-a { aspect-ratio: 4 / 3; }
