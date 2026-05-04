@@ -92,10 +92,10 @@ const isAbsolute = computed(() =>
       <div class="footer-chairs-wrap">
         <picture>
           <source
-            v-for="s in footerChairs.sources"
-            :key="s.srcset"
-            :srcset="s.srcset"
-            :type="s.type"
+            v-for="(srcset, format) in footerChairs.sources"
+            :key="format"
+            :srcset="srcset"
+            :type="`image/${format}`"
           />
           <img
             :src="footerChairs.img.src"

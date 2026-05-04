@@ -272,10 +272,10 @@ async function toggleFaq(i) {
             <!-- Hocker (B) links, kleiner -->
             <picture class="pm-chairs-picture pm-chairs-picture--b">
               <source
-                v-for="s in imgPricingB.sources"
-                :key="s.srcset"
-                :srcset="s.srcset"
-                :type="s.type"
+                v-for="(srcset, format) in imgPricingB.sources"
+                :key="format"
+                :srcset="srcset"
+                :type="`image/${format}`"
               />
               <img
                 :src="imgPricingB.img.src"
@@ -288,10 +288,10 @@ async function toggleFaq(i) {
             <!-- Stühle-Stapel (A) rechts, größer, horizontal gespiegelt -->
             <picture class="pm-chairs-picture pm-chairs-picture--a">
               <source
-                v-for="s in imgPricingA.sources"
-                :key="s.srcset"
-                :srcset="s.srcset"
-                :type="s.type"
+                v-for="(srcset, format) in imgPricingA.sources"
+                :key="format"
+                :srcset="srcset"
+                :type="`image/${format}`"
               />
               <img
                 :src="imgPricingA.img.src"
@@ -304,10 +304,10 @@ async function toggleFaq(i) {
             <!-- Tablet-only: Stühle-Reihe als Full-Bleed -->
             <picture class="pm-chairs-mixed-picture">
               <source
-                v-for="s in imgChairsMixed.sources"
-                :key="s.srcset"
-                :srcset="s.srcset"
-                :type="s.type"
+                v-for="(srcset, format) in imgChairsMixed.sources"
+                :key="format"
+                :srcset="srcset"
+                :type="`image/${format}`"
               />
               <img
                 :src="imgChairsMixed.img.src"

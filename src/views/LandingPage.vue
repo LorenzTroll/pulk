@@ -600,10 +600,10 @@ const menuRevealStyle = computed(() =>
         <div class="intro-img-container reveal-up" data-reveal-delay="0.2">
           <picture>
             <source
-              v-for="src in pulkRoomImageA.sources"
-              :key="src.type"
-              :srcset="src.srcset"
-              :type="src.type"
+              v-for="(srcset, format) in pulkRoomImageA.sources"
+              :key="format"
+              :srcset="srcset"
+              :type="`image/${format}`"
             />
             <img
               :src="pulkRoomImageA.img.src"
@@ -658,10 +658,10 @@ const menuRevealStyle = computed(() =>
       <div class="static-preview" ref="parallaxContainer">
         <picture>
           <source
-            v-for="src in staticGalleryImg.sources"
-            :key="src.type"
-            :srcset="src.srcset"
-            :type="src.type"
+            v-for="(srcset, format) in staticGalleryImg.sources"
+            :key="format"
+            :srcset="srcset"
+            :type="`image/${format}`"
           />
           <img
             ref="parallaxImg"
