@@ -97,14 +97,22 @@ function unlockScroll() {
   }
 }
 
-// Lock body scroll while any BottomMenu modal is open
+// TEST safari-toolbar modals: statt body scroll-lock blenden wir #app
+// aus, damit Window die Modal-Page scrollt → iOS Safari Toolbar reagiert
+// auf Window-Scroll → Pille wird dynamisch.
+// REVERT: { if (current) lockScroll(); else unlockScroll(); }
+let savedModalScrollY = 0
 watch(
   () => overlay.current,
   (current) => {
+    const app = document.getElementById('app')
     if (current) {
-      lockScroll()
+      savedModalScrollY = window.scrollY || 0
+      if (app) app.style.display = 'none'
+      window.scrollTo(0, 0)
     } else {
-      unlockScroll()
+      if (app) app.style.display = ''
+      requestAnimationFrame(() => window.scrollTo(0, savedModalScrollY))
     }
   }
 )

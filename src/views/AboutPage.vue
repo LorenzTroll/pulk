@@ -976,7 +976,29 @@ onBeforeUnmount(() => {
 
 /* ---- Mobile ---- */
 @media (max-width: 640px) {
-  .about-wrap { padding-bottom: 4rem; }
+  /* Bottom-Padding auf reines Safe-Area-Inset reduzieren — der bisherige
+     4rem-Wert war ein Rest aus früheren Safe-Area-Workarounds und hat
+     zusammen mit dem Default min-height:100dvh dafür gesorgt, dass
+     .about-wrap bis in die untere Safe-Area extendet und dort als solid
+     #141414-Block durchscheint. Dadurch tönte die iOS-Safari Liquid-Glass-
+     Toolbar konstant statisch dunkel. Analog zum Fix in AboutModal. */
+  .about-wrap { padding-bottom: env(safe-area-inset-bottom, 0rem); }
+
+  /* WebGL-Canvas auf Mobile deaktivieren — analog zu AboutModal Mobile.
+     Der fixed full-viewport Canvas (position:fixed; top:0; height:100dvh)
+     wurde von Safari 26 als Sampling-Quelle für Toolbar-Color-Tinting
+     herangezogen und produzierte eine schwarze Farbfläche am unteren
+     Bildrand. Stattdessen die echten <picture>/<img>-Elemente sichtbar
+     machen — sie sind im DOM bereits vorhanden, nur per visibility:hidden
+     ausgeblendet. */
+  .gl-canvas { display: none; }
+  .gl-item { visibility: visible; }
+  .gl-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .about-close-btn {
     padding: 1rem 1rem;

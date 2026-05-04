@@ -486,7 +486,7 @@ const bottomMenuStyle = computed(() => {
 
 const base = lifted
   ? (isMobile ? '50rem' : '50rem')
-  : (isMobile ? '0.5rem' : '2rem')
+  : (isMobile ? '0.5rem' : '1.5rem')
 
   return {
     bottom: `calc(${base} + env(safe-area-inset-bottom, 0px))`
@@ -537,10 +537,16 @@ if (typeof window !== 'undefined') {
   }, { passive: true })
 }
 
+// TEMP TEST 2026-05-04 (v2): Reveal über 'opacity' statt 'bottom'.
+// Hintergrund: 'bottom'-Transition triggert iOS-Safari-Safe-Area-Tinting (Bug
+// in v1-Test bestätigt). 'opacity' ist GPU-composited (kein Reflow/Repaint),
+// löst das Tinting nicht aus und erhält den Reveal-Effekt funktional.
+// Rollback: diesen Block durch die originale 4-zeilige Variante ersetzen
+// (siehe git blame).
 const menuRevealStyle = computed(() =>
   menuVisible.value
-    ? { transition: 'bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1)' }
-    : { bottom: '-8rem', transition: 'none' }
+    ? { opacity: 1, transition: 'opacity 0.5s ease' }
+    : { opacity: 0, transition: 'none' }
 )
 </script>
 
@@ -757,11 +763,17 @@ const menuRevealStyle = computed(() =>
         </div>
       </div>
     </section>
-    <!-- ------------------------------------------------------------------- -->
-    <!-- BottomMenu (global CTA tabs)                                        -->
-    <!-- ------------------------------------------------------------------- -->
-    <BottomMenu :style="[bottomMenuStyle, menuRevealStyle]" />
   </main>
+  <!-- ------------------------------------------------------------------- -->
+  <!-- BottomMenu (global CTA tabs)                                        -->
+  <!-- Pattern: transparenter fixed-Wrapper + BottomMenu darin absolute,   -->
+  <!-- damit Safari beide skippt und nicht für Toolbar-Tinting sampled.   -->
+  <!-- ------------------------------------------------------------------- -->
+  <Teleport to="body">
+    <div class="bottom-menu-frame" aria-hidden="true">
+      <BottomMenu :style="[bottomMenuStyle, menuRevealStyle]" class="bottom-menu-absolute" />
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -1409,6 +1421,26 @@ main {
     transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
   will-change: bottom, transform;
 }
+
+/* Transparent-Parent + Absolute-Child Pattern für iOS Safari Toolbar:
+   Safari skippt transparent fixed Elements UND deren absolute Children
+   beim Color-Tinting. */
+.bottom-menu-frame {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+  background: transparent;
+  z-index: 2000;
+}
+
+:deep(.bottom-menu.bottom-menu-absolute) {
+  position: absolute !important;
+  pointer-events: auto;
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   :deep(.bottom-menu) {

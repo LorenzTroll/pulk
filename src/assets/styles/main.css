@@ -31,11 +31,29 @@ html, body {
 }
 
 html {
-  background-color: #e7e8ec;
+  background: #E7E8EC;
 }
 
 body, #app, #app.plain-background {
-  background-color: #e7e8ec !important;
+  /* Solid Color statt Gradient: Safari iOS rendert in der oberen
+     Safe-Area (Notch) sonst weiß, weil der Gradient dort nicht greift. */
+  background: #E7E8EC !important;
+}
+
+/* AboutPage und AboutModal: dunkler Body-Background nur auf Mobile, damit
+   die Save-Area (Notch oben + Home-Indicator unten) farblich zum dunklen
+   Modal-Inhalt passt. :has(.about-wrap) greift wenn AboutPage als Route
+   aktiv ist oder AboutModal mit v-if="visible" rendert — sobald
+   geschlossen, fällt der Background automatisch zurück auf #E7E8EC.
+   Die URL-Pille bleibt dynamisch, weil das Modal seit dem Inner-Scroll-
+   Fix dem window-scroll-Pattern folgt (siehe Mobile-Block in AboutModal). */
+@media (max-width: 640px) {
+  html:has(.about-wrap),
+  body:has(.about-wrap),
+  #app:has(.about-wrap),
+  #app.plain-background:has(.about-wrap) {
+    background: #141414 !important;
+  }
 }
 
 :root {

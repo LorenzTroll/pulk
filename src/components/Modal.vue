@@ -28,7 +28,7 @@ watch(
       previousActiveElement = document.activeElement
       window.addEventListener('keydown', handleKeydown)
       requestAnimationFrame(() => {
-        dialogRef.value?.focus?.()
+        dialogRef.value?.focus?.({ preventScroll: true })
       })
     } else {
       window.removeEventListener('keydown', handleKeydown)
@@ -68,17 +68,18 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .overlay-backdrop {
-  position: fixed;
-  top: 0.7rem; left: 0; right: 0;
-  height: calc(100dvh - 0.7rem);
+  /* TEST safari-toolbar modals: position:relative + min-height:100dvh
+     statt fixed+overflow:auto — Body wird die Scroll-Quelle, Window
+     scrollt → iOS Safari Toolbar reagiert dynamisch → Pille animiert.
+     REVERT: position:fixed; top:0.7rem; left:0; right:0;
+             height:calc(100dvh - 0.7rem); overflow:auto;
+             -webkit-overflow-scrolling:touch; touch-action:pan-y;
+             overscroll-behavior:contain; */
+  position: relative;
+  min-height: 100dvh;
   background: rgba(0,0,0,1);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
   z-index: 1000;
-  overflow: auto;
-  /* Allow modal content to scroll on touch devices; only background is locked */
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
 }
 
 .overlay-backdrop:focus {

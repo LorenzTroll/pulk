@@ -878,7 +878,35 @@ onBeforeUnmount(() => {
 
 /* ---- Mobile ---- */
 @media (max-width: 640px) {
-  .about-wrap { padding-bottom: 4rem; }
+  /* Inner-Scroll-Fragment auf Mobile entfernen, sodass das Modal dem
+     gleichen window-scroll-Pattern folgt wie PricingModal/ContactModal
+     (siehe App.vue: #app wird bei Modal-Open ausgeblendet, damit Window
+     die Modal-Page scrollt → iOS Safari Toolbar reagiert dynamisch).
+     Zuvor scrollte AboutModal intern (.about-wrap{overflow-y:auto;
+     height:100%} + .modal-scroll{max-height:100dvh}), wodurch die
+     URL-Pille statisch blieb. */
+  .about-wrap {
+    overflow-y: visible;
+    height: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0rem);
+  }
+  .modal-scroll {
+    max-height: none;
+  }
+
+  /* WebGL-Canvas auf Mobile deaktivieren: Der RAF-translateY-Trick (siehe
+     glTick) desynchronisiert mit dem iOS-Compositor-Scroll und zeigt
+     einen zitternden schwarzen Balken über den Bildern. Stattdessen die
+     echten <picture>/<img>-Elemente sichtbar machen — sie sind im DOM
+     bereits vorhanden, nur per visibility:hidden ausgeblendet. */
+  .gl-canvas-wrap { display: none; }
+  .gl-item { visibility: visible; }
+  .gl-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .about-header {
     padding: 6rem 7.5% 0rem;
