@@ -612,7 +612,11 @@ function handleFormSubmit() {
 .contact-overlay {
   background: #e7e8ec;
   width: 100%;
-  min-height: 100%;
+  /* min-height: 100dvh statt 100% — füllt den dynamischen Viewport
+     (passt sich an iOS Safari Browser-Toolbar an, anders als 100vh).
+     min-height statt height, damit Content über den Viewport hinaus
+     wachsen kann (z.B. Calendar-Popover oder Tastatur-Overlay). */
+  min-height: 100dvh;
   align-self: flex-start;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
