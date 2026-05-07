@@ -17,7 +17,7 @@ useHead({
       content:
         'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für pulk.space – Kontaktinformationen der Betreiber des PULK Raums in Halle (Saale).'
     },
-    { name: 'robots', content: 'noindex,follow' },
+    { name: 'robots', content: 'index,follow' },
 
     // Open Graph
     { property: 'og:title', content: 'Impressum · PULK' },
