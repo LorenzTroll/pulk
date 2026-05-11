@@ -144,7 +144,7 @@ function openPrivacy(evt) {
           unserer Webseite zurechtfindet verwenden wir ein datenschutzfreundliches Analyse-Tool
           Sitesight (gehostet in der EU). Du kannst zustimmen oder einfach ohne Analyse
           weitermachen. Weitere Informationen findest du in unseren
-          <a href="/datenschutz" class="privacy-link" @click="openPrivacy">Datenschutz-Richtlinien</a>.
+          <a href="/datenschutz/" class="privacy-link" @click="openPrivacy">Datenschutz-Richtlinien</a>.
         </p>
         <div class="banner-divider" aria-hidden="true"></div>
         <div class="banner-buttons">

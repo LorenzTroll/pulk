@@ -14,8 +14,8 @@ import FooterLogo from '@/assets/pulk_footer-logo.svg'
  * ---------------------------------------------------------------------------*/
 const props = defineProps({
   instagramUrl: { type: String, default: '#' },
-  impressumHref: { type: String, default: '/impressum' },
-  datenschutzHref: { type: String, default: '/datenschutz' },
+  impressumHref: { type: String, default: '/impressum/' },
+  datenschutzHref: { type: String, default: '/datenschutz/' },
   company: { type: String, default: 'Pulk' },
   year: { type: [Number, String], default: new Date().getFullYear() }
 })
@@ -169,9 +169,9 @@ const isAbsolute = computed(() =>
           <div class="footer-group">
             <h3>Seiten</h3>
             <ul>
-              <li><router-link to="/anfragen">Anfrage senden</router-link></li>
-              <li><router-link to="/about">Über uns</router-link></li>
-              <li><router-link to="/preise">Preise / Pakete</router-link></li>
+              <li><router-link to="/anfragen/">Anfrage senden</router-link></li>
+              <li><router-link to="/about/">Über uns</router-link></li>
+              <li><router-link to="/preise/">Preise / Pakete</router-link></li>
             </ul>
           </div>
 

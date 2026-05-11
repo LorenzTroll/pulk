@@ -676,7 +676,7 @@ onBeforeUnmount(() => {
               und nüchtern ist. Pulk ist ein Ort, an dem Produktivität und Gemütlichkeit sich nicht ausschließen. Ein Raum, der euch in die Lage versetzt,
               euch auf das Wesentliche zu konzentrieren. Das möchten wir mit euch teilen. Pulk ist gemacht, um sich anzupassen: an Gruppen, an Formate,
               an Ideen. Ein Stück Handwerk. Ein Stück Design. Stundenweise zur Miete, damit eure Projekte den passenden Raum finden.
-              Alle Pakete und Tarife findet ihr auf unserer Seite <InlineLink to="/preise">Preise & Pakete</InlineLink>.
+              Alle Pakete und Tarife findet ihr auf unserer Seite <InlineLink to="/preise/">Preise & Pakete</InlineLink>.
             </p>
           </div>
           <span class="dot dot-bl"></span>

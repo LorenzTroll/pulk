@@ -585,8 +585,8 @@ onBeforeUnmount(() => {
     <div class="pp-footer-wrap">
       <SiteFooter
         instagram-url="https://instagram.com/pulk.space"
-        impressum-href="/impressum"
-        datenschutz-href="/datenschutz"
+        impressum-href="/impressum/"
+        datenschutz-href="/datenschutz/"
         company="Pulk"
       />
     </div>
