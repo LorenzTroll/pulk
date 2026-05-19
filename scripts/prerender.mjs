@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import puppeteer from 'puppeteer'
+import Beasties from 'beasties'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DIST = path.resolve(__dirname, '..', 'dist')
@@ -134,6 +135,24 @@ try {
           /<script[^>]*type="application\/ld\+json"[^>]*>\s*\{[^{}]*"@id"\s*:\s*"https:\/\/pulk\.space\/#faq"[\s\S]*?<\/script>/g,
           ''
         )
+      }
+
+      // Critical-CSS-Extraction: Beasties analysiert das prerenderte HTML
+      // und inlinet nur das Above-the-Fold-CSS in <style>. Restliches CSS
+      // wird preload + lazy load (kein Render-Blocking). Vermeidet FOUC,
+      // weil Critical-CSS sofort verfügbar ist.
+      try {
+        const beasties = new Beasties({
+          path: DIST,
+          publicPath: '/',
+          preload: 'swap',
+          inlineFonts: false,
+          pruneSource: false,
+          logLevel: 'silent',
+        })
+        html = await beasties.process(html)
+      } catch (err) {
+        console.warn(`[prerender] Beasties fail for ${route.path}: ${err.message}`)
       }
 
       const outPath = path.join(DIST, route.out)

@@ -56,7 +56,16 @@ async function evaluateBanner() {
  * Lifecycle & watchers
  * ==========================================================================*/
 onMounted(() => {
-  setTimeout(evaluateBanner, 0) // sicher nach initialen DOM-Operations
+  // LCP-Schutz: Banner wird nicht synchron nach Mount evaluiert, sondern
+  // erst wenn der Browser idle ist. Sonst rendert der lange Banner-Text
+  // above-the-fold und wird zum LCP-Element. Mit Idle-Defer ist das LCP
+  // das Hero-Bild (AVIF, preloaded). Fallback für ältere Browser via
+  // setTimeout mit 600ms — sicher nach Initial-Paint.
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(evaluateBanner, { timeout: 1500 })
+  } else {
+    setTimeout(evaluateBanner, 600)
+  }
 })
 
 watch(
