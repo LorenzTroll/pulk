@@ -22,6 +22,17 @@ const PricingModal = defineAsyncComponent(() =>
   import('@/components/PricingModal.vue')
 )
 
+/* Lazy-Mount-Strategie für die drei Modals: solange das Modal nie
+   geöffnet wurde, ist es nicht im Render-Tree → Vue löst die
+   defineAsyncComponent-Imports nicht auf → calendar.js (119 KB) und
+   gl.js (55 KB) werden NICHT in den Initial-Bundle gezogen.
+   Sobald das jeweilige Overlay einmal aktiv wird, bleibt das Flag
+   true und das Modal verbleibt im DOM — :visible steuert von da an
+   die Sichtbarkeit (Animation unverändert wie zuvor). */
+const contactEverOpened = ref(false)
+const aboutEverOpened = ref(false)
+const pricingEverOpened = ref(false)
+
 useHead({
   meta: [
     // Windows Tile
@@ -105,6 +116,12 @@ let savedModalScrollY = 0
 watch(
   () => overlay.current,
   (current) => {
+    // Lazy-Mount-Flags setzen: das jeweilige Modal kommt damit erstmals
+    // in den Render-Tree und sein defineAsyncComponent-Chunk wird geladen.
+    if (current === 'contact') contactEverOpened.value = true
+    else if (current === 'about') aboutEverOpened.value = true
+    else if (current === 'pricing') pricingEverOpened.value = true
+
     const app = document.getElementById('app')
     if (current) {
       savedModalScrollY = window.scrollY || 0
@@ -306,16 +323,19 @@ onBeforeUnmount(() => {
     <router-view />
     <!-- About -->
     <AboutModal
+      v-if="aboutEverOpened"
       :visible="overlay.current === 'about'"
       @close="overlay.close"
     />
     <!-- Contact -->
     <ContactModal
+      v-if="contactEverOpened"
       :visible="overlay.current === 'contact'"
       @close="overlay.close"
     />
     <!-- Pricing -->
     <PricingModal
+      v-if="pricingEverOpened"
       :visible="overlay.current === 'pricing'"
       @close="overlay.close"
     />

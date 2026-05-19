@@ -2,17 +2,25 @@
 /* -----------------------------------------------------------------------------
  * Imports
  * ---------------------------------------------------------------------------*/
-import { ref, nextTick, onMounted, onBeforeUnmount, computed, watch } from 'vue'
+import { ref, nextTick, onMounted, onBeforeUnmount, computed, watch, defineAsyncComponent } from 'vue'
 import { useHead } from '@vueuse/head'
 import gsap from 'gsap'
 
-import { Calendar } from 'hkanev-vue-calendar'
 import { useCalendarStore } from '@/stores/calendar'
 import SiteFooter from '@/components/SiteFooter.vue'
 import { track } from '@/utils/tracking'
 
-import 'hkanev-vue-calendar/dist/style.css'
 import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+
+/* Calendar wird lazy geladen: spart 119 KB raw / 42 KB gzip im
+   Initial-Bundle. Die hkanev-vue-calendar-Library inkl. Stylesheet
+   kommt erst on-demand in den Render-Tree, wenn der Date-Picker
+   tatsächlich geöffnet wird. */
+const Calendar = defineAsyncComponent(async () => {
+  await import('hkanev-vue-calendar/dist/style.css')
+  const mod = await import('hkanev-vue-calendar')
+  return mod.Calendar
+})
 
 /* -----------------------------------------------------------------------------
  * SEO / Meta

@@ -8,12 +8,12 @@ import {
   nextTick,
   onMounted,
   onBeforeUnmount,
-  computed
+  computed,
+  defineAsyncComponent
 } from 'vue'
 
 import { useHead } from '@vueuse/head'
 import Modal from './Modal.vue'
-import { Calendar } from 'hkanev-vue-calendar'
 
 import { useOverlayStore } from '@/stores/overlay'
 import { useCalendarStore } from '@/stores/calendar'
@@ -22,8 +22,17 @@ import { getGsap } from '@/composables/lazyGsap'
 import { useRevealUp } from '@/composables/useRevealUp'
 import { track } from '@/utils/tracking'
 
-import 'hkanev-vue-calendar/dist/style.css'
 import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+
+/* Calendar wird lazy geladen: erst wenn das Date-Picker-Overlay tatsächlich
+   geöffnet wird (showCalendar=true). Spart 119 KB raw / 42 KB gzip im
+   Initial-Bundle, weil hkanev-vue-calendar inkl. Stylesheet erst on-demand
+   in den Render-Tree kommt. */
+const Calendar = defineAsyncComponent(async () => {
+  await import('hkanev-vue-calendar/dist/style.css')
+  const mod = await import('hkanev-vue-calendar')
+  return mod.Calendar
+})
 
 /* -----------------------------------------------------------------------------
  * Props & Emits
