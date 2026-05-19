@@ -1,11 +1,6 @@
 import '@/assets/styles/main.css'
 import '@/assets/css/modal.css'
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
-library.add(faCheck)
-
 // hkanev-vue-calendar wird NICHT global registriert — er wird nur in
 // ContactModal.vue und ContactPage.vue gebraucht und dort jeweils lokal
 // importiert (`import { Calendar } from 'hkanev-vue-calendar'` + style.css).
@@ -130,7 +125,6 @@ router.afterEach(() => {
 const app = createApp(App)
 const head = createHead()
 
-app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.use(head)
 app.use(createPinia())

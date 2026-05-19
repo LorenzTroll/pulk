@@ -588,10 +588,10 @@ const menuRevealStyle = computed(() =>
         </div>
         <!-- Unten: 4 Stühle im Flex-Container — selbes Shrink-Verhalten wie Oben -->
         <div class="hero-chairs-bottom">
-          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
-          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
-          <Pic :image="chairPurple" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
-          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="lazy" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="eager" fetchpriority="high" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
+          <Pic :image="chairPurple" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
+          <Pic :image="chairBlack" class="hero-chairs-bottom__item" alt="" aria-hidden="true" loading="eager" sizes="25vw" />
         </div>
         <!-- Dritte Reihe: nur Mobile, selbe Bilder wie hero-chairs-top -->
         <div class="hero-chairs-third">

@@ -61,6 +61,21 @@ const PORT = 4173
 await new Promise((resolve) => server.listen(PORT, resolve))
 console.log(`[prerender] serving dist/ on http://localhost:${PORT}`)
 
+// Find current font files (Vite hashes them per build).
+// We preload only the woff2 — every modern browser supports it.
+const assetsDir = path.join(DIST, 'assets')
+const assetFiles = fs.existsSync(assetsDir) ? fs.readdirSync(assetsDir) : []
+const regularFont = assetFiles.find((f) => /^LayGrotesk-Regular-.*\.woff2$/.test(f))
+const blackFont = assetFiles.find((f) => /^LayGrotesk-Black-.*\.woff2$/.test(f))
+const fontPreloadTags = [
+  regularFont &&
+    `<link rel="preload" as="font" type="font/woff2" href="/assets/${regularFont}" crossorigin>`,
+  blackFont &&
+    `<link rel="preload" as="font" type="font/woff2" href="/assets/${blackFont}" crossorigin>`,
+]
+  .filter(Boolean)
+  .join('\n    ')
+
 const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -99,6 +114,16 @@ try {
         /<link\s+rel="stylesheet"[^>]*href="[^"]*\/(AboutModal|ContactModal|PricingModal|AboutPage|ContactPage|PricingPage|Modal)-[^"]+\.css"[^>]*>/g,
         ''
       )
+
+      // Inject font preloads early in <head> so the browser starts the
+      // woff2 download in parallel with CSS — without waiting for the
+      // stylesheet to be parsed to discover the @font-face URLs.
+      if (fontPreloadTags) {
+        html = html.replace(
+          '</head>',
+          `    ${fontPreloadTags}\n  </head>`
+        )
+      }
 
       // The homepage FAQPage (identified by its @id) can leak into
       // sibling prerendered routes via @vueuse/head. Scrub only that
