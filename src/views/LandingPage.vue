@@ -89,7 +89,21 @@ useHead({
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/' },
-    { rel: 'preload', as: 'image', href: staticGalleryImg.img.src, fetchpriority: 'high' }
+    /* Responsive Preload-Hint für das LCP-Bild: die hero-chairs-bottom
+       schwarzen Stühle (AVIF). Ohne den Hint entdeckt der Browser das
+       Bild erst nach CSS-Parse → ~586 ms Resource-Load-Delay (laut
+       DevTools-LCP-Breakdown 2026-05-19). Der responsive Preload mit
+       imagesrcset überlässt dem Browser die Variant-Wahl wie im
+       <picture>-Tag. fetchpriority="high" + AVIF-only (alle modernen
+       Mobile-Browser, die Score-relevant sind, können AVIF). */
+    {
+      rel: 'preload',
+      as: 'image',
+      imagesrcset: chairBlack.sources?.avif,
+      imagesizes: '25vw',
+      type: 'image/avif',
+      fetchpriority: 'high'
+    }
   ],
   script: []
 })

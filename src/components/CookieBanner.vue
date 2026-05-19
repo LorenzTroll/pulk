@@ -56,6 +56,13 @@ async function evaluateBanner() {
  * Lifecycle & watchers
  * ==========================================================================*/
 onMounted(() => {
+  // Prerender-Skip: Puppeteer (scripts/prerender.mjs) setzt
+  // navigator.webdriver = true. Wenn wir hier triggern würden, landet
+  // der gerenderte Banner-DOM im statischen HTML und wird beim
+  // Initial-Paint zum LCP-Element. Beim Client-Hydrate ohne Consent
+  // entscheidet evaluateBanner() ohnehin erneut.
+  if (typeof navigator !== 'undefined' && navigator.webdriver) return
+
   // LCP-Schutz: Banner wird nicht synchron nach Mount evaluiert, sondern
   // erst wenn der Browser idle ist. Sonst rendert der lange Banner-Text
   // above-the-fold und wird zum LCP-Element. Mit Idle-Defer ist das LCP
