@@ -20,7 +20,7 @@ import imgChairsMixed from '@/assets/hero-chair-mixed-row.png?format=avif;webp;p
  * SEO / Meta
  * ===========================================================================*/
 useHead({
-  title: 'Preise & Pakete · PULK Raum Halle (Saale)',
+  title: 'Preise & Pakete · Workshopraum PULK in Halle (Saale)',
   link: [
     { rel: 'canonical', href: 'https://pulk.space/preise/' }
   ],
@@ -33,12 +33,12 @@ useHead({
     { name: 'robots', content: 'index,follow' },
     {
       property: 'og:title',
-      content: 'Preise & Pakete · PULK Raum Halle (Saale)'
+      content: 'Preise & Pakete · Workshopraum PULK in Halle (Saale)'
     },
     {
       property: 'og:description',
       content:
-        'Transparente Preise im PULK Halle (Saale): Business-Paket für Unternehmen, Community-Paket für Vereine, Initiativen und Einzelpersonen. Direkte Preisauskunft auf unserer Webseite.'
+        'Workshopraum & Seminarraum in Halle (Saale) mieten: Community-Paket ab 25 €/h, Business-Paket ab 50 €/h. Transparent, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
     { property: 'og:image', content: 'https://pulk.space/og-image-preise.jpg' },
     { property: 'og:url', content: 'https://pulk.space/preise/' }
@@ -49,9 +49,9 @@ useHead({
       children: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Product',
-        name: 'Raumangebote & Pakete – PULK Raum Halle (Saale)',
+        name: 'Preise & Pakete für den Workshopraum PULK in Halle (Saale)',
         description:
-          'Business-Paket für Unternehmen und Community-Paket für Vereine, Initiativen, freie Gruppen und Einzelpersonen im PULK Raum in Halle (Saale). Direkte Preisauskunft auf der Webseite.',
+          'Workshopraum und Seminarraum in Halle (Saale) mieten — Business-Paket für Unternehmen, Community-Paket für Vereine, Initiativen und Einzelpersonen. Stundenweise buchbar, ohne Mindestbuchung. Direkte Preisauskunft auf der Webseite.',
         brand: 'PULK',
         image: 'https://pulk.space/PULK_250513_Foto_Michel_Klehm_03.jpg',
         offers: [
