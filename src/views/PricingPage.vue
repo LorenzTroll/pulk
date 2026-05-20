@@ -20,7 +20,7 @@ import imgChairsMixed from '@/assets/hero-chair-mixed-row.png?format=avif;webp;p
  * SEO / Meta
  * ===========================================================================*/
 useHead({
-  title: 'Preise & Pakete · Workshopraum PULK in Halle (Saale)',
+  title: 'Preise & Pakete – Workshopraum PULK in Halle (Saale)',
   link: [
     { rel: 'canonical', href: 'https://pulk.space/preise/' }
   ],
@@ -33,7 +33,7 @@ useHead({
     { name: 'robots', content: 'index,follow' },
     {
       property: 'og:title',
-      content: 'Preise & Pakete · Workshopraum PULK in Halle (Saale)'
+      content: 'Preise & Pakete – Workshopraum PULK in Halle (Saale)'
     },
     {
       property: 'og:description',
