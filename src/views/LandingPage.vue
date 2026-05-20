@@ -51,39 +51,39 @@ useRevealUp('.reveal-up')
  * SEO meta & structured data
  * -------------------------------------------------------------------------- */
 useHead({
-  title: 'Seminarraum & Workshopraum in Halle (Saale) – PULK',
+  title: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)',
   meta: [
     {
       name: 'description',
       content:
-        'PULK – Seminarraum und Workshopraum in Halle (Saale). 100 m², bis zu 40 Personen, stundenweise mietbar für Seminare, Workshops, Klausurtagungen und Teamformate.'
+        'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m², bis zu 40 Personen, stundenweise mietbar für Workshops, Seminare, Klausurtagungen und Teamformate.'
     },
 
     // Open Graph for social media
     {
       property: 'og:title',
-      content: 'Seminarraum & Workshopraum in Halle (Saale) – PULK'
+      content: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)'
     },
     {
       property: 'og:description',
       content:
-        '100 m² Seminarraum und Workshopraum in Halle (Saale). Bis zu 40 Personen, stundenweise mietbar.'
+        '100 m² Workshopraum, Seminarraum und Creative Space in Halle (Saale). Bis zu 40 Personen, stundenweise mietbar.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: 'PULK – Seminarraum und Workshopraum in Halle (Saale)' },
+    { property: 'og:image:alt', content: 'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale)' },
     { property: 'og:url', content: 'https://pulk.space/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
 
     // Twitter
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'Seminarraum & Workshopraum in Halle (Saale) – PULK' },
+    { name: 'twitter:title', content: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)' },
     {
       name: 'twitter:description',
       content:
-        '100 m² Seminarraum in Halle (Saale). Stundenweise mietbar, bis zu 40 Personen.'
+        '100 m² Workshopraum, Seminarraum & Creative Space in Halle (Saale). Stundenweise mietbar, bis zu 40 Personen.'
     },
     { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
@@ -644,8 +644,8 @@ const menuRevealStyle = computed(() =>
             class="intro-heading reveal-up"
             data-reveal-start="top 43%"
           >
-            Seminar&shy;raum &amp; Workshop&shy;raum in Halle (Saale):<wbr>
-            100 Quadrat&shy;meter für bis zu <wbr> 40 Personen
+            Workshop&shy;raum, Seminar&shy;raum &amp; Creative Space in Halle (Saale):<wbr>
+            100 m² für bis zu <wbr> 40 Personen
           </h1>
           <span class="intro-deco intro-deco--bl"></span>
           <span class="intro-deco intro-deco--br"></span>
