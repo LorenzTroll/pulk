@@ -28,7 +28,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Business-Paket, Gruppen-Paket und individuelle Anfragen: Faire Preise für euren Workshop, euer Vernetzungstreffen oder eure Veranstaltung im PULK Raum in Halle (Saale).'
+        'Business- und Community-Paket mit direkter Preisauskunft auf unserer Webseite'
     },
     { name: 'robots', content: 'index,follow' },
     {
@@ -38,7 +38,7 @@ useHead({
     {
       property: 'og:description',
       content:
-        'Transparente Preise im PULK: Business-Paket für Unternehmen, Gruppen-Paket für Organisationen und individuelle Angebote für besondere Formate in Halle (Saale).'
+        'Transparente Preise im PULK Halle (Saale): Business-Paket für Unternehmen, Community-Paket für Vereine, Initiativen und Einzelpersonen. Direkte Preisauskunft auf unserer Webseite.'
     },
     { property: 'og:image', content: 'https://pulk.space/og-image-preise.jpg' },
     { property: 'og:url', content: 'https://pulk.space/preise/' }
@@ -51,13 +51,13 @@ useHead({
         '@type': 'Product',
         name: 'Raumangebote & Pakete – PULK Raum Halle (Saale)',
         description:
-          'Business-Paket für Unternehmen, Gruppen-Paket für Organisationen und individuelle Lösungen für kleine Gruppen und kulturelle Formate im PULK Raum in Halle (Saale).',
+          'Business-Paket für Unternehmen und Community-Paket für Vereine, Initiativen, freie Gruppen und Einzelpersonen im PULK Raum in Halle (Saale). Direkte Preisauskunft auf der Webseite.',
         brand: 'PULK',
         image: 'https://pulk.space/PULK_250513_Foto_Michel_Klehm_03.jpg',
         offers: [
           {
             '@type': 'Offer',
-            name: 'Business-Paket (pro Stunde)',
+            name: 'Business-Paket (Basispreis pro Stunde)',
             price: '50',
             priceCurrency: 'EUR',
             priceSpecification: {
@@ -71,7 +71,7 @@ useHead({
           },
           {
             '@type': 'Offer',
-            name: 'Business-Paket (pro Tag/Anlass)',
+            name: 'Business-Paket (Basispreis pro Tag/Anlass)',
             price: '350',
             priceCurrency: 'EUR',
             priceSpecification: {
@@ -85,7 +85,7 @@ useHead({
           },
           {
             '@type': 'Offer',
-            name: 'Gruppen-Paket (Basispreis pro Stunde)',
+            name: 'Community-Paket (Basispreis pro Stunde)',
             priceCurrency: 'EUR',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
