@@ -51,39 +51,39 @@ useRevealUp('.reveal-up')
  * SEO meta & structured data
  * -------------------------------------------------------------------------- */
 useHead({
-  title: 'PULK – Workshop- und Seminarraum in Halle (Saale)',
+  title: 'Seminarraum & Workshopraum in Halle (Saale) – PULK',
   meta: [
     {
       name: 'description',
       content:
-        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
+        'PULK – Seminarraum und Workshopraum in Halle (Saale). 100 m², bis zu 40 Personen, stundenweise mietbar für Seminare, Workshops, Klausurtagungen und Teamformate.'
     },
 
     // Open Graph for social media
     {
       property: 'og:title',
-      content: 'PULK – Workshop- und Seminarraum in Halle (Saale)'
+      content: 'Seminarraum & Workshopraum in Halle (Saale) – PULK'
     },
     {
       property: 'og:description',
       content:
-        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
+        '100 m² Seminarraum und Workshopraum in Halle (Saale). Bis zu 40 Personen, stundenweise mietbar.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: 'PULK – 100 m² Workshop- und Seminarraum in Halle (Saale)' },
+    { property: 'og:image:alt', content: 'PULK – Seminarraum und Workshopraum in Halle (Saale)' },
     { property: 'og:url', content: 'https://pulk.space/' },
     { property: 'og:type', content: 'website' },
     { property: 'og:locale', content: 'de_DE' },
 
     // Twitter
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'PULK – Workshop- und Seminarraum in Halle (Saale)' },
+    { name: 'twitter:title', content: 'Seminarraum & Workshopraum in Halle (Saale) – PULK' },
     {
       name: 'twitter:description',
       content:
-        'Das Pulk ist ein flexibler Raum in Halle (Saale). 100 m², stundenweise mietbar für Workshops, Seminare, Community- und Team-Formate bis zu 40 Personen. Jetzt anfragen.'
+        '100 m² Seminarraum in Halle (Saale). Stundenweise mietbar, bis zu 40 Personen.'
     },
     { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
   ],
@@ -113,22 +113,22 @@ useHead({
  * -------------------------------------------------------------------------- */
 const accordionItems = [
   {
-    label: 'Für welche Formate eignet sich das Pulk?',
+    label: 'Für welche Formate eignet sich unser Workshopraum?',
     content:
       'Workshops, Seminare, Klausurtagungen, Netzwerktreffen, Coachings, Fortbildungen, Vereinssitzungen, Lesungen oder Apéros. Alles, was auf 100 Quadratmetern stattfinden kann. Die modularen Möbel lassen sich frei im Raum stellen, das Podest und die Vorhänge schaffen bei Bedarf separate Zonen. Partys gehören nicht zum Repertoire.'
   },
   {
-    label: 'Welche Ausstattung bietet ihr?',
+    label: 'Welche Ausstattung hat der Seminarraum?',
     content:
       'Im Raum stehen euch Tische, Stühle, ein 50-Zoll-Fernseher auf Rollen, Whiteboard, Pinnwände, Papierrollen und grundlegendes Moderationsmaterial zur Verfügung. Dazu Teeküche mit Geschirr, Ceran-Kochfeld und WLAN. Beamer und Soundanlage sind im Business-Paket inklusive. Im Community-Paket sind sie nur auf Anfrage und ggf. mit Mehrkosten verbunden. Die Bestuhlung reicht für bis zu 40 Personen, 8 Tische sind modular und frei kombinierbar.'
   },
   {
-    label: 'Wie läuft eine Anfrage ab?',
+    label: 'Wie läuft die Buchung für den Seminarraum ab?',
     content:
       'Schaut bei den Preisen, welches Paket auf euch zutrifft. Tragt die Personen und Stunden ein und ihr erfahrt direkt den Gesamtpreis. Über das Kontaktformular könnt ihr alle wichtigen Informationen an uns senden. Wir melden uns innerhalb von 24 Stunden. Wenn alles passt, bekommt ihr eine Nutzungsvereinbarung. Die Nutzungsvereinbarung muss vor dem vereinbarten Termin unterschrieben vorliegen. Die Überweisung des Gesamtbetrags erfolgt vorab und muss ebenfalls vor Beginn der Nutzung auf unserem Konto eingehen. Am Tag eurer Veranstaltung öffnen wir euch den Raum oder ermöglichen euch den Zugang. Wer den Raum vorher sehen möchte: Besichtigungen können vereinbart werden.'
   },
   {
-    label: 'Wo ist das Pulk?',
+    label: 'Wo ist der Seminarraum in Halle (Saale)?',
     content:
       'Talstraße 7 in Halle (Saale), direkt an der Kröllwitzbrücke. Im Hochparterre eines Altbaus gelegen, mit Blick auf die Saale und Burg Giebichenstein, Rieveufer und Saalepromenade. Einen barrierefreien Zugang lässt die Bausubstanz leider nicht zu.'
   }
@@ -574,15 +574,15 @@ const menuRevealStyle = computed(() =>
   <!-- Skip-Navigation für Tastatur- & Screenreader-User -->
   <nav class="skip-nav" aria-label="Direkt zum Inhaltsbereich springen">
     <a href="#intro" class="skip-link">Zur Einleitung</a>
-    <a href="#raum" class="skip-link">Zur Raumbeschreibung</a>
-    <a href="#stimmen" class="skip-link">Zur Kundenstimme</a>
+    <a href="#workshopraum" class="skip-link">Zum Workshopraum</a>
+    <a href="#stimmen" class="skip-link">Zu Stimmen aus Halle</a>
     <a href="#faq" class="skip-link">Zu den FAQs</a>
   </nav>
   <main class="landing-container" style="background-color: #e7e8ec; min-height: 100dvh;">
     <!-- ------------------------------------------------------------------- -->
     <!-- Main layout                                                        -->
     <!-- ------------------------------------------------------------------- -->
-    <section aria-label="Landing">
+    <section aria-label="Seminarraum und Workshopraum in Halle (Saale)">
       <!-- Hero: Stühle-Arrangement (Figma node 792:87) -->
       <div
         class="hero-container"
@@ -644,8 +644,8 @@ const menuRevealStyle = computed(() =>
             class="intro-heading reveal-up"
             data-reveal-start="top 43%"
           >
-            Unser Seminar&shy;raum in Halle:<wbr>
-            100 Quadrat&shy;meter bis zu <wbr> 40 Personen
+            Seminar&shy;raum &amp; Workshop&shy;raum in Halle (Saale):<wbr>
+            100 Quadrat&shy;meter für bis zu <wbr> 40 Personen
           </h1>
           <span class="intro-deco intro-deco--bl"></span>
           <span class="intro-deco intro-deco--br"></span>
@@ -690,7 +690,7 @@ const menuRevealStyle = computed(() =>
             :width="staticGalleryImg.img.width"
             :height="staticGalleryImg.img.height"
             sizes="(max-width: 640px) 100vw, 50vw"
-            alt="Heller, wandelbarer Raum für Seminare und Workshops in Halle (Saale)"
+            alt="Schulungsraum und Seminarraum PULK in Halle (Saale) – wandelbar"
             class="m-img-el"
             loading="lazy"
             decoding="async"
@@ -698,9 +698,9 @@ const menuRevealStyle = computed(() =>
         </picture>
       </div>
       <!-- Caption block below gallery -->
-      <div id="raum" class="static-caption reveal-up" tabindex="-1">
+      <div id="workshopraum" class="static-caption reveal-up" tabindex="-1">
         <h2 class="caption-title">
-          Euer Workshop&shy;raum voller Möglichkeiten
+          Euer Workshop&shy;raum, Seminar&shy;raum &amp; Schulungs&shy;raum in Halle (Saale)
         </h2>
         <p class="caption-text reveal-up animated-text">
           Pulk wird Bühne, wird Ideenwerkstatt, wird Zuhörort. Große Fenster, hohe Decken, Stuck.
@@ -715,10 +715,10 @@ const menuRevealStyle = computed(() =>
     <!-- ------------------------------------------------------------------- -->
     <section id="stimmen" class="review-section" tabindex="-1">
       <div class="review-col review-col--img1 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
-        <Pic :image="reviewImageA" alt="PULK Workshopraum – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
+        <Pic :image="reviewImageA" alt="Seminarraum PULK Halle (Saale) – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
       </div>
       <div class="review-col review-col--img2 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
-        <Pic :image="reviewImageB" alt="PULK Workshopraum – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
+        <Pic :image="reviewImageB" alt="Workshopraum PULK Halle (Saale) – Klausurtagung" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
       </div>
       <!-- Zitat-Spalte -->
       <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
