@@ -56,7 +56,7 @@ useHead({
     {
       name: 'description',
       content:
-        'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m², bis zu 40 Personen, stundenweise mietbar für Workshops, Seminare, Klausurtagungen und Teamformate.'
+        'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m², bis zu 40 Personen, stundenweise mietbar für Workshops, Meetings, Seminare und Kurse'
     },
 
     // Open Graph for social media
