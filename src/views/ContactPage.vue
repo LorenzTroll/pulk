@@ -32,16 +32,16 @@ useHead({
     {
       name: 'description',
       content:
-        'Schreib uns, was du bei uns vorhast und welches Format du mitbringst. Verfügbarkeit prüfen, Anfrage schicken und wir antworten innerhalb von 24 Stunden.'
+        'Workshop, Seminar oder Teammeeting in Halle (Saale) geplant? Schreibt uns, wir antworten innerhalb von 24 Stunden. Unverbindliches Angebot, Raumbesichtigung nach Vereinbarung.'
     },
     { name: 'robots', content: 'index,follow' },
 
     // Open Graph
-    { property: 'og:title', content: 'PULK anfragen – Workshopraum mieten in Halle (Saale)' },
+    { property: 'og:title', content: 'PULK anfragen – Workshopraum in Halle (Saale)' },
     {
       property: 'og:description',
       content:
-        'Plant ihr einen Workshop, ein Seminar, Teammeeting oder ganz was anderes? Schickt uns eure Anfrage, wir melden uns innerhalb von 24 Stunden.'
+        'Workshop, Seminar oder Teammeeting geplant? Schreibt uns – Antwort innerhalb von 24 Stunden.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
@@ -49,17 +49,7 @@ useHead({
     { property: 'og:image:alt', content: 'PULK – Workshopraum in Halle (Saale) anfragen' },
     { property: 'og:url', content: 'https://pulk.space/anfragen/' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:locale', content: 'de_DE' },
-
-    // Twitter
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'PULK anfragen – Workshopraum mieten in Halle (Saale)' },
-    {
-      name: 'twitter:description',
-      content:
-        'Schreib uns, was du bei uns vorhast und welches Format du mitbringst. Verfügbarkeit prüfen, Anfrage schicken und wir antworten innerhalb von 24 Stunden.'
-    },
-    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
+    { property: 'og:locale', content: 'de_DE' }
   ],
   script: [
     {

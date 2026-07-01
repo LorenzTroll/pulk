@@ -38,6 +38,8 @@ import pulkLogoLandingpage from '@/assets/pulk-logo-landingpage.svg'
 import ciStoolContainer from '@/assets/ci-elements-stool-container.png?w=600;1200&format=avif;webp;png&as=picture'
 import reviewImageA from '@/assets/pulk_review_customerA_imageA.png?w=640;1200&format=avif;webp;png&as=picture'
 import reviewImageB from '@/assets/pulk_review-section_customerA-imageB.png?w=640;1200&format=avif;webp;png&as=picture'
+import reviewImageC from '@/assets/pulk_review-section_customerB-imageA.jpg?w=640;1200&format=avif;webp;jpg&as=picture'
+import reviewImageD from '@/assets/pulk_review-section_customerB-imageB.jpg?w=640;1200&format=avif;webp;jpg&as=picture'
 import pulkRoomImageA from '@/assets/pulk_room_image-A.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 import Pic from '@/components/Pic.vue'
@@ -56,18 +58,18 @@ useHead({
     {
       name: 'description',
       content:
-        'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m², stundenweise mietbar für Business- und Community-Veranstaltungen bis zu 40 Personen. Jetzt anfragen.'
+        'Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m² für eure Gruppe, bis zu 40 Personen, stundenweise mietbar, ohne Mindestbuchung.'
     },
 
     // Open Graph for social media
     {
       property: 'og:title',
-      content: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)'
+      content: 'PULK – Workshopraum und Creative Space in Halle (Saale)'
     },
     {
       property: 'og:description',
       content:
-        '100 m² Workshopraum, Seminarraum und Creative Space in Halle (Saale). Bis zu 40 Personen, stundenweise mietbar.'
+        '100 m² für eure Gruppe, bis 40 Personen. Stundenweise mietbar, ohne Mindestbuchung.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
@@ -75,17 +77,7 @@ useHead({
     { property: 'og:image:alt', content: 'PULK – Workshopraum, Seminarraum und Creative Space in Halle (Saale)' },
     { property: 'og:url', content: 'https://pulk.space/' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:locale', content: 'de_DE' },
-
-    // Twitter
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)' },
-    {
-      name: 'twitter:description',
-      content:
-        '100 m² Workshopraum, Seminarraum & Creative Space in Halle (Saale). Stundenweise mietbar, bis zu 40 Personen.'
-    },
-    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
+    { property: 'og:locale', content: 'de_DE' }
   ],
   link: [
     { rel: 'canonical', href: 'https://pulk.space/' },
@@ -711,30 +703,59 @@ const menuRevealStyle = computed(() =>
       </div>
     </section>
     <!-- ------------------------------------------------------------------- -->
-    <!-- Review Section (Figma node 792:98)                                 -->
+    <!-- Review Section (Figma node 1155:70)                                -->
+    <!-- Reihe 1: Bild | Bild | Zitat   ·   Reihe 2: Zitat | Bild | Bild    -->
     <!-- ------------------------------------------------------------------- -->
     <section id="stimmen" class="review-section" tabindex="-1">
-      <div class="review-col review-col--img1 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
-        <Pic :image="reviewImageA" alt="Seminarraum PULK Halle (Saale) – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
-      </div>
-      <div class="review-col review-col--img2 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
-        <Pic :image="reviewImageB" alt="Workshopraum PULK Halle (Saale) – Klausurtagung" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
-      </div>
-      <!-- Zitat-Spalte -->
-      <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
-        <span class="review-deco review-deco--tl"></span>
-        <span class="review-deco review-deco--tr"></span>
-        <div class="review-quote-content">
-          <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
-          <h2 class="review-quote-text">
-            Das Pulk ist modular, bestens durchdacht, gemütlich und sehr freundlich<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
-          </h2>
+      <!-- Reihe 1 (Figma node 792:98) -->
+      <div class="review-row review-row--imgquote">
+        <div class="review-col review-col--img1 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
+          <Pic :image="reviewImageA" alt="Seminarraum PULK Halle (Saale) – Kundenmoment" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
         </div>
-        <p class="review-attribution">
-          Unterstützer:innen<br>Die Linke Halle Saale
-        </p>
-        <span class="review-deco review-deco--bl"></span>
-        <span class="review-deco review-deco--br"></span>
+        <div class="review-col review-col--img2 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
+          <Pic :image="reviewImageB" alt="Workshopraum PULK Halle (Saale) – Klausurtagung" loading="lazy" sizes="(max-width: 640px) 50vw, 30vw" />
+        </div>
+        <!-- Zitat-Spalte -->
+        <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
+          <span class="review-deco review-deco--tl"></span>
+          <span class="review-deco review-deco--tr"></span>
+          <div class="review-quote-content">
+            <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
+            <h2 class="review-quote-text">
+              Das Pulk ist modular, bestens durchdacht, gemütlich und sehr freundlich<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
+            </h2>
+          </div>
+          <p class="review-attribution">
+            Unterstützer:innen<br>Die Linke Halle Saale
+          </p>
+          <span class="review-deco review-deco--bl"></span>
+          <span class="review-deco review-deco--br"></span>
+        </div>
+      </div>
+      <!-- Reihe 2 (Figma node 1155:68) -->
+      <div class="review-row review-row--quoteimg">
+        <!-- Zitat-Spalte -->
+        <div class="review-col review-col--quote reveal-up" data-reveal-start="top 75%" data-reveal-delay="0">
+          <span class="review-deco review-deco--tl"></span>
+          <span class="review-deco review-deco--tr"></span>
+          <div class="review-quote-content">
+            <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
+            <h2 class="review-quote-text">
+              Der licht&shy;durch&shy;flutete Raum und Ambiente waren perfekt für kreative Prozesse.<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
+            </h2>
+          </div>
+          <p class="review-attribution">
+            Tourismusverband<br>Sachsen-Anhalt e.V.
+          </p>
+          <span class="review-deco review-deco--bl"></span>
+          <span class="review-deco review-deco--br"></span>
+        </div>
+        <div class="review-col review-col--img3 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
+          <Pic :image="reviewImageC" alt="Zufriedene Kundin im Workshopraum PULK Halle (Saale)" loading="lazy" sizes="(max-width: 640px) 100vw, 28vw" />
+        </div>
+        <div class="review-col review-col--img4 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
+          <Pic :image="reviewImageD" alt="Teilnehmerin mit Tagungsunterlagen im PULK Halle (Saale)" loading="lazy" sizes="(max-width: 640px) 100vw, 24vw" />
+        </div>
       </div>
     </section>
     <!-- ------------------------------------------------------------------- -->
@@ -1134,13 +1155,22 @@ const menuRevealStyle = computed(() =>
  * -------------------------------------------------------------------------- */
 .review-section {
   display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 5rem; /* Abstand zwischen den beiden Reihen */
   padding: 5rem 7%;
 }
 
-/* Bild-Spalten: img2 deutlich breiter als img1 (Figma: 405px vs. 534px) */
+/* Eine Review-Reihe = 3-Spalten-Flex
+   Reihe 1: Bild | Bild | Zitat   ·   Reihe 2: Zitat | Bild | Bild */
+.review-row {
+  display: flex;
+  flex-wrap: nowrap; /* Desktop: 3 Spalten immer in einer Reihe (kein Wrap) */
+  align-items: stretch;
+  gap: 1rem;
+}
+
+/* Bild-Spalten
+   Reihe 1 (Figma: 405px vs. 534px) · Reihe 2 (Figma: 498px vs. 441px) */
 .review-col--img1 {
   flex: 0 0 22%;
   min-width: 10rem;
@@ -1155,13 +1185,33 @@ const menuRevealStyle = computed(() =>
   overflow: hidden;
 }
 
+.review-col--img3 {
+  flex: 0 0 28%;
+  min-width: 11rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.review-col--img4 {
+  flex: 0 0 24%;
+  min-width: 10rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
 .review-col--img1 :deep(img),
-.review-col--img2 :deep(img) {
+.review-col--img2 :deep(img),
+.review-col--img3 :deep(img),
+.review-col--img4 :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
+/* Motiv-Ausrichtung der neuen Fotos (Landscape-Original, hochkant beschnitten) */
+.review-col--img3 :deep(img) { object-position: 60% 22%; }
+.review-col--img4 :deep(img) { object-position: 52% 30%; }
 
 /* Zitat-Spalte: 3×4 Grid — Deco | Quote | Attribution | Deco */
 .review-col--quote {
@@ -1227,6 +1277,10 @@ const menuRevealStyle = computed(() =>
   line-height: 1.114;
   color: #141414;
   margin: 0;
+  /* Weiche Trennstellen (&shy;) standardmäßig ignorieren → Wortbild bleibt wie im Entwurf.
+     Nur im Laptop-Band (Media-Query unten) wird die Trennung für Reihe 2 aktiviert. */
+  -webkit-hyphens: none;
+  hyphens: none;
 }
 
 /* Attribution: row 3 im 4-Zeilen-Grid */
@@ -1241,12 +1295,31 @@ const menuRevealStyle = computed(() =>
   margin: 0rem;
 }
 
+/* Laptop-Band: Desktop-Layout, aber zu schmal für 3 volle Spalten.
+   Hier darf das lange Kompositum in Reihe 2 an seinen weichen Trennstellen (&shy;)
+   brechen → der min-content der Zitat-Spalte sinkt, die Bilder bleiben im rechten Rand.
+   Oberhalb (> 1400px) bleibt das Wortbild exakt wie im Entwurf. */
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .review-row--quoteimg .review-quote-text {
+    -webkit-hyphens: manual;
+    hyphens: manual;
+  }
+}
+
 /* Responsive: ab Tablet in zwei Zeilen, Bilder nebeneinander / Zitat drunter */
 @media (min-width: 641px) and (max-width: 1024px) {
   .review-section {
     padding: 4rem 5%;
-    flex-wrap: wrap;
+  }
+
+  .review-row {
+    flex-wrap: wrap; /* im Umbruch-Bereich wieder erlaubt */
     row-gap: 2.5rem;
+  }
+
+  /* (B) Reihe 2: Bilder zuerst, Zitat darunter (Zitat ans Ende sortiert) */
+  .review-row--quoteimg .review-col--quote {
+    order: 1;
   }
 
   .review-col--img1 {
@@ -1255,6 +1328,14 @@ const menuRevealStyle = computed(() =>
 
   .review-col--img2 {
     flex: 0 0 calc(55% - 0.5rem);
+  }
+
+  .review-col--img3 {
+    flex: 0 0 calc(52% - 0.5rem);
+  }
+
+  .review-col--img4 {
+    flex: 0 0 calc(48% - 0.5rem);
   }
 
   .review-col--quote {
@@ -1270,20 +1351,34 @@ const menuRevealStyle = computed(() =>
 /* Mobile: alles stackt vertikal */
 @media (max-width: 640px) {
   .review-section {
-    flex-direction: column;
     padding: 3rem 5%;
   }
 
+  .review-row {
+    flex-direction: column;
+  }
+
+  /* (B) Reihe 2: Bilder zuerst, Zitat darunter */
+  .review-row--quoteimg .review-col--quote {
+    order: 1;
+  }
+
   .review-col--img1,
-  .review-col--img2 {
+  .review-col--img2,
+  .review-col--img3,
+  .review-col--img4 {
     flex: 0 0 auto;
     width: 100%;
+    /* einheitliche Bildhöhe wie Reihe 1 (445/426) — Motive füllen per object-fit: cover */
+    aspect-ratio: 445 / 426;
     border-radius: 1.25rem;
     overflow: hidden;
   }
 
   .review-col--img1 img,
-  .review-col--img2 img {
+  .review-col--img2 img,
+  .review-col--img3 img,
+  .review-col--img4 img {
     border-radius: 1.25rem;
   }
 

@@ -17,39 +17,29 @@ import InlineLink from '@/components/InlineLink.vue'
  * SEO / Meta
  * ---------------------------------------------------------------------------*/
 useHead({
-  title: 'Der Raum PULK – Creative Space mieten in Halle-Kröllwitz',
+  title: 'About PULK – Creative Space in Halle (Saale)',
   meta: [
     {
       name: 'description',
       content:
-        'Stuck, Dielen, modulares Holzdesign. Das ist der Creative Space Pulk in Halle-Kröllwitz. Fotos, Einblicke und die Geschichte hinter dem Workshopraum in der Talstraße 7.'
+        'Modularer Workshopraum in Halle (Saale) mit Dielen, Stuck und modernem Holzdesign. Einblicke, Fotos und wie der Raum entstanden ist.'
     },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
 
     // Open Graph
-    { property: 'og:title', content: 'PULK – Creative Space in Halle-Kröllwitz' },
+    { property: 'og:title', content: 'Das ist PULK – Creative Space in Halle (Saale)' },
     {
       property: 'og:description',
       content:
-        'Nichts in diesem Raum ist Zufall. Materialien, Möbel und Raumaufteilung sind so gestaltet, dass sich unser Creative Space in Halle-Kröllwitz eurem Workshop-Format anpasst.'
+        '100 m² Workshopraum in der Talstraße 7. Stuck, Dielen, modulares Holzdesign – schaut rein.'
     },
     { property: 'og:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: 'PULK – Creative Space in Halle-Kröllwitz' },
+    { property: 'og:image:alt', content: 'PULK – Creative Space in Halle (Saale)' },
     { property: 'og:url', content: 'https://pulk.space/about/' },
     { property: 'og:type', content: 'website' },
-    { property: 'og:locale', content: 'de_DE' },
-
-    // Twitter
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:title', content: 'PULK – Creative Space in Halle-Kröllwitz' },
-    {
-      name: 'twitter:description',
-      content:
-        'Stuck, Dielen, modulares Holzdesign. Das ist der Creative Space Pulk in Halle-Kröllwitz. Fotos, Einblicke und die Geschichte hinter dem Workshopraum in der Talstraße 7.'
-    },
-    { name: 'twitter:image', content: 'https://pulk.space/pulk-og-image_2025.jpg' }
+    { property: 'og:locale', content: 'de_DE' }
   ],
   link: [{ rel: 'canonical', href: 'https://pulk.space/about/' }],
   script: [

@@ -28,17 +28,17 @@ useHead({
     {
       name: 'description',
       content:
-        'Business- und Community-Paket mit direkter Preisauskunft auf unserer Webseite'
+        'Community-Paket ab 25 €/h, Business-Paket ab 50 €/h. Direkte Preisauskunft auf unserer Webseite, Stundenweise mieten, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
     { name: 'robots', content: 'index,follow' },
     {
       property: 'og:title',
-      content: 'Preise & Pakete – Workshopraum PULK in Halle (Saale)'
+      content: 'PULK Preise & Pakete – Workshopraum Halle (Saale)'
     },
     {
       property: 'og:description',
       content:
-        'Workshopraum & Seminarraum in Halle (Saale) mieten: Community-Paket ab 25 €/h, Business-Paket ab 50 €/h. Transparent, ohne Mindestbuchung, ohne Cateringpflicht.'
+        'Community ab 25 €/h, Business ab 50 €/h. Stundenweise mietbar, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
     { property: 'og:image', content: 'https://pulk.space/og-image-preise.jpg' },
     { property: 'og:url', content: 'https://pulk.space/preise/' }
