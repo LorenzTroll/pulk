@@ -34,24 +34,27 @@ const router = createRouter({
     { path: '/anfragen',  name: 'anfragen',  component: () => import('@/views/ContactPage.vue') },
     { path: '/about',  name: 'about',  component: () => import('@/views/AboutPage.vue') },
 
-    /* MODAL-Routen (nicht indexiert, nur UI-State) */
-    { 
-      path: '/modal/preise', 
-      name: 'modal-preise', 
+    /* MODAL-Routen (nicht indexiert, nur UI-State).
+       Namen im camelCase — BottomMenu.vue (geschützt) pusht
+       'modalPricing' / 'modalContact' / 'modalAbout'; die früheren
+       kebab-case-Namen führten zu "no match"-Fehlern bei router.push. */
+    {
+      path: '/modal/preise',
+      name: 'modalPricing',
       component: LandingPage,
       props: { modal: 'pricing' },
       meta: { robots: 'noindex' }
     },
-    { 
+    {
       path: '/modal/anfragen',
-      name: 'modal-anfragen',
+      name: 'modalContact',
       component: LandingPage,
       props: { modal: 'contact' },
       meta: { robots: 'noindex' }
     },
-    { 
-      path: '/modal/about',  
-      name: 'modal-about',  
+    {
+      path: '/modal/about',
+      name: 'modalAbout',
       component: LandingPage,
       props: { modal: 'about' },
       meta: { robots: 'noindex' }
@@ -71,7 +74,12 @@ router.beforeEach((to, from, next) => {
   // Alle SEO-Seiten, auf denen KEIN Modal laufen soll
   const seoPaths = ['/datenschutz', '/impressum', '/about', '/preise', '/anfragen']
 
-  if (seoPaths.includes(to.path)) {
+  // Trailing-Slash normalisieren: Footer-Links verwenden '/about/' etc. —
+  // ohne Normalisierung matcht includes() nicht und destroyLenis() wird
+  // übersprungen → verwaiste Lenis-Instanz frisst Wheel-Events (Scroll tot).
+  const toPath = to.path.length > 1 ? to.path.replace(/\/+$/, '') : to.path
+
+  if (seoPaths.includes(toPath)) {
     destroyLenis()
 
     // Entfernt alle Lenis-/Scroll-Blocker-Klassen global
@@ -107,7 +115,10 @@ router.afterEach(() => {
   const start = Date.now()
   const maxMs = 4000
 
-  (function tryPageView() {
+  // Als Funktionsdeklaration statt IIFE: die frühere Form `4000\n(function…)()`
+  // wurde durch ASI als Aufruf `4000(…)` geparst → "TypeError: 4000 is not a
+  // function" bei jedem Routenwechsel mit akzeptiertem Consent.
+  function tryPageView() {
     if (window.MDAL && typeof window.MDAL.pageView === 'function') {
       window.MDAL.pageView({ Absolute: null, ClientId: null })
       return
@@ -118,7 +129,8 @@ router.afterEach(() => {
       // Optional: einmalige, leise Warnung – oder ganz weglassen
       console.warn('[Sitesight] MDAL.pageView nicht verfügbar (nach Routewechsel)')
     }
-  })()
+  }
+  tryPageView()
 })
 
 

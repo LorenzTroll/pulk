@@ -351,6 +351,10 @@ function setupReveals(gsap, container) {
 }
 
 /* ─────────────────────────── Watch visible ─────────────────────────────── */
+/* immediate: true ist nötig, weil das Modal seit dem Lazy-Mount (App.vue,
+   v-if="aboutEverOpened") beim ersten Öffnen bereits mit visible=true
+   mountet — ohne immediate feuert der Watcher dann nie und glInit()
+   wird nie aufgerufen (Canvas bliebe 300×150 → leere Photo-Grid). */
 watch(
   () => props.visible,
   async visible => {
@@ -464,7 +468,8 @@ watch(
       }
     })
     if (ScrollTrigger) ScrollTrigger.refresh()
-  }
+  },
+  { immediate: true }
 )
 
 /* ─────────────────────────── Cleanup ───────────────────────────────────── */

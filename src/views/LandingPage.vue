@@ -149,10 +149,15 @@ const introTrigger = ref(null)
 watch(
   () => route.name,
   newName => {
+    /* Keys = Routen-Namen der /modal/*-Routen (main.js). Die früheren Keys
+       (preise/anfragen/about) waren die SEO-Seiten — auf denen ist die
+       LandingPage gar nicht gemountet. Seit router.push im BottomMenu nicht
+       mehr wirft (Namens-Fix), schloss die alte Map das Overlay sofort
+       wieder, weil 'modalAbout' nicht gemappt war. */
     const modalRoutes = {
-      preise: 'pricing',
-      anfragen: 'contact',
-      about: 'about'
+      modalPricing: 'pricing',
+      modalContact: 'contact',
+      modalAbout: 'about'
     }
 
     if (modalRoutes[newName]) {
