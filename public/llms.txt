@@ -1,10 +1,10 @@
 # PULK
 
-> Creative Space und Workshopraum zur Miete in Halle (Saale).
+> Creative Space, Workshopraum und Seminarraum zur Miete in Halle (Saale). 100 m², wandelbar, bis zu 40 Personen. Stundenweise mietbar ab 25 €/Std. (Community) bzw. 50 €/Std. (Business), ohne Mindestbuchung, zzgl. 19 % MwSt.
 
 ## Seiten
 
 - [Startseite](https://pulk.space/)
-- [Preise & Pakete](https://pulk.space/preise)
-- [Über den Raum](https://pulk.space/about)
-- [Anfragen](https://pulk.space/anfragen)
+- [Preise & Pakete](https://pulk.space/preise/): Stundenpreise und Pakete — Community ab 25 €/Std. (bis 25 Personen), Business ab 50 €/Std. (bis 40 Personen), zzgl. 19 % MwSt., ohne Mindestbuchung.
+- [Über den Raum](https://pulk.space/about/)
+- [Anfragen](https://pulk.space/anfragen/)

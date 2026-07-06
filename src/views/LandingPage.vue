@@ -58,7 +58,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m² für eure Gruppe, bis zu 40 Personen, stundenweise mietbar, ohne Mindestbuchung.'
+        'Workshopraum, Seminarraum und Creative Space in Halle (Saale). 100 m² für eure Gruppe, bis zu 40 Personen, stundenweise ab 25 €/Std. mietbar, ohne Mindestbuchung.'
     },
 
     // Open Graph for social media
@@ -699,12 +699,15 @@ const menuRevealStyle = computed(() =>
         <h2 class="caption-title">
           Euer Workshop&shy;raum, Seminar&shy;raum &amp; Schulungs&shy;raum in Halle (Saale)
         </h2>
-        <p class="caption-text reveal-up animated-text">
-          Pulk wird Bühne, wird Ideenwerkstatt, wird Zuhörort. Große Fenster, hohe Decken, Stuck.
-          Darin: modulares Design, viel Holz, Vorhänge, die den Raum neu zeichnen. Wohnlich, aber professionell.
-          Privat, aber repräsentativ. Euer Creative Space und Workshop-Location in Halle (Saale),
-          damit euer Team nicht nur zusammensitzt, sondern vorankommt.
-        </p>
+        <div class="caption-body">
+          <p class="caption-text reveal-up animated-text">
+            Pulk wird Bühne, wird Ideenwerkstatt, wird Zuhörort. Große Fenster, hohe Decken, Stuck.
+            Darin: modulares Design, viel Holz, Vorhänge, die den Raum neu zeichnen. Wohnlich, aber professionell.
+            Privat, aber repräsentativ. Euer Creative Space und Workshop-Location in Halle (Saale),
+            damit euer Team nicht nur zusammensitzt, sondern vorankommt.
+            Neben unserem Business-Paket ab 50 Euro pro Stunde könnt ihr auch unser Community-Angebot ab 25 Euro pro Stunde nutzen.
+          </p>
+        </div>
       </div>
     </section>
     <!-- ------------------------------------------------------------------- -->
@@ -1145,8 +1148,11 @@ const menuRevealStyle = computed(() =>
   overflow-wrap: normal;
 }
 
-.caption-text {
+.caption-body {
   flex: 0 0 48%;
+}
+
+.caption-text {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   line-height: 1.375;
   color: #141414;
@@ -1623,7 +1629,7 @@ main {
     padding-left: 1rem;
   }
 
-  .caption-text {
+  .caption-body {
     flex: 0 0 54%;
   }
 
@@ -1805,7 +1811,7 @@ main {
     padding-left: 0;
   }
 
-  .caption-text {
+  .caption-body {
     flex: none;
     width: 100%;
   }
