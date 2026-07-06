@@ -113,17 +113,28 @@
     { "@type": "LocationFeatureSpecification", "name": "Internet", "value": true }
   ],
   "maximumAttendeeCapacity": 40,
-  "priceRange": "€€",
-  "offers": [
-    {
-    "@type": "AggregateOffer",
+  "priceRange": "€25–€455",
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "Workshop- und Seminarraum-Vermietung",
+      "serviceType": "Raumvermietung",
+      "provider": { "@id": "https://pulk.space/#pulk" },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Halle (Saale)"
+      }
+    },
     "url": "https://pulk.space/preise/",
     "priceCurrency": "EUR",
-    "lowPrice": 25,
-    "highPrice": 455,
-    "availability": "https://schema.org/InStock"
+    "priceSpecification": {
+      "@type": "PriceSpecification",
+      "minPrice": 25,
+      "maxPrice": 455,
+      "priceCurrency": "EUR"
     }
-  ],
+  },
   "hasMap": "https://share.google/1aPrxNg6crO4XKHIb",
   "aggregateRating": {
     "@type": "AggregateRating",

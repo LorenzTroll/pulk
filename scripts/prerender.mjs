@@ -137,6 +137,30 @@ try {
         )
       }
 
+      // Reviews + aggregateRating gehören nur auf die Startseite (kanonische
+      // Business-Entität). Der LocalBusiness-Block (#pulk) steckt statisch in
+      // index.html und landet damit in JEDER prerenderten Route. Auf Nicht-Root-
+      // Seiten die Identität (Name/Adresse/@id) behalten, aber review +
+      // aggregateRating strippen — sonst meldet die GSC je Unterseite
+      // "mehrere Reviews ohne aggregateRating" und die Reviews sind dort
+      // semantisch fehl am Platz. JSON-aware, damit verschachtelte {} sicher sind.
+      if (route.path !== '/') {
+        html = html.replace(
+          /<script\b[^>]*\btype="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g,
+          (full, inner) => {
+            if (!inner.includes('"LocalBusiness"')) return full
+            try {
+              const data = JSON.parse(inner)
+              delete data.review
+              delete data.aggregateRating
+              return full.replace(inner, '\n' + JSON.stringify(data, null, 2) + '\n')
+            } catch {
+              return full
+            }
+          }
+        )
+      }
+
       // Critical-CSS-Extraction: Beasties analysiert das prerenderte HTML
       // und inlinet nur das Above-the-Fold-CSS in <style>. Restliches CSS
       // wird preload + lazy load (kein Render-Blocking). Vermeidet FOUC,
