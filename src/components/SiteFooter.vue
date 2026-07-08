@@ -35,6 +35,11 @@ function trackAssociateClick(name) {
   track('pulk.outbound.click', { destination: name, source: 'footer-associates' })
 }
 
+/* Öffnet das Cookie-Banner erneut (CookieBanner.vue lauscht auf dieses Event) */
+function openCookieSettings() {
+  window.dispatchEvent(new Event('open-cookie-settings'))
+}
+
 const copied = ref(false)
 
 function onCopySuccess(url) {
@@ -181,6 +186,11 @@ const isAbsolute = computed(() =>
             <ul>
               <li><router-link :to="datenschutzHref">Datenschutz</router-link></li>
               <li><router-link :to="impressumHref">Impressum</router-link></li>
+              <li>
+                <button type="button" class="footer-cookie-btn" @click="openCookieSettings">
+                  Cookies verwalten
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -401,6 +411,29 @@ const isAbsolute = computed(() =>
 }
 
 .footer-group a:hover {
+  opacity: 0.7;
+}
+
+/* „Cookies verwalten" ist ein Button (Aktion, keine Navigation), sieht aber
+   aus wie die anderen Rechtliches-Links */
+.footer-cookie-btn {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: #e7e8ec;
+  font-size: 1.25rem;
+  line-height: 2.3125rem;
+  font-weight: 400;
+  letter-spacing: -0.0125rem;
+  text-align: left;
+  transition: opacity 0.2s ease;
+}
+
+.footer-cookie-btn:hover {
   opacity: 0.7;
 }
 
