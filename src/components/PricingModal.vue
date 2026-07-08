@@ -53,6 +53,9 @@ watch(
     }
 
     /* Modal opening → animation */
+    // Funnel-Startpunkt "Preise-Modal geöffnet" (analog pulk.contact.open)
+    track('pulk.pricing.open', { source: 'pricing-modal' })
+
     await nextTick()
 
     const root = rootRef.value
@@ -103,7 +106,12 @@ watch(
       },
       clearProps: 'willChange'
     })
-  }
+  },
+  // immediate: true — Modal mountet seit dem Lazy-Mount (App.vue,
+  // v-if="pricingEverOpened") beim ersten Öffnen bereits mit visible=true;
+  // ohne immediate feuert der Watcher dann nie → open-Event + Animation
+  // würden beim Erst-Öffnen ausfallen (analog AboutModal-Fix).
+  { immediate: true }
 )
 
 /* ============================================================================
