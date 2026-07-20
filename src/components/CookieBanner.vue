@@ -2,7 +2,7 @@
 /* ============================================================================
  * Imports
  * ==========================================================================*/
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { CSSPlugin } from 'gsap/CSSPlugin'
@@ -53,9 +53,24 @@ async function evaluateBanner() {
 }
 
 /* ============================================================================
+ * Banner manuell öffnen — getriggert vom Footer-Link „Cookies verwalten"
+ * und dem Datenschutz-Abschnitt (window-Event). Umgeht die Auto-Show-Logik
+ * (Consent-/Datenschutzseiten-Check) bewusst, weil es eine explizite
+ * Nutzeraktion ist. Nutzer wählt danach im Banner neu (Accept/Reject).
+ * ==========================================================================*/
+async function openCookieSettings() {
+  showBanner.value = true
+  await nextTick()
+  getLenis()?.stop()
+}
+
+/* ============================================================================
  * Lifecycle & watchers
  * ==========================================================================*/
 onMounted(() => {
+  // Footer/Datenschutz können das Banner jederzeit wieder öffnen
+  window.addEventListener('open-cookie-settings', openCookieSettings)
+
   // Prerender-Skip: Puppeteer (scripts/prerender.mjs) setzt
   // navigator.webdriver = true. Wenn wir hier triggern würden, landet
   // der gerenderte Banner-DOM im statischen HTML und wird beim
@@ -73,6 +88,10 @@ onMounted(() => {
   } else {
     setTimeout(evaluateBanner, 600)
   }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('open-cookie-settings', openCookieSettings)
 })
 
 watch(
@@ -98,6 +117,11 @@ function rejectCookies() {
   window.dispatchEvent(new Event('cookie-consent-changed'))
   showBanner.value = false
   getLenis()?.start()
+
+  // War der Tracker in dieser Session bereits geladen (Widerruf nach
+  // vorheriger Zustimmung), lässt er sich nur per Reload zuverlässig
+  // stoppen. Beim Erst-Ablehnen ist window.MDAL nicht vorhanden → kein Reload.
+  if (typeof window !== 'undefined' && window.MDAL) window.location.reload()
 }
 
 /* ============================================================================
@@ -126,7 +150,7 @@ function openPrivacy(evt) {
   <!-- Wrapper v-if-mounted erst wenn showBanner true wird. Position:fixed
        ohne inset entzieht ihn dem normal flow (Größe 0×0), die Children
        (cookie-overlay, cookie-banner) haben eigene fixed-Positioning. -->
-  <div v-if="showBanner" style="position: fixed;">
+  <div v-if="showBanner" style="position: fixed; z-index: 6000;">
     <!-- Background blocker (prevents scrolling) -->
     <div
       class="cookie-overlay"

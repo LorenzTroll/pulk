@@ -116,7 +116,7 @@ const sections = [
       Mit Ihrer Einwilligung verwenden wir das datenschutzfreundliche Analysetool <strong>Sitesight</strong> (siehe unten). Diese Cookies oder Trackingdaten helfen uns, das Nutzerverhalten anonymisiert auszuwerten, um die Website zu verbessern.<br><br>
 
       <strong>C. Cookie-Einstellungen</strong><br>
-      Beim ersten Besuch der Website werden Sie über ein Cookie-Banner um Ihre Einwilligung gebeten. Sie können Ihre Auswahl jederzeit über die Cookie-Einstellungen im Browser ändern oder bereits gespeicherte Cookies löschen.
+      Beim ersten Besuch der Website werden Sie über ein Cookie-Banner um Ihre Einwilligung gebeten. Sie können Ihre Auswahl jederzeit über den Button „Cookies verwalten“ (im Seitenfooter oder oben auf dieser Seite) anpassen oder Ihre Einwilligung mit Wirkung für die Zukunft widerrufen. Alternativ können Sie gespeicherte Cookies in Ihrem Browser löschen.
     `
   },
   {
@@ -270,6 +270,11 @@ function collapseAll() {
   })
 }
 
+/* Öffnet das Cookie-Banner erneut (CookieBanner.vue lauscht auf dieses Event) */
+function openCookieSettings() {
+  window.dispatchEvent(new Event('open-cookie-settings'))
+}
+
 
 /* ============================================================================
  * onBeforeUnmount cleanup
@@ -313,6 +318,11 @@ onBeforeUnmount(() => {
             type="button"
           >X</button>
         </div>
+        <!-- Cookie-Banner erneut öffnen (Widerruf/Zustimmung) — neben dem Suchfeld,
+             damit es auch auf Mobile sichtbar bleibt (expand-toggle ist mobil ausgeblendet) -->
+        <button type="button" class="legal-cookie-btn" @click="openCookieSettings">
+          Cookies verwalten
+        </button>
         <div class="expand-toggle">
           <span @click="expandAll" class="toggle-text">Alles ausklappen</span>
           <span @click="collapseAll" class="toggle-text">Alles einklappen</span>
@@ -423,7 +433,9 @@ onBeforeUnmount(() => {
   line-height: 2rem;
   letter-spacing: -0.01rem;
   color: #141414;
-  padding: 1.25rem;
+  /* Höhe an den kompakten Button angeglichen (statt umgekehrt): vertikales
+     Padding reduziert, line-height 2rem zentriert den Text weiterhin */
+  padding: 0.5rem 1.25rem;
   border: 0.125rem solid #141414;
   border-radius: 0.625rem;
   background: transparent;
@@ -452,10 +464,32 @@ onBeforeUnmount(() => {
 .legal-controls {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
   gap: 2rem;
   margin: 2rem 0 3rem;
+}
+
+/* „Cookies verwalten"-Button neben dem Suchfeld — Outline-Optik wie das Suchfeld */
+.legal-cookie-btn {
+  font-family: 'LayGrotesk', sans-serif;
+  font-size: 1rem;
+  line-height: 1;
+  color: #141414;
+  padding: 1rem 1.5rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.625rem;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.legal-cookie-btn:hover {
+  background: #141414;
+  color: #e7e8ec;
 }
 
 .expand-toggle {
@@ -472,6 +506,7 @@ onBeforeUnmount(() => {
   font-weight: 400;
   display: flex;
   gap: 0.5rem;
+  white-space: nowrap;
   transition: opacity 0.2s ease;
   user-select: none;
 }
@@ -623,16 +658,17 @@ details[open] .icon-chevron {
     margin: 2rem 0rem 3rem 0rem;
   }
 
-  .legal-controls input[type="search"] {
-    height: 50%;
-  }
-
   summary {
     padding: 1.75rem 1.5rem;
   }
 
   .legal-body {
     padding: 0 1.5rem 1.75rem;
+  }
+
+  /* Toggle nicht an den rechten Rand ziehen — im Umbruch links ausrichten */
+  .expand-toggle {
+    margin-left: 0;
   }
 }
 
@@ -721,15 +757,23 @@ details[open] .icon-chevron {
 
   .legal-controls {
     flex-wrap: wrap;
+    gap: 1rem;
   }
 
+  /* Suchfeld schrumpft, damit der "Cookies verwalten"-Button daneben in
+     Zeile 1 passt (statt in Zeile 2) */
   .legal-search-wrap {
-    width: 100%;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   .legal-controls input[type="search"] {
     width: 100%;
-    height: 50%;
+    min-width: 0;
+  }
+
+  .legal-cookie-btn {
+    flex: 0 0 auto;
   }
 
   .expand-toggle {
