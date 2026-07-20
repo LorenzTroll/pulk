@@ -127,6 +127,24 @@ function resetButtons() {
 }
 
 /* -----------------------------------------------------------------------------
+ * Reset gefadeter Tabs bei Overlay-Close über Nicht-Menü-Wege
+ *   Modal Backdrop/ESC/Browser-Zurück setzen overlay.current=null, ohne
+ *   resetButtons() aufzurufen. animateStack() fadet beim Öffnen die inaktiven
+ *   Tabs (contact/pricing) auf opacity:0 — ohne diesen Reset blieben sie nach
+ *   dem Schließen unsichtbar (nur der aktive Tab sichtbar → "nur About").
+ *   Beim Modal-Wechsel geht current 'about'→'pricing' (nie null), der Watcher
+ *   feuert also nur beim echten Schließen, nicht beim Umschalten.
+ *   Guard old!=='contact': Contact nutzt den v-if-Nav-Zweig (andere Refs) und
+ *   wird ohnehin nie gefadet.
+ * ---------------------------------------------------------------------------*/
+watch(
+  () => overlay.current,
+  (val, old) => {
+    if (val === null && old && old !== 'contact') resetButtons()
+  }
+)
+
+/* -----------------------------------------------------------------------------
  * Button Morph Animation
  * (Mieten ↔ Abgesendet)
  * ---------------------------------------------------------------------------*/
