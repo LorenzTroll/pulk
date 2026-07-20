@@ -130,7 +130,13 @@ watch(
     openTimestamp.value = Date.now()
     jsChallenge.value = btoa(Math.random().toString(36).slice(2))
     track('pulk.contact.open', { source: 'contact-modal' })
-  }
+  },
+  // immediate: true — Modal mountet seit dem Lazy-Mount (App.vue,
+  // v-if="contactEverOpened") beim ersten Öffnen bereits mit visible=true;
+  // ohne immediate feuerte der Watcher beim Erst-Öffnen nie → pulk.contact.open
+  // fehlte im Funnel (undercount). jsChallenge kommt separat aus onMounted,
+  // Submit war also nie betroffen.
+  { immediate: true }
 )
 
 watch(
