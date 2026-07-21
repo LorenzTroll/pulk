@@ -97,7 +97,54 @@ useHead({
       fetchpriority: 'high'
     }
   ],
-  script: []
+  // FAQPage-Schema aus den sichtbaren accordionItems (unten). Muss inhaltlich
+  // mit denen synchron bleiben — Google verlangt, dass FAQ-Schema den sichtbaren
+  // Seiteninhalt spiegelt. Hardcoded analog PricingPage.vue (Konvention).
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        '@id': 'https://pulk.space/#faq',
+        url: 'https://pulk.space/',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Für welche Formate eignet sich unser Workshopraum?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Workshops, Seminare, Klausurtagungen, Netzwerktreffen, Coachings, Fortbildungen, Vereinssitzungen, Lesungen oder Apéros. Alles, was auf 100 Quadratmetern stattfinden kann. Die modularen Möbel lassen sich frei im Raum stellen, das Podest und die Vorhänge schaffen bei Bedarf separate Zonen. Partys gehören nicht zum Repertoire.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Welche Ausstattung hat der Seminarraum?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Im Raum stehen euch Tische, Stühle, ein 50-Zoll-Fernseher auf Rollen, Whiteboard, Pinnwände, Papierrollen und grundlegendes Moderationsmaterial zur Verfügung. Dazu Teeküche mit Geschirr, Ceran-Kochfeld und WLAN. Beamer und Soundanlage sind im Business-Paket inklusive. Im Community-Paket sind sie nur auf Anfrage und ggf. mit Mehrkosten verbunden. Die Bestuhlung reicht für bis zu 40 Personen, 8 Tische sind modular und frei kombinierbar.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Wie läuft die Buchung für den Seminarraum ab?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Schaut bei den Preisen, welches Paket auf euch zutrifft. Tragt die Personen und Stunden ein und ihr erfahrt direkt den Gesamtpreis. Über das Kontaktformular könnt ihr alle wichtigen Informationen an uns senden. Wir melden uns innerhalb von 24 Stunden. Wenn alles passt, bekommt ihr eine Nutzungsvereinbarung. Die Nutzungsvereinbarung muss vor dem vereinbarten Termin unterschrieben vorliegen. Die Überweisung des Gesamtbetrags erfolgt vorab und muss ebenfalls vor Beginn der Nutzung auf unserem Konto eingehen. Am Tag eurer Veranstaltung öffnen wir euch den Raum oder ermöglichen euch den Zugang. Wer den Raum vorher sehen möchte: Besichtigungen können vereinbart werden.'
+            }
+          },
+          {
+            '@type': 'Question',
+            name: 'Wo ist der Seminarraum in Halle (Saale)?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Talstraße 7 in Halle (Saale), direkt an der Kröllwitzbrücke. Im Hochparterre eines Altbaus gelegen, mit Blick auf die Saale und Burg Giebichenstein, Rieveufer und Saalepromenade. Einen barrierefreien Zugang lässt die Bausubstanz leider nicht zu.'
+            }
+          }
+        ]
+      })
+    }
+  ]
 })
 
 /* --------------------------------------------------------------------------

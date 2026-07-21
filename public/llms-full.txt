@@ -64,7 +64,7 @@ Alle Preise verstehen sich zzgl. MwSt. Stundenweise buchbar, keine Mindestbuchun
 
 ## Buchungsprozess
 
-1. Anfrage über das Kontaktformular auf https://pulk.space/anfragen
+1. Anfrage über das Kontaktformular auf https://pulk.space/anfragen/
 2. Antwort innerhalb von 24 Stunden
 3. Nutzungsvereinbarung wird zugesendet
 4. Bezahlung erfolgt vorab per Überweisung
@@ -101,7 +101,7 @@ Hinweis: Einen barrierefreien Zugang lässt die Bausubstanz leider nicht zu.
 ## Die Macher
 
 PULK wurde von Lorenz Troll und Michel Klehm entworfen und gebaut. Ein Jahr Planung, Sägen, Fräsen und Gestalten – damit in der Talstraße 7 ein Kreativraum entsteht, der sich an Gruppen, Formate und Ideen anpasst. Sie betreiben den Raum und unterstützen bei der Vorbereitung eurer Veranstaltung.
-Mehr über die Gründer und die Entstehung: https://pulk.space/about
+Mehr über die Gründer und die Entstehung: https://pulk.space/about/
 
 ## Positionierung
 
@@ -110,15 +110,15 @@ PULK ist kein Business Center, kein Co-Working-Space, kein Hotel-Tagungsraum und
 ## Kontakt
 
 - Website: https://pulk.space
-- Anfragen: https://pulk.space/anfragen
+- Anfragen: https://pulk.space/anfragen/
 - E-Mail: kontakt@pulk.space
 - Telefon: +49 345 20849778
 - Instagram: https://www.instagram.com/pulk.space
 - Erreichbarkeit: Mo–Fr 9–18 Uhr
-- Preise: https://pulk.space/preise
-- Über den Raum: https://pulk.space/about
+- Preise: https://pulk.space/preise/
+- Über den Raum: https://pulk.space/about/
 
 
 ## Letzte Aktualisierung
 
-April 2026
+Juli 2026
