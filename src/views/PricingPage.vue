@@ -40,7 +40,6 @@ useHead({
       content:
         'Community ab 25 €/h, Business ab 50 €/h. Stundenweise mietbar, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
-    { property: 'og:image', content: 'https://pulk.space/og-image-preise.jpg' },
     { property: 'og:url', content: 'https://pulk.space/preise/' }
   ],
   script: [
@@ -53,7 +52,7 @@ useHead({
         description:
           'Workshopraum und Seminarraum in Halle (Saale) mieten — Business-Paket für Unternehmen, Community-Paket für Vereine, Initiativen und Einzelpersonen. Stundenweise buchbar, ohne Mindestbuchung. Direkte Preisauskunft auf der Webseite.',
         brand: 'PULK',
-        image: 'https://pulk.space/PULK_250513_Foto_Michel_Klehm_03.jpg',
+        image: 'https://pulk.space/pulk-og-image_2025.jpg',
         offers: [
           {
             '@type': 'Offer',

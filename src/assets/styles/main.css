@@ -36,6 +36,11 @@ html, body {
 
 html {
   background: #E7E8EC;
+  /* Reserviert die Scrollbar-Spalte dauerhaft → kein horizontaler Layout-Shift
+     (CLS), wenn die vertikale Scrollbar erscheint/verschwindet (z. B. beim
+     Öffnen/Schließen der Modals, die #app aus-/einblenden). Bei Overlay-
+     Scrollbars (macOS-Default) ohne sichtbare Wirkung. */
+  scrollbar-gutter: stable;
 }
 
 body, #app, #app.plain-background {

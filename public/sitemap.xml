@@ -41,12 +41,4 @@
     <priority>0.3</priority>
   </url>
 
-  <!-- Datenschutz -->
-  <url>
-    <loc>https://pulk.space/datenschutz/</loc>
-    <lastmod>2026-04-23</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
 </urlset>
