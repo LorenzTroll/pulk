@@ -52,7 +52,9 @@ export function useRevealUp(selector = '.reveal-up', defaults = {}) {
       const triggerSelector = el.getAttribute('data-reveal-trigger')
       const triggerEl = triggerSelector ? root.querySelector(triggerSelector) : el
 
-      el.style.visibility = 'hidden'
+      // opacity:0 statt visibility:hidden — hält den Inhalt im DOM als sichtbaren
+      // Text (Crawler/Extraktoren verwerfen visibility:hidden, opacity:0 nicht).
+      el.style.opacity = '0'
 
       const st = ScrollTrigger.create({
         trigger: triggerEl,
@@ -61,12 +63,15 @@ export function useRevealUp(selector = '.reveal-up', defaults = {}) {
         once: defaults.once ?? true,
         invalidateOnRefresh: true,
         onEnter: () => {
-          el.style.visibility = ''
-
           // ✨ SplitText-Variante
           if (SplitText && el.classList.contains('animated-text')) {
             console.log('[useRevealUp] Animating with SplitText', el)
+            gsap.set(el, { opacity: 1 })
             const split = new SplitText(el, { type: 'words', wordsClass: 'word' })
+            // SplitText setzt aria-hidden auf die Wörter → für Extraktoren/Screenreader
+            // unsichtbar. Entfernen, damit der Satz extrahierbar bleibt.
+            split.words.forEach(w => w.removeAttribute('aria-hidden'))
+            el.removeAttribute('aria-label')
 
             gsap.set(split.words, { color: '#00000034' })
 

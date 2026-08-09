@@ -534,6 +534,10 @@ function handleFormSubmit() {
             Plant ihr was? Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
               Auf Wunsch könnt ihr den Raum vorher besichtigen.
           </p>
+          <p class="cp-subtitle">
+            Pulk hat keine festen Öffnungszeiten. Der Raum wird ausschließlich nach Vereinbarung
+            vermietet — an allen sieben Wochentagen, auch abends und am Wochenende.
+          </p>
         </div>
 
         <form

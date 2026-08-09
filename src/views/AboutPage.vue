@@ -508,6 +508,12 @@ onMounted(async () => {
 
     if (SplitText && el.classList.contains('animated-text')) {
       const split = new SplitText(el, { type: 'words', wordsClass: 'word' })
+      // SplitText setzt aria-hidden auf die Wörter + aria-label auf den Absatz →
+      // Extraktoren/Answer-Engines überspringen den Text (der Prerender-Snapshot
+      // passiert vor split.revert()). Entfernen, damit die Fakten extrahierbar
+      // bleiben (u.a. „sieben Tage die Woche", „bis 40 Personen", „stundenweise mietbar").
+      split.words.forEach(w => w.removeAttribute('aria-hidden'))
+      el.removeAttribute('aria-label')
       gsap.set(split.words, { color: 'rgba(255,255,255,0.12)' })
       gsap.to(split.words, {
         color: '#ffffff',
@@ -532,6 +538,17 @@ onMounted(async () => {
 
   let inViewIndex = 0
   revealEls.forEach(el => {
+    // Prerender (headless Puppeteer): animated-text NICHT splitten. Der Snapshot
+    // passiert 400 ms nach Load — mitten in der Farb-Animation — und würde den
+    // Absatz als ~80 einzelne <div class="word"> einfrieren, die kein Text-
+    // Extraktor zusammensetzt (Fakten wie „sieben Tage die Woche" gingen für
+    // Answer-Engines verloren). Sauberen, sichtbaren Text stehen lassen; echte
+    // Browser (navigator.webdriver === false) animieren unverändert. gl-items
+    // ausgenommen — deren Sichtbarkeit steuert WebGL/CSS.
+    if (navigator.webdriver && !el.classList.contains('gl-item')) {
+      el.style.visibility = ''
+      return
+    }
     const rect = el.getBoundingClientRect()
     if (rect.top < vh) {
       animateEl(el, 0.15 + inViewIndex * 0.06)

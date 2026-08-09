@@ -53,7 +53,7 @@ useRevealUp('.reveal-up')
  * SEO meta & structured data
  * -------------------------------------------------------------------------- */
 useHead({
-  title: 'PULK – Workshopraum, Seminarraum & Creative Space in Halle (Saale)',
+  title: 'PULK – Workshopraum, Seminarraum & Tagungsraum in Halle (Saale)',
   meta: [
     {
       name: 'description',
@@ -688,7 +688,7 @@ const menuRevealStyle = computed(() =>
             class="intro-heading reveal-up"
             data-reveal-start="top 43%"
           >
-            Workshop&shy;raum, Seminar&shy;raum &amp; Creative Space in Halle (Saale):<wbr>
+            Workshop&shy;raum, Seminar&shy;raum und Tagungs&shy;raum in Halle (Saale):<wbr>
             100 m² für bis zu <wbr> 40 Personen
           </h1>
           <span class="intro-deco intro-deco--bl"></span>
@@ -699,10 +699,11 @@ const menuRevealStyle = computed(() =>
             data-reveal-start="top 40%"
             aria-hidden="true"
           >
-            Gebt euren Ideen einen Raum. Ob Workshop, Klausurtagung, Netzwerktreffen oder Seminar:
-            ihr bucht stundenweise, kommt mit eurer Gruppe und habt den Raum ganz für euch.
-            Damit ihr ungestört Großes bewegen könnt. Gemütlich, privat und vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
-            werden aus Team-Meetings Meilensteine und aus Meetings Momente, die hängen bleiben.
+            Gebt euren Ideen den richtigen Raum. Ob Teamevents, Kreativworkshops, Offsite, Präsentationen,
+            Meetups oder andere Formate: Der Raum gehört ganz euch — sieben Tage die Woche.
+            Gemütlich statt steril, wohnlich statt nüchtern, damit ihr ungestört Großes bewegen könnt.
+            Das Pulk ist eure Workshop-Location in Halle (Saale), in der Ideen leichter von Kopf zu Kopf
+            springen und aus Meetings Meilensteine werden.
           </p>
         </div>
         <!-- Mobile: intro-body outside grid -->
@@ -710,10 +711,11 @@ const menuRevealStyle = computed(() =>
           class="intro-body intro-body--mb reveal-up animated-text"
           data-reveal-start="top 40%"
         >
-          Gebt euren Ideen einen Raum. Ob Workshop, Klausurtagung, Netzwerktreffen oder Seminar:
-          ihr bucht stundenweise, kommt mit eurer Gruppe und habt den Raum ganz für euch.
-          Damit ihr ungestört Großes bewegen könnt. Gemütlich, privat und vielseitig. Hier springen Ideen leichter von Kopf zu Kopf,
-          werden aus Team-Meetings Meilensteine und aus Meetings Momente, die hängen bleiben.
+          Gebt euren Ideen den richtigen Raum. Ob Teamevents, Kreativworkshops, Offsite, Präsentationen,
+          Meetups oder andere Formate: Der Raum gehört ganz euch — sieben Tage die Woche.
+          Gemütlich statt steril, wohnlich statt nüchtern, damit ihr ungestört Großes bewegen könnt.
+          Das Pulk ist eure Workshop-Location in Halle (Saale), in der Ideen leichter von Kopf zu Kopf
+          springen und aus Meetings Meilensteine werden.
         </p>
         <!-- Trigger node for advanced GSAP/ScrollTrigger animations -->
         <div class="intro-trigger" ref="introTrigger" />
@@ -742,17 +744,17 @@ const menuRevealStyle = computed(() =>
         </picture>
       </div>
       <!-- Caption block below gallery -->
-      <div id="workshopraum" class="static-caption reveal-up" tabindex="-1">
-        <h2 class="caption-title">
-          Euer Workshop&shy;raum, Seminar&shy;raum &amp; Schulungs&shy;raum in Halle (Saale)
+      <div id="workshopraum" class="section-intro reveal-up" tabindex="-1">
+        <h2 class="section-intro__title">
+          Pulk stundenweise mieten und flexibel einrichten
         </h2>
-        <div class="caption-body">
-          <p class="caption-text reveal-up animated-text">
-            Pulk wird Bühne, wird Ideenwerkstatt, wird Zuhörort. Große Fenster, hohe Decken, Stuck.
-            Darin: modulares Design, viel Holz, Vorhänge, die den Raum neu zeichnen. Wohnlich, aber professionell.
-            Privat, aber repräsentativ. Euer Creative Space und Workshop-Location in Halle (Saale),
-            damit euer Team nicht nur zusammensitzt, sondern vorankommt.
-            Neben unserem Business-Paket ab 50 Euro pro Stunde könnt ihr auch unser Community-Angebot ab 25 Euro pro Stunde nutzen.
+        <div class="section-intro__body">
+          <p class="section-intro__text reveal-up animated-text">
+            Ihr bucht den Raum stundenweise, ohne Mindestbuchung. Unsere modularen Möbel und die flexible
+            Bestuhlung passen sich eurem Format an, nicht umgekehrt. Pulk wird zur Bühne, wird Ideenwerkstatt,
+            wird Zuhörort. Neben unserem Business-Paket ab 50 Euro pro Stunde können Vereine und Initiativen
+            unser Community-Angebot ab 25 Euro pro Stunde nutzen. Anfragen zu kleinen Kulturveranstaltungen
+            wie Lesungen oder Ausstellungen oder zur privaten Nutzung sind ebenfalls möglich.
           </p>
         </div>
       </div>
@@ -1172,14 +1174,14 @@ const menuRevealStyle = computed(() =>
  * Static caption blocks below gallery
  * -------------------------------------------------------------------------- */
 
-.static-caption {
+.section-intro {
   display: flex;
   width: 80%;
   margin: 5rem auto 10rem;
   gap: 2rem;
 }
 
-.caption-title {
+.section-intro__title {
   flex: 0 40%;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
@@ -1195,11 +1197,11 @@ const menuRevealStyle = computed(() =>
   overflow-wrap: normal;
 }
 
-.caption-body {
+.section-intro__body {
   flex: 0 0 48%;
 }
 
-.caption-text {
+.section-intro__text {
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   line-height: 1.375;
   color: #141414;
@@ -1666,17 +1668,17 @@ main {
     margin: 0 auto 4rem;
   }
 
-  .static-caption {
+  .section-intro {
     width: 90%;
     margin: 5rem auto 6rem;
     gap: 2rem;
   }
 
-  .caption-title {
+  .section-intro__title {
     padding-left: 1rem;
   }
 
-  .caption-body {
+  .section-intro__body {
     flex: 0 0 54%;
   }
 
@@ -1846,7 +1848,7 @@ main {
   }
 
   /* Caption unter Gallery */
-  .static-caption {
+  .section-intro {
     width: auto;
     flex-direction: column;
     gap: 1.5rem;
@@ -1854,11 +1856,11 @@ main {
     margin: 0rem 0.5rem 0rem 1.5rem;
   }
 
-  .caption-title {
+  .section-intro__title {
     padding-left: 0;
   }
 
-  .caption-body {
+  .section-intro__body {
     flex: none;
     width: 100%;
   }

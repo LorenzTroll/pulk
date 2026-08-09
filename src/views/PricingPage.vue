@@ -536,6 +536,23 @@ onBeforeUnmount(() => {
     </section>
 
     <!-- ======================================================================
+         Preis-Zusammenfassung als Fließtext — beantwortet „Was kostet der Raum?"
+         außerhalb der Rechner-Chrome, damit Extraktoren/Answer-Engines die Preise
+         (inkl. der Community-Tagessätze) überhaupt lesen können.
+         ====================================================================== -->
+    <section class="pm-summary" aria-labelledby="pm-summary-title">
+      <h2 id="pm-summary-title" class="pm-summary-title">Was kostet der Raum?</h2>
+      <p class="pm-summary-text">
+        Das Community-Paket kostet ab 25 Euro pro Stunde und richtet sich an Vereine,
+        Initiativen, freie Gruppen und Einzelpersonen bis 25 Personen. Für einen ganzen
+        Tag (8 Stunden) gilt ein Tagessatz: 175 Euro für Gruppen bis 10 Personen,
+        210 Euro für größere Gruppen. Das Business-Paket kostet ab 50 Euro pro Stunde
+        für bis zu 40 Personen; der Tagessatz beginnt bei 350 Euro. Alle Preise
+        verstehen sich zzgl. 19 % MwSt.
+      </p>
+    </section>
+
+    <!-- ======================================================================
          FAQ Accordion
          ====================================================================== -->
     <section class="pm-faq">
@@ -914,6 +931,28 @@ onBeforeUnmount(() => {
 /* ============================================================================
  * FAQ Accordion
  * ============================================================================*/
+.pm-summary {
+  width: 100%;
+  max-width: 55rem;
+  margin-top: 3rem;
+}
+.pm-summary-title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.2;
+  color: #141414;
+  margin: 0 0 1.5rem;
+}
+.pm-summary-text {
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  font-weight: 400;
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
+  color: #141414;
+  margin: 0;
+  max-width: 48rem;
+}
+
 .pm-faq {
   width: 100%;
   margin-top: 12rem;
