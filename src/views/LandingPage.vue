@@ -44,6 +44,10 @@ import reviewImageB from '@/assets/pulk_review-section_customerA-imageB.png?w=64
 import reviewImageC from '@/assets/pulk_review-section_customerB-imageA.jpg?w=640;1200&format=avif;webp;jpg&as=picture'
 import reviewImageD from '@/assets/pulk_review-section_customerB-imageB.jpg?w=640;1200&format=avif;webp;jpg&as=picture'
 import pulkPostit from '@/assets/pulk-post-it_a.png?w=800&format=webp&as=src'
+import brushZitatBestens from '@/assets/brush-line-zitatA-bestens.png?w=800&format=webp&as=src'
+import brushZitatDurchdacht from '@/assets/brush-line-zitatA-durchdacht.png?w=800&format=webp&as=src'
+import brushZitatBperfekt from '@/assets/brush-line-zitatB-perfekt-fuer.png?w=800&format=webp&as=src'
+import brushZitatBkreative from '@/assets/brush-line-zitatB-kreative-prozesse.png?w=800&format=webp&as=src'
 import pulkRoomImageA from '@/assets/pulk_room_image-A.jpg?w=640;1200;2000&format=avif;webp;jpg&as=picture'
 
 import Pic from '@/components/Pic.vue'
@@ -625,6 +629,29 @@ onMounted(async () => {
 })
 
 /* --------------------------------------------------------------------------
+ * Zitat-Brushes (erstes Testimonial): Reveal beim Viewport-Eintritt.
+ * Kein Hover — sichtbar auf allen Geräten. Die Sequenz (erst „bestens",
+ * dann „durchdacht") läuft über CSS transition-delay der beiden Brushes.
+ * -------------------------------------------------------------------------- */
+let quoteBrushObserver = null
+onMounted(() => {
+  const quotes = document.querySelectorAll('.review-quote-text--brushed')
+  if (!quotes.length) return
+  quoteBrushObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-inview')
+        quoteBrushObserver.unobserve(e.target)
+      }
+    })
+  }, { threshold: 0, rootMargin: '0px 0px -25% 0px' })
+  quotes.forEach((q) => quoteBrushObserver.observe(q))
+})
+onBeforeUnmount(() => {
+  quoteBrushObserver?.disconnect()
+})
+
+/* --------------------------------------------------------------------------
  * BottomMenu reveal on first scroll
  * -------------------------------------------------------------------------- */
 const menuVisible = ref(false)
@@ -841,12 +868,12 @@ const menuRevealStyle = computed(() => {
           <span class="review-deco review-deco--tr"></span>
           <div class="review-quote-content">
             <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
-            <h2 class="review-quote-text">
-              Das Pulk ist modular, bestens durch&shy;dacht, gemüt&shy;lich und sehr freund&shy;lich<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
+            <h2 class="review-quote-text review-quote-text--brushed">
+              Das Pulk ist modular, <span class="review-quote-word"><span class="review-quote-word-text">bestens</span><img class="review-quote-brush review-quote-brush--a" :src="brushZitatBestens" alt="" aria-hidden="true" /></span> <span class="review-quote-word"><span class="review-quote-word-text">durch&shy;dacht</span><img class="review-quote-brush review-quote-brush--b" :src="brushZitatDurchdacht" alt="" aria-hidden="true" /></span>, gemüt&shy;lich und sehr freund&shy;lich<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
             </h2>
           </div>
           <p class="review-attribution">
-            Unterstützer:innen<br>Die Linke Halle Saale
+            Bürgerdialog,<br>Die Linke Halle Saale
           </p>
           <span class="review-deco review-deco--bl"></span>
           <span class="review-deco review-deco--br"></span>
@@ -860,12 +887,12 @@ const menuRevealStyle = computed(() => {
           <span class="review-deco review-deco--tr"></span>
           <div class="review-quote-content">
             <span class="review-quote-mark review-quote-mark--open" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 6.8C0 2.56 2.68 0.4 8.08 0V3.8C5.8 3.96 4.08 4.2 4.08 6.8H8.08V14.8H0V6.8ZM18.56 3.8C16.28 3.96 14.56 4.2 14.56 6.8H18.56V14.8H10.48V6.8C10.48 2.56 13.16 0.4 18.56 0V3.8Z" fill="black"/></svg></span>
-            <h2 class="review-quote-text">
-              Der licht&shy;durch&shy;flutete Raum und Ambiente waren perfekt für kreative Pro&shy;zesse.<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
+            <h2 class="review-quote-text review-quote-text--brushed">
+              Der licht&shy;durch&shy;flutete Raum und Ambiente waren <span class="review-quote-word"><span class="review-quote-word-text">perfekt für</span><img class="review-quote-brush review-quote-brush--a" :src="brushZitatBperfekt" alt="" aria-hidden="true" /></span> <span class="review-quote-word"><span class="review-quote-word-text">kreative Pro&shy;zesse</span><img class="review-quote-brush review-quote-brush--b" :src="brushZitatBkreative" alt="" aria-hidden="true" /></span>.<span class="review-quote-mark review-quote-mark--close" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="15" viewBox="0 0 19 15" fill="none"><path d="M0 8V0H8.08V8C8.08 12.24 5.4 14.4 0 14.8V11C2.28 10.84 4 10.6 4 8H0ZM10.48 0H18.56V8C18.56 12.24 15.88 14.4 10.48 14.8V11C12.76 10.84 14.48 10.6 14.48 8H10.48V0Z" fill="black"/></svg></span>
             </h2>
           </div>
           <p class="review-attribution">
-            Tourismusverband<br>Sachsen-Anhalt e.V.
+            Kreativworkshop,<br>Tourismusverband<br>Sachsen-Anhalt e.V.
           </p>
           <span class="review-deco review-deco--bl"></span>
           <span class="review-deco review-deco--br"></span>
@@ -1565,14 +1592,56 @@ const menuRevealStyle = computed(() => {
   hyphens: none;
 }
 
+/* Zitat-Brushes (erstes Zitat): Brush HINTER dem Wort, Reveal links→rechts —
+   nacheinander beim Viewport-Eintritt (.is-inview via IntersectionObserver). */
+.review-quote-word {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;   /* gebürstete Wörter nie umbrechen → Brush bleibt deckungsgleich */
+}
+
+.review-quote-word-text {
+  position: relative;
+  z-index: 1;
+}
+
+.review-quote-brush {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 116%;
+  height: auto;
+  z-index: 0;
+  pointer-events: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sequenz: erst „bestens", dann „durchdacht" */
+.review-quote-brush--a { transition-delay: 0.2s; }
+.review-quote-brush--b { transition-delay: 0.75s; }
+
+.review-quote-text--brushed.is-inview .review-quote-brush {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Zitat 2 (Reihe „quoteimg"): Brushes etwas transparenter (70 %) */
+.review-row--quoteimg .review-quote-brush {
+  opacity: 0.7;
+}
+
 /* Attribution: row 3 im 4-Zeilen-Grid */
 .review-attribution {
   grid-column: 2;
   grid-row: 3;
   font-family: 'LayGrotesk', sans-serif;
   font-weight: 400;
-  font-size: clamp(1rem, 1.8vw, 2.25rem);
-  line-height: 1.25;
+  /* identisch zum Fließtext (.intro-body): Größe + Zeilenhöhe + Laufweite und
+     dasselbe responsive Verhalten (clamp). Vorher clamp(1rem,1.8vw,2.25rem) → größer. */
+  font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
+  line-height: 1.375;
+  letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0rem;
 }

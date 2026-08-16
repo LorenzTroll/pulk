@@ -14,6 +14,8 @@ import InlineLink from '@/components/InlineLink.vue'
 import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
 import pulkLogo from '@/assets/pulk-logo_E2.svg'
 import chairYellow from '@/assets/pulk_pricing-chair-yellow-a_E2.png?format=avif;webp;png&as=picture'
+import brushBusiness from '@/assets/brush-line-business.png?w=800&format=webp&as=src'
+import brushCommunity from '@/assets/brush-line-community.png?w=800&format=webp&as=src'
 
 /* ============================================================================
  * SEO / Meta
@@ -307,6 +309,7 @@ const footerSentinelRef = ref(null)
 const btnLift = ref(0)
 let scrollCleanup = null
 let scrollDepthCleanup = null
+let brushObserver = null
 
 function updateLift() {
   const sentinel = footerSentinelRef.value
@@ -326,6 +329,18 @@ onMounted(async () => {
 
   // Scroll-Depth Tracking (pulk.scroll.depth) — window-scroll
   scrollDepthCleanup = attachScrollDepthTracker('pricing')
+
+  // Brush-Reveal auf Touch/Mobile: Card beim Viewport-Eintritt markieren
+  // (Desktop nutzt reines CSS :hover). Einmalig pro Card, dann unobserve.
+  brushObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-inview')
+        brushObserver.unobserve(e.target)
+      }
+    })
+  }, { threshold: 0.4 })
+  root.querySelectorAll('.pm-card-wrap').forEach((el) => brushObserver.observe(el))
 
   const cards = [...root.querySelectorAll('.card')]
   if (!cards.length) return
@@ -370,6 +385,7 @@ onBeforeUnmount(() => {
   tl = null
   scrollCleanup?.()
   scrollDepthCleanup?.()
+  brushObserver?.disconnect()
 })
 </script>
 
@@ -422,7 +438,15 @@ onBeforeUnmount(() => {
           <!-- Karte -->
           <div class="card pm-card">
             <header class="card-header pm-card-header">
-              <h2 class="pm-card-title">{{ plan.key === 'gruppen' ? 'Community' : plan.title }}</h2>
+              <h2 class="pm-card-title">
+                <span class="pm-card-title-text">{{ plan.key === 'gruppen' ? 'Community' : plan.title }}</span>
+                <img
+                  class="pm-card-brush"
+                  :src="plan.key === 'gruppen' ? brushCommunity : brushBusiness"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </h2>
               <p class="pm-card-desc">
                 <template v-if="plan.key === 'gruppen'">Vereine, Initiativen, freie Gruppen, Einzelpersonen bis 25 Personen.</template>
                 <template v-else-if="plan.key === 'business'">Unternehmen, Agenturen, Verbände, Stiftungen, Unis und Hochschulen bis 40 Personen.</template>
@@ -805,6 +829,37 @@ onBeforeUnmount(() => {
   line-height: 1.1;
   color: #141414;
   margin: 0.75rem 0 2.125rem;
+  position: relative;
+  display: inline-block;   /* schrumpft auf die Wortbreite → Brush spannt das Wort, nicht die Card */
+}
+
+/* Titel-Text liegt ÜBER dem Brush */
+.pm-card-title-text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Brush-Akzent HINTER der Headline — Reveal links→rechts via clip-path.
+   Desktop: bei Card-Hover (@media hover). Touch/Mobile: bei Viewport-Eintritt (.is-inview). */
+.pm-card-brush {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 112%;
+  height: auto;
+  z-index: 0;
+  pointer-events: none;
+  clip-path: inset(0 100% 0 0);              /* von rechts zugeklappt → 0 % sichtbar */
+  transition: clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .pm-card-wrap:hover .pm-card-brush { clip-path: inset(0 0 0 0); }
+}
+
+@media (hover: none) {
+  .pm-card-wrap.is-inview .pm-card-brush { clip-path: inset(0 0 0 0); }
 }
 
 .pm-card-desc {
