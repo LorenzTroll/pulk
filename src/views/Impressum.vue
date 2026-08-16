@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
  * Page Wrapper
  * ============================================================================ */
 .legal-wrap {
-  max-width: 75%;
+  max-width: 88.4%;
   margin: 0 auto 35rem;
   padding: 5rem 0 0 0;
   background: #e7e8ec;
@@ -279,8 +279,10 @@ address {
  * ============================================================================ */
 @media (max-width: 40rem) {
   .legal-wrap {
-    max-width: 92%;
+    max-width: 95%;
     padding: 3rem 0 6rem;
+    /* Mehr Abstand Inhalt → Footer auf Mobile (Footer war fast im Inhalt) */
+    margin-bottom: 45rem;
   }
 
   .ds-close-btn {
@@ -292,12 +294,18 @@ address {
 
   .legal-header h1 {
     font-size: clamp(2rem, 7vw, 2.5rem);
-    margin: 1rem 0 2rem;
+    /* Überschrift → Text: Abstand halbiert (6rem → 3rem) */
+    margin: 1rem 0 3rem;
   }
 
   .legal-body {
     font-size: clamp(1rem, 4vw, 1.25rem);
     line-height: 1.65;
   }
+}
+
+/* Mobile: Border-Radius um 1/3 verringern (wie Startseite) */
+@media (max-width: 40rem) {
+  .ds-close-btn { border-radius: 0.67rem; }
 }
 </style>

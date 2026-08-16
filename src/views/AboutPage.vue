@@ -11,6 +11,8 @@ import {
   Plane as OGLPlane, Mesh, Program, Texture, Vec2
 } from 'ogl'
 import InlineLink from '@/components/InlineLink.vue'
+// Topbar-Logo in Gelb (#FFCC00) — eigene gelbe Variante des E2-Logos
+import pulkLogo from '@/assets/pulk-logo_E2-yellow.svg'
 
 
 /* -----------------------------------------------------------------------------
@@ -592,16 +594,22 @@ onBeforeUnmount(() => {
     <!-- All content sits above the canvas -->
     <div class="modal-content">
 
+      <!-- Topbar: Logo + about-Box (analog Pricing; kein H1, da about-headline bereits H1 ist) -->
+      <header class="about-topbar">
+        <img :src="pulkLogo" class="about-logo" alt="PULK" width="169" height="92" />
+        <h1 class="about-pill"><span class="about-pill-label">about</span><span class="sr-only"> – Creative Space, Workshopraum &amp; Seminarraum in Halle (Saale)</span></h1>
+      </header>
+
       <!-- Header: Headline + Description -->
       <header class="about-header">
-        <h1 class="about-headline reveal-up" data-reveal-delay="0.2">Creative Space<br /> in Halle Saale mieten</h1>
+        <h2 class="about-headline reveal-up" data-reveal-delay="0.2">Creative Space<br /> in Halle Saale</h2>
         <div class="about-intro">
           <p class="about-description reveal-up animated-text" data-reveal-delay="0.35">
-            Talstraße 7 in Halle-Kröllwitz. Blick auf die Saale und Burg Giebichenstein, vier Meter Decke,
-            Stuck und Dielen. Darin: Formen aus geweißter Kiefer und Aluminium. Ein Podest, halbtransparente Vorhänge, die den Raum teilen und öffnen.
-            Nichts davon ist Dekoration, alles hat eine Funktion. Das Podest wird Bühne, Rückzugsort oder Arbeitsplatz.
-            100 Quadratmeter, modulare Tische und Stühle, Teeküche. Beamer, Fernseher, Whiteboard, Moderationsmaterial. Stundenweise mietbar,
-            bis 40 Personen, sieben Tage die Woche. Ein Kreativraum und Workshopraum zur Miete in Halle (Saale).
+            Ihr gestaltet den Tag, wir schaffen euch den Raum dafür. Ob große Bestuhlung, kleine Workshopgruppen,
+            Ausstellung, Meetup oder Diskussionsrunde: Im Pulk findet ihr das passende Setup. Unsere Möbel stehen auf
+            Rollen, Vorhänge teilen den Raum oder öffnen ihn. Ihr rückt zurecht, was ihr braucht, und lasst weg, was ihr
+            nicht braucht. Bei uns findet ihr einen offenen, hellen Raum, dank drei großer Fenster, hoher Decken, Dielenboden
+            und einen wunderbaren Blick auf die Burg Giebichenstein und die Saale vor der Haustür.
           </p>
         </div>
       </header>
@@ -678,12 +686,11 @@ onBeforeUnmount(() => {
           <div class="text-card-content">
             <h2 class="text-card-headline reveal-up">Von der Idee<wbr> zum Raum</h2>
             <p class="text-card-body reveal-up animated-text">
-              Wir sind Lorenz und Michel. Wir betreiben das Pulk und haben den Ort so gestaltet, wie wir uns einen Raum wünschen würden.
-              Ein Jahr Planung, sägen, Ideen sammeln, fräsen, nähen damit in der Talstraße 7 ein Kreativraum entsteht, der bitte nicht pragmatisch
-              und nüchtern ist. Pulk ist ein Ort, an dem Produktivität und Gemütlichkeit sich nicht ausschließen. Ein Raum, der euch in die Lage versetzt,
-              euch auf das Wesentliche zu konzentrieren. Das möchten wir mit euch teilen. Pulk ist gemacht, um sich anzupassen: an Gruppen, an Formate,
-              an Ideen. Ein Stück Handwerk. Ein Stück Design. Stundenweise zur Miete, damit eure Projekte den passenden Raum finden.
-              Alle Pakete und Tarife findet ihr auf unserer Seite <InlineLink to="/preise/">Preise & Pakete</InlineLink>.
+              Wir sind Lorenz Troll und Michel Klehm. Wir haben das Pulk so gebaut, wie wir uns den idealen Workshopraum wünschen würden.
+              Und wir wussten, was der Raum werden soll: Bitte nicht nüchtern oder pragmatisch. Ein Jahr haben wir geplant, gesägt, verbessert,
+              durchdacht, versiegelt, gefräst und genäht, damit in der Talstraße 7 ein Raum entsteht, der die optimale Workshop-Atmosphäre erzeugt:
+              klar strukturiert, vielseitig und gemütlich. Unser Resultat möchten wir mit euch teilen. Pulk ist für euch gebaut. Ein Stück Handwerk.
+              Ein Stück Design, um euren Projekten den passenden Raum zu geben.
             </p>
           </div>
           <span class="dot dot-bl"></span>
@@ -754,11 +761,62 @@ onBeforeUnmount(() => {
   height: 0;
 }
 
+/* ============================================================================
+ * Topbar: Logo + about-Box (analog Pricing; weiß fürs dunkle Theme).
+ * About hat bereits ein H1 → die Box ist hier bewusst KEIN H1.
+ * ============================================================================*/
+.about-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3.3rem 5.8% 0;
+  margin-bottom: 6.5rem;
+}
+
+.about-logo {
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  width: auto;
+  display: block;
+}
+
+.about-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  padding: 0 1rem;
+  border: 0.125rem solid #FFCC00;
+  border-radius: 0.9rem;
+  margin: 0;
+}
+
+/* sr-only: visuell verborgen, aber für Crawler/Screenreader lesbar (H1-Keywords) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.about-pill-label {
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 3.125rem);
+  line-height: 1;
+  color: #FFCC00;
+}
+
 /* ---- Header ---- */
 .about-header {
   display: flex;
   gap: 4rem;
-  padding: 12rem 7.5% 6rem;
+  padding: 5rem 7.5% 2rem;
   align-items: flex-start;
 }
 
@@ -832,7 +890,7 @@ onBeforeUnmount(() => {
    PHOTO GRID — Mobile first
    ================================================================ */
 .photo-grid {
-  padding: 6rem 4% 0rem;
+  padding: 6rem 1rem 0rem;
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.75rem;
@@ -847,7 +905,7 @@ onBeforeUnmount(() => {
 /* ---- Tablet ---- */
 @media (min-width: 641px) and (max-width: 1024px) {
   .photo-grid {
-    padding: 0 5%;
+    padding: 0 5.8%;
     grid-template-columns: repeat(2, 1fr);
     row-gap: 2rem;
     column-gap: 2rem;
@@ -864,7 +922,7 @@ onBeforeUnmount(() => {
 /* ---- Desktop ---- */
 @media (min-width: 1025px) {
   .photo-grid {
-    padding: 12rem 7.5% 1rem;
+    padding: 12rem 5.8% 1rem;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(9, 6.5rem);
     column-gap: 4rem;
@@ -893,7 +951,7 @@ onBeforeUnmount(() => {
 .about-bottom {
   display: flex;
   gap: 4rem;
-  padding: 1.25rem 7.5% 0;
+  padding: 1.25rem 5.8% 0;
   align-items: flex-start;
   margin-bottom: 8rem;
 }
@@ -961,7 +1019,7 @@ onBeforeUnmount(() => {
 /* ---- Tablet ---- */
 @media (min-width: 641px) and (max-width: 1024px) {
   .about-header {
-    padding: 8rem 10% 8rem;
+    padding: 0 5.8% 8rem;
     flex-direction: column;
     gap: 2rem;
   }
@@ -969,7 +1027,7 @@ onBeforeUnmount(() => {
   .about-headline { flex: none; }
 
   .about-bottom {
-    padding: 0rem 5% 0;
+    padding: 0rem 5.8% 0;
     flex-direction: column;
   }
 
@@ -1015,10 +1073,29 @@ onBeforeUnmount(() => {
   }
 
   .about-header {
-    padding: 6rem 7.5% 0rem;
+    /* zusätzliche 0.5rem links/rechts (1rem → 1.5rem) */
+    padding: 0 1.5rem 0rem;
     flex-direction: column;
+    /* Headline→Text wie andere Textblöcke (text-card headline→body = 1.5rem) */
     gap: 1.5rem;
   }
+
+  /* Topbar mobil (analog Pricing) */
+  .about-topbar {
+    padding: 1rem 1rem 0;
+    gap: 0.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .about-logo { height: 3.25rem; }
+
+  .about-pill {
+    height: 3.25rem;
+    border-radius: 0.6rem;
+    border-width: 0.09375rem;
+  }
+
+  .about-pill-label { font-size: 1.75rem; }
 
   .about-headline,
   .text-card-headline {
@@ -1027,7 +1104,7 @@ onBeforeUnmount(() => {
   }
 
   .about-bottom {
-    padding: 0rem 4% 0;
+    padding: 0rem 1rem 0;
     flex-direction: column;
     gap: 1rem;
     margin-top: -1rem;
@@ -1070,5 +1147,11 @@ onBeforeUnmount(() => {
 
 :global(.about-wrap ~ .site-footer) {
   margin-top: -3rem;
+}
+
+/* Mobile: prominente Border-Radien um 1/3 verringern (wie Startseite) */
+@media (max-width: 640px) {
+  .about-close-btn { border-radius: 0.67rem; }
+  .gl-item { border-radius: 0.83rem; }
 }
 </style>

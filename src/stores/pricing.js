@@ -26,7 +26,7 @@ export const usePricingStore = defineStore('pricing', () => {
       features: [
         'Ganzer Raum 100 qm',
         'Saalbestuhlung',
-        '7 Tische',
+        '8 Tische',
         'Teeküche / Tresen',
         'Fernseher 50 Zoll',
         'Beamer',
@@ -48,13 +48,14 @@ export const usePricingStore = defineStore('pricing', () => {
       context:    'Für Netzwerktreffen, Workshops, Sprints, Team-Meetings, Seminare und Vorträge bis',
       maxPersons: 'max. 25 Personen',
 
-      price:      25,
+      price:      20,
       unit:       'Euro / Stunde',
-      priceAlt:   '1–10 Personen: 25 €/h · 11–25 Personen: 30 €/h',
+      priceAlt:   '1–5 Personen: 20 €/h · 6–15 Personen: 25 €/h · 16–25 Personen: 30 €/h',
       priceNote:  'Preis zzgl. MwSt. · Tagessatz ab 7 Stunden',
 
       tiers: [
-        { maxPersons: 10, hourRate: 25, dayRate: 175 },
+        { maxPersons: 5,  hourRate: 20, dayRate: 140 },
+        { maxPersons: 15, hourRate: 25, dayRate: 175 },
         { maxPersons: 25, hourRate: 30, dayRate: 210 }
       ],
 
@@ -62,7 +63,7 @@ export const usePricingStore = defineStore('pricing', () => {
 
       features: [
         'Workshop-Bereich',
-        '7 Tische',
+        '8 Tische',
         '4 Werkbänke',
         'Teeküche / Tresen',
         'Fernseher 50 Zoll',
@@ -71,7 +72,6 @@ export const usePricingStore = defineStore('pricing', () => {
       ],
       onRequest: [
         'Catering / Getränke',
-        'Mikrofonierung',
         'Beamer'
       ],
 

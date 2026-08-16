@@ -11,6 +11,8 @@ import SiteFooter from '@/components/SiteFooter.vue'
 import { track } from '@/utils/tracking'
 
 import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+// Topbar-Logo (gleiches Logo wie Pricing/About) — hier dunkel auf hellem BG
+import pulkLogo from '@/assets/pulk-logo_E2.svg'
 
 /* Calendar wird lazy geladen: spart 119 KB raw / 42 KB gzip im
    Initial-Bundle. Die hkanev-vue-calendar-Library inkl. Stylesheet
@@ -501,6 +503,13 @@ function handleFormSubmit() {
 <template>
   <main ref="rootRef" class="contact-page">
 
+    <!-- Topbar: Logo + anfrage-Box. Ist jetzt das H1 der Seite (mit unsichtbaren
+         Keywords für Crawler/SEO), da der "Anfrage senden"-Titel in den Fließtext wandert. -->
+    <header class="cp-topbar">
+      <img :src="pulkLogo" class="cp-logo" alt="PULK" width="169" height="92" />
+      <h1 class="cp-pill"><span class="cp-pill-label">anfrage</span><span class="sr-only"> – Workshopraum, Seminarraum &amp; Tagungsraum in Halle (Saale) anfragen</span></h1>
+    </header>
+
     <!-- Haupt-Layout -->
     <div class="cp-content">
 
@@ -529,14 +538,8 @@ function handleFormSubmit() {
       <!-- Formularbereich -->
       <div class="form-section reveal-up">
         <div class="cp-text-block">
-          <h1 class="contact-title">Anfrage senden</h1>
           <p class="cp-subtitle">
-            Plant ihr was? Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
-              Auf Wunsch könnt ihr den Raum vorher besichtigen.
-          </p>
-          <p class="cp-subtitle">
-            Pulk hat keine festen Öffnungszeiten. Der Raum wird ausschließlich nach Vereinbarung
-            vermietet — an allen sieben Wochentagen, auch abends und am Wochenende.
+            Plant ihr was? Sendet uns eine Anfrage. Erzähl uns davon und wir melden uns innerhalb von 24 Stunden. Unverbindlich, ohne Haken. Auf Wunsch könnt ihr den Raum vorher besichtigen. Das Pulk hat keine festen Öffnungszeiten. Der Raum wird ausschließlich nach Vereinbarung vermietet, sowohl an allen Wochentagen und am Wochenende.
           </p>
         </div>
 
@@ -672,7 +675,7 @@ function handleFormSubmit() {
     <div class="cp-footer-wrap">
       <div ref="footerSentinelRef"></div>
       <SiteFooter
-        instagram-url="https://instagram.com/pulk.space"
+        instagram-url="https://www.instagram.com/pulk.space"
         impressum-href="/impressum/"
         datenschutz-href="/datenschutz/"
         company="Pulk"
@@ -709,7 +712,59 @@ function handleFormSubmit() {
   min-height: 100dvh;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
-  padding: 2rem 7.25% 1.5rem 2rem;
+  /* padding-top 3.3rem = gleiche Topbar-Startposition wie Preise/About */
+  padding: 3.3rem 5.8% 1rem 1rem;
+  /* Positionskontext für die absolut gesetzte Topbar (Desktop) */
+  position: relative;
+}
+
+/* ============================================================================
+ * Topbar: Logo + anfrage-Box (analog Pricing/About). Dunkel auf hellem BG.
+ * ============================================================================*/
+.cp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 6.5rem;
+}
+
+.cp-logo {
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  width: auto;
+  display: block;
+}
+
+.cp-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  padding: 0 1rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.9rem;
+  margin: 0;
+}
+
+/* sr-only: visuell verborgen, aber für Crawler/Screenreader lesbar (H1-Keywords) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.cp-pill-label {
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 3.125rem);
+  line-height: 1;
+  color: #141414;
 }
 
 /* ============================================================================
@@ -1124,11 +1179,48 @@ function handleFormSubmit() {
 }
 
 /* ============================================================================
+ * Desktop: Bild als gerahmtes Panel (1rem oben/links/unten zum Rand),
+ * etwas schmaler als die Formularspalte, damit die zentrierte Bottom-Nav
+ * (Abschicken/Schließen) rechts daneben Platz hat und nicht überlappt.
+ * ============================================================================*/
+@media (min-width: 64.0625rem) {
+  /* Desktop: Logo+Box (Topbar) absolut oben-links ÜBER dem Bild; das Bild nimmt
+     die volle Höhe (97vh). Das Formular startet per padding-top unter der Topbar. */
+  .contact-page {
+    padding-top: 1.3rem;
+  }
+
+  .cp-topbar {
+    position: absolute;
+    /* gleiche Logo+Box-Position wie die anderen Unterseiten (Topbar-Start 3.3rem/5.8%) */
+    top: 3.3rem;
+    left: 5.8%;
+    margin: 0;
+    z-index: 10; /* über dem Bild (image-section bildet via reveal-up einen Stacking-Context) */
+  }
+
+  /* Gelber Box-Hintergrund NUR Desktop (dort liegt die Box über dem Bild) */
+  .cp-pill {
+    background-color: #E6CE2E;
+  }
+
+  .image-section {
+    flex: 0 0 40%;
+    align-self: flex-start;
+    height: 97vh;
+  }
+
+  .form-section {
+    padding-top: 7rem;
+  }
+}
+
+/* ============================================================================
  * Tablet
  * ============================================================================*/
 @media (max-width: 64rem) {
   .contact-page {
-    padding: 2rem 7.25% 10rem;
+    padding: 3.3rem 5.8% 10rem;
   }
 
   .cp-content {
@@ -1184,11 +1276,31 @@ function handleFormSubmit() {
  * ============================================================================*/
 @media (max-width: 40rem) {
   .contact-page {
-    padding: 3rem 6% 10rem;
+    padding: 1rem 1rem 5rem;
   }
 
+  /* Abstand Form → Bild identisch zum Feld-Abstand der Form (.contact-form gap = 1.1875rem) */
+  .cp-content {
+    gap: 1.1875rem;
+  }
+
+  /* Topbar mobil (analog Pricing/About) */
+  .cp-topbar {
+    gap: 0.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .cp-logo { height: 3.25rem; }
+
+  .cp-pill {
+    height: 3.25rem;
+    border-width: 0.09375rem;
+  }
+
+  .cp-pill-label { font-size: 1.75rem; }
+
   .contact-title {
-    padding-top: 2rem;
+    padding-top: 0;
   }
 
   .cp-subtitle {
@@ -1234,5 +1346,14 @@ function handleFormSubmit() {
     margin-right: -6vw;
     margin-bottom: -10rem;
   }
+}
+
+/* Mobile: prominente Border-Radien um 1/3 verringern (wie Startseite) */
+@media (max-width: 40rem) {
+  .cp-tab { border-radius: 0.67rem; }
+  .image-section,
+  .contact-form input,
+  .contact-form textarea,
+  .cp-select-wrap select { border-radius: 0.42rem; }
 }
 </style>

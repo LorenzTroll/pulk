@@ -270,6 +270,73 @@ function collapseAll() {
   })
 }
 
+/* ============================================================================
+ * Accordion open/close animation (wie LandingPage/Pricing)
+ * ============================================================================
+ * Native <details> klappt hart auf/zu. Damit die Höhe browserübergreifend
+ * (auch Safari/Firefox, wo interpolate-size fehlt) weich animiert, steuern wir
+ * das Toggeln selbst (@click.prevent) und animieren die Content-Höhe per Web
+ * Animations API. Suche, „Alles ausklappen" und Deep-Links (die .open direkt
+ * setzen) bleiben unberührt. Das +/−-Icon folgt weiter dem [open]-Attribut bzw.
+ * der .is-closing-Klasse (rein per CSS).
+ */
+const prefersReducedMotion = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+function toggleDetails(e) {
+  const details = e.currentTarget.closest('details')
+  if (!details) return
+  const content = details.querySelector('.legal-body-outer')
+  if (!content) return
+
+  // Reduced Motion: ohne Animation hart toggeln
+  if (prefersReducedMotion()) {
+    details.open = !details.open
+    return
+  }
+  // Re-Klick während laufender Animation ignorieren
+  if (details.dataset.animating === '1') return
+  details.dataset.animating = '1'
+
+  const settle = () => {
+    delete details.dataset.animating
+    lenis.value?.resize?.()
+  }
+
+  if (!details.open) {
+    // Öffnen: Content einblenden (Icon → Minus via [open]), Höhe 0 → natürlich
+    details.open = true
+    const target = content.scrollHeight
+    const anim = content.animate(
+      [
+        { height: '0px', opacity: 0 },
+        { height: `${target}px`, opacity: 1 }
+      ],
+      { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+    )
+    anim.onfinish = settle
+    anim.oncancel = settle
+  } else {
+    // Schließen: Icon sofort zurück auf Plus (via .is-closing), Höhe natürlich → 0
+    details.classList.add('is-closing')
+    const start = content.getBoundingClientRect().height
+    const anim = content.animate(
+      [
+        { height: `${start}px`, opacity: 1 },
+        { height: '0px', opacity: 0 }
+      ],
+      { duration: 400, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+    )
+    const done = () => {
+      details.open = false
+      details.classList.remove('is-closing')
+      settle()
+    }
+    anim.onfinish = done
+    anim.oncancel = done
+  }
+}
+
 /* Öffnet das Cookie-Banner erneut (CookieBanner.vue lauscht auf dieses Event) */
 function openCookieSettings() {
   window.dispatchEvent(new Event('open-cookie-settings'))
@@ -337,14 +404,17 @@ onBeforeUnmount(() => {
         :id="s.id"
         class="legal-item"
       >
-        <summary>
-          <h2>{{ s.title }}</h2>
-          <div class="icon-chevron-wrap">
-            <img :src="pulkArrow" alt="" class="icon-chevron" aria-hidden="true" />
-          </div>
+        <summary @click.prevent="toggleDetails">
+          <h2 class="ds-acc-title">{{ s.title }}</h2>
+          <span class="acc-icon" aria-hidden="true">
+            <span class="acc-icon-bar acc-icon-bar--h"></span>
+            <span class="acc-icon-bar acc-icon-bar--v"></span>
+          </span>
         </summary>
 
-        <div class="legal-body" v-html="s.body"></div>
+        <div class="legal-body-outer">
+          <div class="legal-body" v-html="s.body"></div>
+        </div>
       </details>
     </section>
 
@@ -370,7 +440,7 @@ onBeforeUnmount(() => {
  * General Layout
  * ==========================================================================*/
 .legal-wrap {
-  max-width: 85%;
+  max-width: 88.4%;
   margin: 0 auto 50rem;
   padding: 5rem 0 0 0;
   color: #141414;
@@ -533,17 +603,13 @@ onBeforeUnmount(() => {
  * Accordion — LandingPage style
  * ==========================================================================*/
 .legal-accordion {
-  border-top: 1px solid rgba(20, 20, 20, 0.3);
   margin-top: 1rem;
   padding-bottom: 5rem;
 }
 
+/* Trenner wie LandingPage/Pricing: durchgehende dünne Linie unter jedem Item */
 .legal-item {
-  border-top: 1px solid rgba(20, 20, 20, 0.3);
-}
-
-.legal-item:first-child {
-  border-top: none;
+  border-bottom: 0.09375rem solid #141414;
 }
 
 summary {
@@ -560,43 +626,66 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+/* Titel wie LandingPage/Pricing: durchgehend Regular (kein Fettwerden beim Öffnen). */
 summary h2 {
   flex: 1;
-  font-size: clamp(1.8rem, 5vw, 3rem);
-  font-weight: 900;
-  line-height: 1.24;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.25;
   color: #141414;
   margin: 0;
 }
 
-/* Chevron wrap — LandingPage style */
-.icon-chevron-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* +/- Icon (wie LandingPage/Pricing): vertikaler Balken skaliert beim Öffnen auf 0 → Minus */
+.acc-icon {
+  position: relative;
   flex-shrink: 0;
-  width: 3.375rem;
-  height: 3.375rem;
+  width: 1.8125rem;
+  height: 1.8125rem;
+  display: block;
+}
+
+.acc-icon-bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   background: #141414;
-  border-radius: 0.625rem;
-  transition: background 0.3s ease;
+  border-radius: 0.0625rem;
+  transition: transform 0.3s ease;
 }
 
-details[open] .icon-chevron-wrap {
-  background: #9687FF;
+.acc-icon-bar--h {
+  width: 1.8125rem;
+  height: 0.125rem;
+  transform: translate(-50%, -50%);
 }
 
-.icon-chevron {
-  width: 1.5625rem;
-  transform-origin: center;
-  transition: transform 0.4s ease-in-out;
+.acc-icon-bar--v {
+  width: 0.125rem;
+  height: 1.8125rem;
+  transform: translate(-50%, -50%) scaleY(1);
 }
 
-details[open] .icon-chevron {
-  transform: rotate(180deg);
+details[open] .acc-icon-bar--v {
+  transform: translate(-50%, -50%) scaleY(0);
+}
+
+/* Beim Schließen (JS setzt .is-closing) Icon sofort zurück auf Plus — synchron
+   zur Höhen-Kollaps-Animation, statt erst am Ende wenn [open] entfernt wird. */
+.legal-item.is-closing .acc-icon-bar--v {
+  transform: translate(-50%, -50%) scaleY(1);
+}
+
+/* Wrapper, dessen Höhe die JS-Animation (toggleDetails) von 0 → natürlich fährt.
+   Ohne eigenes Padding, damit die Höhe sauber auf 0 kollabiert; overflow clippt
+   den Inhalt während der Animation. */
+.legal-body-outer {
+  overflow: hidden;
 }
 
 .legal-body {
+  /* box-sizing: Padding zählt in die Breite → kein Überstand rechts (width + padding) */
+  box-sizing: border-box;
   padding: 0 2.875rem 2.875rem;
   line-height: 1.375;
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
@@ -660,6 +749,7 @@ details[open] .icon-chevron {
 
   summary {
     padding: 1.75rem 1.5rem;
+    gap: 2.2rem;
   }
 
   .legal-body {
@@ -689,16 +779,17 @@ details[open] .icon-chevron {
  * Mobile (≤ 640px)
  * ==========================================================================*/
 @media (max-width: 640px) {
-  /* LandingPage-Pattern: .legal-wrap nimmt volle Viewport-Breite, jede
-     Section setzt eigenes padding-inline. So kann .legal-accordion mit
-     width:95% + margin:auto sauber zentrieren wie auf LandingPage. */
+  /* Rand-Padding wie die anderen Unterseiten: 1rem am Viewport-Rand über die
+     ganze .legal-wrap; Header und Accordion sitzen bündig darin (kein Extra-Inset). */
   .legal-wrap {
     max-width: none;
-    padding: 3rem 0 6rem;
+    padding: 3rem 1rem 6rem;
+    /* Abstand Inhalt → Footer auf Mobile (26.5rem + 1/3) */
+    margin-bottom: 35.33rem;
   }
 
   .legal-header {
-    padding-inline: 5%;
+    padding-inline: 0;
   }
 
   .legal-tools h1 {
@@ -707,27 +798,20 @@ details[open] .icon-chevron {
   }
 
   .legal-accordion {
-    width: 95%;
-    margin: 0 auto;
+    width: auto;
+    margin: 0;
+    padding-bottom: 10rem;
   }
 
+  /* Header-Padding identisch zu LandingPage/Pricing-Accordion */
   summary {
-    padding: 1.5rem 1rem;
-  }
-
-
-  .icon-chevron-wrap {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .icon-chevron {
-    width: 1.25rem;
+    padding: 1.5rem 0.6rem 1.5rem 0.2rem;
   }
 
   .legal-body {
     padding: 0 1rem 1.5rem;
-    font-size: clamp(1rem, 4vw, 1.25rem);
+    /* identisch zur LandingPage-Accordion-Content-Schriftgröße auf Mobile */
+    font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
     width: 100%;
   }
 
@@ -783,5 +867,12 @@ details[open] .icon-chevron {
   .toggle-text {
     font-size: clamp(0.875rem, 3.5vw, 1.125rem);
   }
+}
+
+/* Mobile: prominente Border-Radien um 1/3 verringern (wie Startseite) */
+@media (max-width: 640px) {
+  .ds-close-btn { border-radius: 0.67rem; }
+  .legal-controls input[type="search"],
+  .legal-cookie-btn { border-radius: 0.42rem; }
 }
 </style>

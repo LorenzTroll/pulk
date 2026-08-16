@@ -12,9 +12,8 @@ import SiteFooter from '@/components/SiteFooter.vue'
 import InlineLink from '@/components/InlineLink.vue'
 
 import pulkArrow from '@/assets/pulk-arrow-accordeon_e2.svg'
-import imgPricingA from '@/assets/pulk_pricing-imageA.png?format=avif;webp;png&as=picture'
-import imgPricingB from '@/assets/pulk_pricing-imageB.png?format=avif;webp;png&as=picture'
-import imgChairsMixed from '@/assets/hero-chair-mixed-row.png?format=avif;webp;png&as=picture'
+import pulkLogo from '@/assets/pulk-logo_E2.svg'
+import chairYellow from '@/assets/pulk_pricing-chair-yellow-a_E2.png?format=avif;webp;png&as=picture'
 
 /* ============================================================================
  * SEO / Meta
@@ -28,7 +27,7 @@ useHead({
     {
       name: 'description',
       content:
-        'Community-Paket ab 25 €/h, Business-Paket ab 50 €/h. Direkte Preisauskunft auf unserer Webseite, Stundenweise mieten, ohne Mindestbuchung, ohne Cateringpflicht.'
+        'Community-Paket ab 20 €/h, Business-Paket ab 50 €/h. Direkte Preisauskunft auf unserer Webseite, Stundenweise mieten, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
     { name: 'robots', content: 'index,follow' },
     {
@@ -38,7 +37,7 @@ useHead({
     {
       property: 'og:description',
       content:
-        'Community ab 25 €/h, Business ab 50 €/h. Stundenweise mietbar, ohne Mindestbuchung, ohne Cateringpflicht.'
+        'Community ab 20 €/h, Business ab 50 €/h. Stundenweise mietbar, ohne Mindestbuchung, ohne Cateringpflicht.'
     },
     { property: 'og:url', content: 'https://pulk.space/preise/' }
   ],
@@ -88,7 +87,7 @@ useHead({
             priceCurrency: 'EUR',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              minPrice: 25,
+              minPrice: 20,
               priceCurrency: 'EUR',
               unitCode: 'HUR'
             },
@@ -389,70 +388,32 @@ onBeforeUnmount(() => {
     <!-- ======================================================================
          HERO: Intro + Preiskarten
          ====================================================================== -->
-    <section class="pm-hero">
+    <!-- Topbar: Logo + preise-Pille (echtes H1 mit unsichtbaren Keywords für Crawler/SEO) -->
+    <header class="pm-topbar">
+      <img :src="pulkLogo" class="pm-logo" alt="PULK" width="169" height="92" />
+      <h1 class="pm-pill">
+        <span class="pm-pill-label">preise</span>
+        <span class="sr-only"> – Workshopraum, Seminarraum &amp; Tagungsraum in Halle (Saale) mieten</span>
+      </h1>
+    </header>
 
-      <!-- LEFT: Intro text + Stühle-Bild -->
-      <div class="pm-intro">
-        <div class="pm-intro-text">
-          <h1 class="pm-intro-title">Preise und Pakete</h1>
-          <p class="pm-intro-heading">
-            Mietet stundenweise, ohne Mindest­buchung ohne Cateringzwang. Alle Preise zzgl. 19 % MwSt.
-          </p>
-        </div>
-        <div class="pm-chairs-wrap">
-          <!-- Hocker (B) links, kleiner -->
-          <picture class="pm-chairs-picture pm-chairs-picture--b">
-            <source
-              v-for="(srcset, format) in imgPricingB.sources"
-              :key="format"
-              :srcset="srcset"
-              :type="`image/${format}`"
-            />
-            <img
-              :src="imgPricingB.img.src"
-              alt="Grafik eines dreibeinigen Hockers in Lila aus der Corporate Identity des Pulk"
-              class="pm-chairs-img"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <!-- Stühle-Stapel (A) rechts, größer -->
-          <picture class="pm-chairs-picture pm-chairs-picture--a">
-            <source
-              v-for="(srcset, format) in imgPricingA.sources"
-              :key="format"
-              :srcset="srcset"
-              :type="`image/${format}`"
-            />
-            <img
-              :src="imgPricingA.img.src"
-              alt="Grafik verschiedenfarbiger Stühle im Profil aus der Corporate Identity des Pulk"
-              class="pm-chairs-img pm-chairs-img--flipped"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <!-- Tablet-only: Stühle-Reihe als Full-Bleed -->
-          <picture class="pm-chairs-mixed-picture">
-            <source
-              v-for="(srcset, format) in imgChairsMixed.sources"
-              :key="format"
-              :srcset="srcset"
-              :type="`image/${format}`"
-            />
-            <img
-              :src="imgChairsMixed.img.src"
-              alt="Reihe verschiedenfarbiger Stuhlsilhouetten als Grafikelement der Corporate Identity des Pulk"
-              class="pm-chairs-mixed"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-        </div>
+    <!-- Preis-Leittext (Prosa — beantwortet „Was kostet der Raum?") + Stühle -->
+    <section class="pm-lead">
+      <p class="pm-lead-text">
+        Der Preis richtet sich nach dem Paket und der Größe der Gruppe. Anhand der
+        Kriterien könnt ihr direkt ausrechnen, wie viel der Raum kostet. Im Überblick: Das
+        Business-Paket beginnt bei 50 Euro pro Stunde; der Tagessatz startet bei 350 Euro.
+        Das Community-Paket startet ab 20 Euro pro Stunde; Tagessatz ab 140 Euro. Alle Preise
+        zzgl. 19% MwSt.
+      </p>
+      <div class="pm-lead-chairs" aria-hidden="true">
+        <img :src="chairYellow.img.src" class="pm-lead-chair pm-lead-chair--b" alt="" loading="lazy" decoding="async" />
+        <img :src="chairYellow.img.src" class="pm-lead-chair pm-lead-chair--a" alt="" loading="lazy" decoding="async" />
       </div>
+    </section>
 
-      <!-- RIGHT: Preiskarten -->
-      <div class="pm-cards">
+    <!-- Preiskarten (Business + Community) -->
+    <section class="pm-cards">
         <div
           v-for="plan in pricingPlans"
           :key="plan.key"
@@ -532,30 +493,47 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-      </div>
     </section>
 
     <!-- ======================================================================
-         Preis-Zusammenfassung als Fließtext — beantwortet „Was kostet der Raum?"
-         außerhalb der Rechner-Chrome, damit Extraktoren/Answer-Engines die Preise
-         (inkl. der Community-Tagessätze) überhaupt lesen können.
+         Preisübersicht als maschinenlesbare Tabelle (sr-only) — für Crawler/KI.
+         Der interaktive Rechner oben deckt dieselben Werte visuell ab; diese
+         semantische <table> macht die Preis-Matrix direkt extrahierbar, ohne
+         dass ein Bot den JS-Rechner ausführen muss. Quelle: pricingStore.plans →
+         bleibt automatisch synchron mit den sichtbaren Preisen.
          ====================================================================== -->
-    <section class="pm-summary" aria-labelledby="pm-summary-title">
-      <h2 id="pm-summary-title" class="pm-summary-title">Was kostet der Raum?</h2>
-      <p class="pm-summary-text">
-        Das Community-Paket kostet ab 25 Euro pro Stunde und richtet sich an Vereine,
-        Initiativen, freie Gruppen und Einzelpersonen bis 25 Personen. Für einen ganzen
-        Tag (8 Stunden) gilt ein Tagessatz: 175 Euro für Gruppen bis 10 Personen,
-        210 Euro für größere Gruppen. Das Business-Paket kostet ab 50 Euro pro Stunde
-        für bis zu 40 Personen; der Tagessatz beginnt bei 350 Euro. Alle Preise
-        verstehen sich zzgl. 19 % MwSt.
-      </p>
-    </section>
+    <div class="sr-only">
+      <table>
+        <caption>
+          Preisübersicht Workshop- und Seminarraum pulk in Halle (Saale) — alle Preise zzgl. 19 % MwSt., Tagessatz ab 7 Stunden
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Paket</th>
+            <th scope="col">Gruppengröße</th>
+            <th scope="col">Stundensatz</th>
+            <th scope="col">Tagessatz (ab 7 Stunden)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="plan in pricingPlans" :key="`pt-${plan.key}`">
+            <tr v-for="tier in plan.tiers" :key="`pt-${plan.key}-${tier.maxPersons}`">
+              <td>{{ plan.title }}</td>
+              <td>bis {{ tier.maxPersons }} Personen</td>
+              <td>{{ tier.hourRate }} € / Stunde</td>
+              <td>{{ tier.dayRate }} €</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
 
     <!-- ======================================================================
          FAQ Accordion
          ====================================================================== -->
     <section class="pm-faq">
+      <!-- Section-Titel-Box „faq" (wie LandingPage) -->
+      <h2 class="pm-faq-label">faq</h2>
       <div
         v-for="(item, i) in faqItems"
         :key="i"
@@ -572,15 +550,14 @@ onBeforeUnmount(() => {
           @keydown.space.prevent="toggleFaq(i)"
         >
           <h2 class="pm-faq-question">{{ item.q }}</h2>
-          <div class="pm-faq-chevron-wrap">
-            <img
-              :src="pulkArrow"
-              :ref="el => { if (el) faqArrowRefs[i] = el }"
-              class="pm-faq-chevron"
-              alt=""
-              aria-hidden="true"
-            />
-          </div>
+          <span
+            class="pm-faq-icon"
+            :ref="el => { if (el) faqArrowRefs[i] = el }"
+            aria-hidden="true"
+          >
+            <span class="pm-faq-icon-bar pm-faq-icon-bar--h"></span>
+            <span class="pm-faq-icon-bar pm-faq-icon-bar--v"></span>
+          </span>
         </div>
         <div
           class="pm-faq-content"
@@ -600,7 +577,7 @@ onBeforeUnmount(() => {
     <div ref="footerSentinelRef"></div>
     <div class="pp-footer-wrap">
       <SiteFooter
-        instagram-url="https://instagram.com/pulk.space"
+        instagram-url="https://www.instagram.com/pulk.space"
         impressum-href="/impressum/"
         datenschutz-href="/datenschutz/"
         company="Pulk"
@@ -616,9 +593,29 @@ onBeforeUnmount(() => {
 .pricing-page {
   background: #e7e8ec;
   min-height: 100dvh;
+  position: relative;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
-  padding: 5rem 7.25% 8rem;
+  padding: 3.3rem 5.8% 8rem;
+}
+
+/* border-box für alle Kinder — sonst addieren padding-inline + width:100%
+   (content-box) und die Cards laufen im Mobile rechts aus dem Viewport. */
+.pricing-page * {
+  box-sizing: border-box;
+}
+
+/* sr-only: visuell verborgen, aber für Crawler/Screenreader lesbar */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Fixed close button */
@@ -654,113 +651,122 @@ onBeforeUnmount(() => {
 }
 
 /* ============================================================================
- * Hero: Intro + Karten
+ * Topbar: Logo + preise-Pille (H1)
  * ============================================================================*/
-.pm-hero {
+.pm-topbar {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 5rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 6.5rem;
 }
 
-/* Left: Intro */
-.pm-intro {
-  flex: 0 0 36%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 36rem;
+.pm-logo {
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  width: auto;
+  display: block;
 }
 
-.pm-intro-text {
-  margin: 2.6rem auto;
+.pm-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  padding: 0 1rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.9rem;
+  margin: 0;
 }
 
-.pm-intro-title {
-  font-size: clamp(2.5rem, 3.5vw, 3.625rem);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -0.015625rem;
+.pm-pill-label {
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 3.125rem);
+  line-height: 1;
   color: #141414;
-  margin: 0 0 1.5rem;
 }
 
-.pm-intro-heading {
+/* ============================================================================
+ * Preis-Leittext (Prosa) + Stühle
+ * ============================================================================*/
+.pm-lead {
+  display: flex;
+  flex-wrap: wrap-reverse;      /* wird es zu eng, wrappen die Stühle ÜBER den Text (volle Breite) */
+  align-items: flex-end;
+  margin: 12rem 0 0;
+}
+
+.pm-lead-text {
+  flex: 1 1 28rem;
+  max-width: 51.5rem;
   font-size: clamp(1.25rem, 1.4vw, 1.5625rem);
   font-weight: 400;
   line-height: 1.375;
   letter-spacing: -0.015625rem;
   color: #141414;
   margin: 0;
-  width: 80%;
 }
 
-@media (max-width: 64rem) {
-  .pm-intro-heading {
-    width: 100%;
-  }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-  .pm-intro-heading {
-    width: 70%;
-  }
-}
-
-.pm-intro-heading strong {
-  font-size: clamp(1.5rem, 2vw, 1.5625rem);
-  font-weight: 900;
-  display: block;
-  margin-bottom: 0.75rem;
-}
-
-.pm-chairs-wrap {
-  flex: 1;
+/* Stühle als eigener Block: neben dem Text rechts, beim Wrappen volle Breite über dem Text */
+.pm-lead-chairs {
+  flex: 1 1 auto;
   display: flex;
-  align-items: flex-end;
   justify-content: flex-end;
+  align-items: flex-end;
   gap: 0;
-  min-height: 20rem;
-  overflow: hidden;
-  transform: translateX(-7.5rem) translateY(6.5rem) scale(1.3);
+  pointer-events: none;
 }
 
-.pm-chairs-picture {
-  display: block;
-  flex-shrink: 0;
-}
-
-.pm-chairs-picture--b {
-  width: clamp(5rem, 7.5vw, 13rem);
-}
-
-.pm-chairs-picture--a {
-  width: clamp(9rem, 20vw, 26rem);
-}
-
-.pm-chairs-img {
-  width: 95%;
+.pm-lead-chair {
   height: auto;
   object-fit: contain;
   display: block;
+  width: clamp(19rem, 22vw, 23rem);
 }
 
-.pm-chairs-img--flipped {
-  width: 85%;
-  transform: scaleX(1) translateY(0.3125rem);
+.pm-lead-chair--a {
+  margin-left: -3rem;
 }
 
-/* Tablet-only Full-Bleed Chair-Row */
-.pm-chairs-mixed-picture {
-  display: none;
+/* Desktop (breit, nicht gewrappt): Stühle hoch bis auf Höhe der Logo/preise-Kante ziehen */
+@media (min-width: 75rem) {
+  .pm-lead-chairs {
+    align-self: flex-start;
+    margin-top: -15rem;
+  }
 }
 
-/* Right: Cards */
+/* Tablet + Mobile: Stühle nehmen volle Breite ein und shrinken proportional (%),
+   statt fixem clamp — sonst werden sie an den Rändern abgeschnitten. */
+@media (max-width: 64rem) {
+  .pm-lead {
+    margin: 4rem 0 0;   /* Topbar→Inhalt 4rem (About-Referenz) */
+    gap: 2rem;          /* vertikaler Abstand Stühle ↔ Text beim Wrappen */
+  }
+
+  .pm-lead-chairs {
+    width: 100%;
+    justify-content: center;
+    align-self: auto;
+    margin-top: 0;
+  }
+
+  .pm-lead-chair {
+    width: 44%;
+  }
+
+  .pm-lead-chair--a {
+    margin-left: -2%;
+  }
+}
+
+/* Cards */
 .pm-cards {
-  flex: 1;
   display: flex;
-  gap: 1.625rem;
-  align-items: flex-start;
+  gap: 3.25rem;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 7rem;
+  margin-bottom: 5rem;
 }
 
 .pm-card-wrap {
@@ -772,14 +778,21 @@ onBeforeUnmount(() => {
 
 /* Card */
 .card.pm-card {
-  border: 2px solid #141414;
-  border-radius: 0.625rem;
-  padding: 1.6875rem 2.1875rem;
+  border: 0.125rem solid rgba(20, 20, 20, 0.3);
+  border-radius: 1.25rem;
+  padding: 2rem 3rem;
   display: flex;
   flex-direction: column;
-  min-height: 34rem;
+  min-height: 37rem;
   background: transparent;
   box-shadow: none;
+  transition: border-color 0.35s ease 0.06s;
+}
+
+/* Hover: Border der Karte + Details-Box wird voll deckend (#141414), smooth + minimaler Delay */
+.pm-card-wrap:hover .card.pm-card,
+.pm-card-wrap:hover .pm-toggle-wrap {
+  border-color: #141414;
 }
 
 .pm-card-header {
@@ -831,9 +844,10 @@ onBeforeUnmount(() => {
 
 /* Wrapper trägt die Border — Toggle und Details sind borderlos darin */
 .pm-toggle-wrap {
-  border: 2px solid #141414;
-  border-radius: 0.625rem;
+  border: 0.125rem solid rgba(20, 20, 20, 0.3);
+  border-radius: 1.25rem;
   overflow: hidden;
+  transition: border-color 0.35s ease 0.06s;
 }
 
 /* Details toggle button */
@@ -959,48 +973,79 @@ onBeforeUnmount(() => {
   margin-bottom: 12rem;
 }
 
-.pm-faq-item {
-  border-top: 1px solid rgba(20, 20, 20, 0.3);
+/* „faq"-Section-Titel-Box vor dem Accordion (Optik/Responsive wie LandingPage) */
+.pm-faq-label {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  padding: 0 1rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.9rem;
+  margin: 0 0 3rem;
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 3.125rem);
+  line-height: 1;
+  color: #141414;
 }
 
+.pm-faq-item {
+  border-bottom: 0.09375rem solid #141414;
+}
 
 .pm-faq-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  padding: 2.25rem 0;
+  padding: 2.25rem 2rem;
   cursor: pointer;
 }
 
 .pm-faq-question {
   flex: 1;
-  font-size: clamp(1.8rem, 5vw, 3rem);
-  font-weight: 900;
-  line-height: 1.2;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.25;
   color: #141414;
   margin: 0;
 }
 
-.pm-faq-chevron-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* +/- Icon: zwei Balken; vertikaler skaliert beim Öffnen smooth auf 0 → Minus */
+.pm-faq-icon {
+  position: relative;
   flex-shrink: 0;
-  width: 3.375rem;
-  height: 3.375rem;
+  width: 1.8125rem;
+  height: 1.8125rem;
+  display: block;
+}
+
+.pm-faq-icon-bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   background: #141414;
-  border-radius: 0.625rem;
-  transition: background 0.3s ease;
+  border-radius: 0.0625rem;
+  transition: transform 0.3s ease;
 }
 
-.pm-faq-item--active .pm-faq-chevron-wrap {
-  background: #9687FF;
+.pm-faq-icon-bar--h {
+  width: 1.8125rem;
+  height: 0.125rem;
+  transform: translate(-50%, -50%);
 }
 
-.pm-faq-chevron {
-  width: 1.5625rem;
-  transform-origin: center;
+.pm-faq-icon-bar--v {
+  width: 0.125rem;
+  height: 1.8125rem;
+  transform: translate(-50%, -50%) scaleY(1);
+}
+
+.pm-faq-item--active .pm-faq-icon-bar--v {
+  transform: translate(-50%, -50%) scaleY(0);
 }
 
 .pm-faq-content {
@@ -1050,11 +1095,21 @@ onBeforeUnmount(() => {
     font-size: clamp(1.8rem, 5vw, 3rem);
   }
 
-  .pm-intro-heading,
+  .pm-lead-text,
   .pm-card-desc,
   .pm-toggle-label,
   .pm-faq-content p {
     font-size: clamp(1.5rem, 1.4vw, 1.6rem);
+  }
+
+  /* Pille auf Tablet schlanker (Radius bleibt konstant 20px) */
+  .pm-pill {
+    border-width: 0.09375rem;
+  }
+
+  /* Card-Gap auf Tablet = Gap Card↔Details */
+  .pm-cards {
+    gap: 1.625rem;
   }
 }
 
@@ -1155,53 +1210,55 @@ onBeforeUnmount(() => {
     bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px) + var(--pp-btn-lift, 0px));
   }
 
-  .pm-hero {
-    gap: 1rem;
-    padding-inline: 6%;
+  .pm-topbar {
+    padding-inline: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 4rem;
   }
 
-  .pm-intro {
-    display: contents;
+  .pm-logo {
+    height: 3.25rem;
   }
 
-  .pm-intro-text {
-    order: 1;
+  .pm-pill {
+    height: 3.25rem;
+    padding: 0 1rem;
+    border-radius: 0.9rem;
+    border-width: 0.09375rem;
+  }
+
+  .pm-pill-label {
+    font-size: 1.75rem;
+  }
+
+  .pm-lead {
+    padding-inline: 1rem;
+    margin: -2rem 0 0;
+  }
+
+  .pm-lead-text {
+    max-width: 100%;
+    /* zusätzliche 0.5rem links/rechts */
+    margin-inline: 0.5rem;
+  }
+
+  .pm-lead-chairs {
+    margin-bottom: 0.5rem;
+  }
+
+  .pm-lead-chair {
+    width: 54%;
   }
 
   .pm-cards {
     flex-direction: column;
-    order: 2;
+    padding-inline: 1rem;
+    gap: 1.625rem;
+    margin-bottom: 3rem;
   }
 
   .card.pm-card {
     min-height: 20rem;
-  }
-
-  .pm-chairs-wrap {
-    display: block;
-    order: 3;
-    width: 100%;
-    max-width: 100%;
-    margin: 3rem 0 0;
-    min-height: auto;
-    overflow: hidden;
-    transform: none;
-  }
-
-  .pm-chairs-picture--b,
-  .pm-chairs-mixed-picture {
-    display: none;
-  }
-
-  .pm-chairs-picture--a {
-    display: block;
-    width: 100%;
-  }
-
-  .pm-chairs-img--flipped {
-    width: 100%;
-    height: auto;
-    transform: scaleX(1) translateX(-0.5rem);
   }
 
   .pm-faq {
@@ -1209,13 +1266,33 @@ onBeforeUnmount(() => {
     margin: 7rem auto 7rem;
   }
 
-  .pm-faq-header {
-    padding: 1.5rem 1rem;
+  .pm-faq-label {
+    height: 3.25rem;
+    border-radius: 0.6rem;
+    border-width: 0.09375rem;
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
   }
 
-  .pm-faq-chevron-wrap {
-    width: 3rem;
-    height: 3rem;
+  .pm-faq-header {
+    padding: 1.5rem 0.6rem 1.5rem 0.2rem;
+  }
+
+  .pm-faq-content {
+    padding: 0 1rem;
+  }
+
+  .pm-faq-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .pm-faq-icon-bar--h {
+    width: 1.5rem;
+  }
+
+  .pm-faq-icon-bar--v {
+    height: 1.5rem;
   }
 
   .pm-faq-content p {
@@ -1227,7 +1304,7 @@ onBeforeUnmount(() => {
   .pm-faq-question {
     font-size: clamp(1.8rem, 5vw, 3rem);
     min-width: 0;
-    overflow-wrap: break-word;
+    /* nur deutsche Grammatik-Silbentrennung (lang=de), kein Umbruch mitten im Wort */
     hyphens: auto;
   }
 }
@@ -1327,5 +1404,14 @@ onBeforeUnmount(() => {
     margin-right: 0;
     margin-bottom: -6rem;
   }
+}
+
+/* Mobile: prominente Border-Radien um 1/3 verringern (wie Startseite) */
+@media (max-width: 40rem) {
+  .card.pm-card,
+  .pm-toggle-wrap { border-radius: 0.83rem; }
+  .pm-pill { border-radius: 0.6rem; }
+  .pp-close-btn { border-radius: 0.67rem; }
+  .pm-chevron-wrap { border-radius: 0.42rem; }
 }
 </style>

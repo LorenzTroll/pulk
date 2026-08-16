@@ -156,7 +156,7 @@ const isAbsolute = computed(() =>
             <h3>Adresse</h3>
             <ul>
               <li>Talstraße 7</li>
-              <li>06120 Halle</li>
+              <li>06120 Halle (Saale)</li>
               <li>
                 <a
                   href="https://www.google.com/maps?q=Talstraße+7,+06120+Halle+(Saale)"
@@ -245,8 +245,8 @@ const isAbsolute = computed(() =>
 .site-footer {
   background: #242424;
   color: #e7e8ec;
-  border-top-left-radius: 2rem;
-  border-top-right-radius: 2rem;
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
   font-family: 'LayGrotesk', sans-serif;
   position: absolute;
   left: 0;
@@ -257,6 +257,15 @@ const isAbsolute = computed(() =>
   display: flex;
   flex-direction: column;
   gap: 8rem;
+}
+
+/* Desktop + Tablet: Footer schwebt mit 1rem Rand, alle Ecken 1.25rem */
+@media (min-width: 40.0625rem) {
+  .site-footer {
+    margin: 0 1rem 1rem;
+    border-bottom-left-radius: 1.25rem;
+    border-bottom-right-radius: 1.25rem;
+  }
 }
 
 .footer-absolute {
@@ -552,7 +561,10 @@ const isAbsolute = computed(() =>
  * ---------------------------------------------------------------------------*/
 @media (max-width: 640px) {
   .site-footer {
-    padding: 4rem 7.5% 3rem;
+    /* (G) unteres Padding um die iOS-Safe-Area (Home-Indicator) erweitern,
+       damit die dunkle Footer-Fläche bis zum physischen Bildschirmrand reicht
+       und darunter kein heller Balken (html-Background #E7E8EC) durchscheint. */
+    padding: 4rem 7.5% calc(3rem + env(safe-area-inset-bottom, 0px));
     gap: 3rem;
     /* Hartes Width-Cap: Footer darf nie über den Viewport wachsen.
        overflow-x: clip stoppt zusätzlich Overflow aus Children ohne
@@ -601,6 +613,16 @@ const isAbsolute = computed(() =>
        line-height-Property. min-height greift. */
     line-height: 2rem;
     min-height: 2rem;
+  }
+
+  /* „Cookies verwalten" ist ein Button, war aber im Mobile-Block nicht
+     mit verkleinert → gleiche Schriftgröße wie die übrigen Footer-Links. */
+  .footer-cookie-btn {
+    font-size: 1.1rem;
+    line-height: 2rem;
+    min-height: 2rem;
+    /* eine Zeile (Text ist nur ~1px breiter als die Grid-Zelle) */
+    white-space: nowrap;
   }
 
   .footer-legal {

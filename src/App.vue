@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
     <div id="end-sentinel" style="height:1px"></div>
     <SiteFooter
       v-if="showFooter"
-      instagram-url="https://instagram.com/pulk.space"
+      instagram-url="https://www.instagram.com/pulk.space"
       impressum-href="/impressum/"
       datenschutz-href="/datenschutz/"
       company="Pulk"

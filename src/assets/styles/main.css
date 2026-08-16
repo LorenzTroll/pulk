@@ -58,20 +58,20 @@ body, #app, #app.plain-background {
   overflow-x: clip;
 }
 
-/* AboutPage und AboutModal: dunkler Body-Background nur auf Mobile, damit
-   die Save-Area (Notch oben + Home-Indicator unten) farblich zum dunklen
-   Modal-Inhalt passt. :has(.about-wrap) greift wenn AboutPage als Route
-   aktiv ist oder AboutModal mit v-if="visible" rendert — sobald
-   geschlossen, fällt der Background automatisch zurück auf #E7E8EC.
-   Die URL-Pille bleibt dynamisch, weil das Modal seit dem Inner-Scroll-
-   Fix dem window-scroll-Pattern folgt (siehe Mobile-Block in AboutModal). */
-@media (max-width: 640px) {
-  html:has(.about-wrap),
-  body:has(.about-wrap),
-  #app:has(.about-wrap),
-  #app.plain-background:has(.about-wrap) {
-    background: #141414 !important;
-  }
+/* AboutPage und AboutModal: dunkler Hintergrund auf ALLEN Breakpoints.
+   - Mobile: passt die Save-Area (Notch oben + Home-Indicator unten) farblich
+     zum dunklen Modal-/Seiten-Inhalt an.
+   - Desktop/Tablet: der schwebende Footer (position:relative, 1rem-Ränder)
+     liegt sonst auf dem transparenten .main-container → hellem #app durch.
+     Der dunkle #app-Background füllt Ränder + Fläche hinter dem Footer
+     (ersetzt den nicht-responsiven padding-bottom/margin-bottom-Hack).
+   :has(.about-wrap) greift für Route + Modal (v-if="visible"); nach Schließen
+   fällt der Background automatisch auf #E7E8EC zurück. */
+html:has(.about-wrap),
+body:has(.about-wrap),
+#app:has(.about-wrap),
+#app.plain-background:has(.about-wrap) {
+  background: #141414 !important;
 }
 
 :root {

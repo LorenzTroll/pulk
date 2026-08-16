@@ -23,6 +23,8 @@ import { useRevealUp } from '@/composables/useRevealUp'
 import { track } from '@/utils/tracking'
 
 import pulkContactImage from '@/assets/pulk_contact-imageA.png?w=640;1200;2000&format=avif;webp;jpg&as=picture'
+// Topbar-Logo (gleiches Logo wie Pricing/About) — hier dunkel auf hellem BG
+import pulkLogo from '@/assets/pulk-logo_E2.svg'
 
 /* Calendar wird lazy geladen: erst wenn das Date-Picker-Overlay tatsächlich
    geöffnet wird (showCalendar=true). Spart 119 KB raw / 42 KB gzip im
@@ -462,6 +464,12 @@ function handleFormSubmit() {
       data-lenis-prevent-wheel
       data-lenis-prevent-touch
     >
+      <!-- Topbar: Logo + anfrage-Box (analog Pricing/About; kein H1, da co-title bereits H1 ist) -->
+      <header class="co-topbar">
+        <img :src="pulkLogo" class="co-logo" alt="PULK" width="169" height="92" />
+        <div class="co-pill"><span class="co-pill-label">anfrage</span></div>
+      </header>
+
       <!-- Haupt-Layout -->
       <div class="co-content">
 
@@ -490,10 +498,8 @@ function handleFormSubmit() {
         <!-- Formularbereich -->
         <div class="co-form-wrap">
           <div class="co-text-block">
-            <h1 class="co-title">Anfrage senden</h1>
             <p class="co-subtitle">
-              Plant ihr was? Erzähl uns davon und wir melden uns innerhalb von 24 Stunden mit einem Vorschlag. Unverbindlich, ohne Haken.
-              Auf Wunsch könnt ihr den Raum vorher besichtigen.
+              Plant ihr was? Sendet uns eine Anfrage. Erzähl uns davon und wir melden uns innerhalb von 24 Stunden. Unverbindlich, ohne Haken. Auf Wunsch könnt ihr den Raum vorher besichtigen. Das Pulk hat keine festen Öffnungszeiten. Der Raum wird ausschließlich nach Vereinbarung vermietet, sowohl an allen Wochentagen und am Wochenende.
             </p>
           </div>
 
@@ -635,8 +641,44 @@ function handleFormSubmit() {
   align-self: flex-start;
   box-sizing: border-box;
   font-family: 'LayGrotesk', sans-serif;
-  padding: 2rem 7.25% 1.8rem 2rem;
+  /* padding-top 3.3rem = gleiche Topbar-Startposition wie Preise/About */
+  padding: 3.3rem 5.8% 1rem 1rem;
   position: relative;
+}
+
+/* ============================================================================
+ * Topbar: Logo + anfrage-Box (analog Pricing/About). Dunkel auf hellem BG.
+ * ============================================================================*/
+.co-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 6.5rem;
+}
+
+.co-logo {
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  width: auto;
+  display: block;
+}
+
+.co-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: clamp(3.25rem, 4.8vw, 5.75rem);
+  padding: 0 1rem;
+  border: 0.125rem solid #141414;
+  border-radius: 0.9rem;
+}
+
+.co-pill-label {
+  font-family: 'LayGrotesk', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.75rem, 2.6vw, 3.125rem);
+  line-height: 1;
+  color: #141414;
 }
 
 /* ============================================================================
@@ -962,11 +1004,46 @@ function handleFormSubmit() {
 }
 
 /* ============================================================================
+ * Desktop: Bild als gerahmtes Panel (1rem oben/links/unten zum Rand),
+ * etwas schmaler als die Formularspalte, damit die zentrierte Bottom-Nav
+ * rechts daneben Platz hat und nicht überlappt. Spiegelt ContactPage.
+ * ============================================================================*/
+@media (min-width: 64.0625rem) {
+  /* Desktop: Logo+Box (Topbar) absolut oben-links ÜBER dem Bild; das Bild nimmt
+     die volle Höhe (97vh). Das Formular startet per padding-top unter der Topbar. */
+  .contact-overlay {
+    padding-top: 1.3rem;
+  }
+
+  .co-topbar {
+    position: absolute;
+    /* gleiche Logo+Box-Position wie die anderen Modals (Topbar-Start 3.3rem/5.8%) */
+    top: 3.3rem;
+    left: 5.8%;
+    margin: 0;
+    z-index: 10; /* über dem Bild (image-wrap bildet via reveal-up einen Stacking-Context) */
+  }
+
+  /* Gelber Box-Hintergrund NUR Desktop (dort liegt die Box über dem Bild) */
+  .co-pill {
+    background-color: #E6CE2E;
+  }
+
+  .co-image {
+    height: 97vh;
+  }
+
+  .co-form-wrap {
+    padding-top: 7rem;
+  }
+}
+
+/* ============================================================================
  * Tablet
  * ============================================================================*/
 @media (max-width: 64rem) {
   .contact-overlay {
-    padding: 2rem 7.25% 2rem;
+    padding: 3.3rem 5.8% 2rem;
   }
 
   .co-content {
@@ -1008,15 +1085,36 @@ function handleFormSubmit() {
  * ============================================================================*/
 @media (max-width: 40rem) {
   .contact-overlay {
-    padding: 3rem 6% 6rem;
+    padding: 1rem 1rem 3rem;
   }
+
+  /* zusätzliche 0.5rem links/rechts + volle Breite auf Mobile */
+  .co-subtitle {
+    max-width: 100%;
+    margin: 0 0.5rem;
+  }
+
+  /* Topbar mobil (analog Pricing/About) */
+  .co-topbar {
+    gap: 0.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .co-logo { height: 3.25rem; }
+
+  .co-pill {
+    height: 3.25rem;
+    border-width: 0.09375rem;
+  }
+
+  .co-pill-label { font-size: 1.75rem; }
 
   .co-content {
     gap: 0rem;
   }
 
   .co-title {
-    padding-top: 1rem;
+    padding-top: 0;
   }
 
   .co-row {
@@ -1031,11 +1129,21 @@ function handleFormSubmit() {
 
   .co-form-wrap {
     order: 1;
+    /* Abstand Form → Bild identisch zum Feld-Abstand der Form (.co-form gap = 1.1875rem) */
+    margin-bottom: 1.1875rem;
   }
 
   .co-image-wrap {
     order: 2;
     min-height: 30rem;
   }
+}
+
+/* Mobile: prominente Border-Radien um 1/3 verringern (wie Startseite) */
+@media (max-width: 40rem) {
+  .co-image-wrap,
+  .co-form input,
+  .co-form textarea,
+  .co-select-wrap select { border-radius: 0.42rem; }
 }
 </style>
