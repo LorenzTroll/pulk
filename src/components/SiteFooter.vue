@@ -186,6 +186,7 @@ const isAbsolute = computed(() =>
             <ul>
               <li><router-link :to="datenschutzHref">Datenschutz</router-link></li>
               <li><router-link :to="impressumHref">Impressum</router-link></li>
+              <li><router-link to="/grounding/pulk-de/">Grounding Page</router-link></li>
               <li>
                 <button type="button" class="footer-cookie-btn" @click="openCookieSettings">
                   Cookies verwalten

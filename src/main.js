@@ -64,6 +64,10 @@ const router = createRouter({
     { path: '/impressum',   name: 'impressum',  component: Impressum },
     { path: '/datenschutz', name: 'datenschutz',component: Datenschutz },
 
+    /* GEO Grounding Pages (indexiert, DE/EN — maschinenlesbare Faktenseite) */
+    { path: '/grounding/pulk-de', name: 'groundingDe', component: () => import('@/views/GroundingPage.vue'), props: { lang: 'de' } },
+    { path: '/grounding/pulk-en', name: 'groundingEn', component: () => import('@/views/GroundingPage.vue'), props: { lang: 'en' } },
+
     /* 404 */
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   ],
@@ -72,7 +76,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // Alle SEO-Seiten, auf denen KEIN Modal laufen soll
-  const seoPaths = ['/datenschutz', '/impressum', '/about', '/preise', '/anfragen']
+  const seoPaths = ['/datenschutz', '/impressum', '/about', '/preise', '/anfragen', '/grounding/pulk-de', '/grounding/pulk-en']
 
   // Trailing-Slash normalisieren: Footer-Links verwenden '/about/' etc. —
   // ohne Normalisierung matcht includes() nicht und destroyLenis() wird

@@ -15,6 +15,8 @@ const ROUTES = [
   { path: '/anfragen', out: 'anfragen/index.html' },
   { path: '/impressum', out: 'impressum/index.html' },
   { path: '/datenschutz', out: 'datenschutz/index.html' },
+  { path: '/grounding/pulk-de', out: 'grounding/pulk-de/index.html' },
+  { path: '/grounding/pulk-en', out: 'grounding/pulk-en/index.html' },
   { path: '/_prerender-404', out: '404.html' },
 ]
 

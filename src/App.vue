@@ -55,7 +55,7 @@ const showFooter = computed(() => {
   const current = router.currentRoute.value
   console.log('🧭 Aktuelle Route:', current.name, current.matched)
 
-  return current?.matched?.length > 0 && current?.name !== 'NotFound' && current?.name !== 'preise' && current?.name !== 'anfragen'
+  return current?.matched?.length > 0 && current?.name !== 'NotFound' && current?.name !== 'preise' && current?.name !== 'anfragen' && current?.name !== 'groundingDe' && current?.name !== 'groundingEn'
 })
 
 const LEGAL_PATHS = ['/datenschutz', '/impressum']
