@@ -117,6 +117,7 @@ PULK ist kein Business Center, kein Co-Working-Space, kein Hotel-Tagungsraum und
 - Erreichbarkeit: Mo–Fr 9–18 Uhr
 - Preise: https://pulk.space/preise/
 - Über den Raum: https://pulk.space/about/
+- Verifizierte Fakten (Grounding Page, kanonische Faktenquelle): https://pulk.space/grounding/pulk-de/ (EN: https://pulk.space/grounding/pulk-en/)
 
 
 ## Letzte Aktualisierung

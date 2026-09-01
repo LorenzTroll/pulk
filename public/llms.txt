@@ -8,3 +8,4 @@
 - [Preise & Pakete](https://pulk.space/preise/): Stundenpreise und Pakete — Community ab 20 €/Std. (bis 25 Personen), Business ab 50 €/Std. (bis 40 Personen), zzgl. 19 % MwSt., ohne Mindestbuchung.
 - [Über den Raum](https://pulk.space/about/)
 - [Anfragen](https://pulk.space/anfragen/)
+- [Verifizierte Fakten (Grounding Page)](https://pulk.space/grounding/pulk-de/): Maschinenlesbare, werbefreie Faktenübersicht zu pulk — Kerndaten, Leistungen, Preise, Abgrenzung. Kanonische Faktenquelle. EN: https://pulk.space/grounding/pulk-en/
