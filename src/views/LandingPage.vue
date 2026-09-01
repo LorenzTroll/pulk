@@ -898,7 +898,7 @@ const menuRevealStyle = computed(() => {
           <span class="review-deco review-deco--br"></span>
         </div>
         <div class="review-col review-col--img3 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.12">
-          <img :src="pulkPostit" alt="" aria-hidden="true" class="review-postit" />
+          <div class="review-postit" aria-hidden="true" :style="{ '--postit-img': `url(${pulkPostit})` }"></div>
           <Pic :image="reviewImageC" alt="Zufriedene Kundin im Workshopraum PULK Halle (Saale)" loading="lazy" sizes="(max-width: 640px) 100vw, 28vw" />
         </div>
         <div class="review-col review-col--img4 reveal-up" data-reveal-start="top 75%" data-reveal-delay="0.24">
@@ -1493,7 +1493,7 @@ const menuRevealStyle = computed(() => {
    Breakpoints proportional mit dem Container mit (aspekt-unabhängig, responsive).
    Horizontaler Überstand wird von html/body/.main-container (overflow-x:clip)
    abgefangen → kein horizontales Scrollen. */
-.review-col--img3 img.review-postit {
+.review-col--img3 .review-postit {
   position: absolute;
   z-index: -1;
   /* Anker: links + unten. Das reale Foto ist deutlich höher (portrait) als in
@@ -1507,7 +1507,11 @@ const menuRevealStyle = computed(() => {
   bottom: 0;
   left: 0;
   width: clamp(20rem, 115%, 28rem);
-  height: auto;
+  aspect-ratio: 1851 / 1952;
+  background-image: var(--postit-img);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   transform: translate(-5.29%, 24.8%) rotate(8deg);
   pointer-events: none;
   user-select: none;
@@ -1517,7 +1521,7 @@ const menuRevealStyle = computed(() => {
    Nicht auf Tablet/Mobile — dort ist das Foto ~volle Breite, ein Links-Versatz
    würde die Notiz links anschneiden. */
 @media (min-width: 64.0625rem) {
-  .review-col--img3 img.review-postit {
+  .review-col--img3 .review-postit {
     left: -5rem;
   }
 }
