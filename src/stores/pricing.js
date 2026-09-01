@@ -30,12 +30,12 @@ export const usePricingStore = defineStore('pricing', () => {
         'Teeküche / Tresen',
         'Fernseher 50 Zoll',
         'Beamer',
+        'Mikrofonierung',
         'Pinnwand',
         'Whiteboard'
       ],
       onRequest: [
-        'Catering / Getränke',
-        'Mikrofonierung'
+        'Catering / Getränke'
       ],
 
       description: ''
