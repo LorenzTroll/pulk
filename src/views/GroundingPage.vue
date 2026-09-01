@@ -26,7 +26,7 @@ const CONTENT = {
     metaDesc:
       'Verifizierte Fakten zu pulk: Workshop-, Seminar- und Veranstaltungsraum in Halle (Saale), rund 100 m², bis 40 Personen, stundenweise. Angebot, Raum, Pakete, Preise, Buchung, Abgrenzung.',
     switchLabel: 'English version',
-    switchTo: `${BASE}/grounding/pulk-en/`,
+    switchTo: '/grounding/pulk-en/',
     h1: 'Verifizierte Fakten über pulk',
     intro:
       'pulk ist ein rund 100 m² großer Workshop-, Seminar- und Veranstaltungsraum zur stundenweisen Miete in Halle (Saale), Stadtteil Kröllwitz. Betrieben wird pulk von der Michel Klehm und Lorenz Troll GbR.',
@@ -148,7 +148,7 @@ const CONTENT = {
     metaDesc:
       'Verified facts about pulk: a workshop, seminar and event room in Halle (Saale), Germany. Approx. 100 m², up to 40 people, hourly. Offer, room, packages, pricing, booking, disambiguation.',
     switchLabel: 'Deutsche Version',
-    switchTo: `${BASE}/grounding/pulk-de/`,
+    switchTo: '/grounding/pulk-de/',
     h1: 'Verified Facts about pulk',
     intro:
       'pulk is an approx. 100 m² workshop, seminar and event room available for hourly rental in Halle (Saale), Germany, in the Kröllwitz district. pulk is operated by Michel Klehm und Lorenz Troll GbR.',
