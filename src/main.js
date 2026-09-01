@@ -17,9 +17,9 @@ import LandingPage from '@/views/LandingPage.vue'
 import Impressum    from '@/views/Impressum.vue'
 import Datenschutz  from '@/views/Datenschutz.vue'
 import NotFound from '@/views/NotFound.vue'
-import AboutPage from '@/views/AboutPage.vue'
-import PricingPage from '@/views/PricingPage.vue'
-import ContactPage from '@/views/ContactPage.vue'
+// AboutPage/PricingPage/ContactPage werden ausschließlich lazy in den Routen
+// geladen (() => import). Kein statischer Top-Import → sie bleiben aus dem
+// Initial-Bundle (das war vorher doppelt importiert und hob das Splitting auf).
 
 import { destroyLenis } from '@/composables/useLenis.js'
 

@@ -3,10 +3,9 @@
 User-agent: *
 Allow: /
 
-# Blockiere Modal-Varianten (Duplicate Content vermeiden)
-Disallow: /*?modal=about
-Disallow: /*?modal=preise
-Disallow: /*?modal=anfragen
+# Modal-Routen (/modal/*) sind bewusst crawlbar und per <meta robots="noindex">
+# von der Indexierung ausgenommen — ein Disallow würde verhindern, dass Crawler
+# das noindex überhaupt lesen (URL könnte sonst "blockiert" doch indexiert werden).
 
 # AI-Crawler / LLM-Training — explizit erlaubt
 User-agent: GPTBot
