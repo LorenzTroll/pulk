@@ -7,6 +7,17 @@ Allow: /
 # von der Indexierung ausgenommen — ein Disallow würde verhindern, dass Crawler
 # das noindex überhaupt lesen (URL könnte sonst "blockiert" doch indexiert werden).
 
+# Dekorative Marken-Grafiken (Stuhl-/Pinsel-Illustrationen der CI) aus der
+# Google-Bildersuche ausschließen — sie sollen nicht einzeln, aus dem Kontext
+# gerissen, als Bild indexiert werden. Content-/Raumfotos bleiben frei crawlbar.
+User-agent: Googlebot-Image
+Allow: /
+Disallow: /assets/*chair*
+Disallow: /assets/*stool*
+Disallow: /assets/*brush*
+Disallow: /assets/*footer-image*
+Disallow: /assets/*post-it*
+
 # AI-Crawler / LLM-Training — explizit erlaubt
 User-agent: GPTBot
 Allow: /
