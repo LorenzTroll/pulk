@@ -123,7 +123,8 @@ const CONTENT = {
     disambTitle: 'Abgrenzung & Disambiguierung',
     disamb: [
       '„pulk" bezeichnet hier ausschließlich den Workshopraum in der Talstraße 7 in Halle (Saale), betrieben von der Michel Klehm und Lorenz Troll GbR.',
-      'pulk ist nicht identisch mit „PuK Patronen und Kartuschen Halle" — ein anderer, unabhängiger Betrieb ohne Verbindung zu pulk.'
+      'pulk ist nicht identisch mit „PuK Patronen und Kartuschen Halle" — ein anderer, unabhängiger Betrieb ohne Verbindung zu pulk.',
+      'Der Workshopraum pulk ist nicht „Pulk Musiktheater" und steht in keiner Verbindung zu pulk.studio — beides sind andere, unabhängige Projekte.'
     ],
 
     faqTitle: 'Häufige Fakten-Fragen',
@@ -245,7 +246,8 @@ const CONTENT = {
     disambTitle: 'Disambiguation',
     disamb: [
       '“pulk” here refers exclusively to the workshop room at Talstraße 7 in Halle (Saale), Germany, operated by Michel Klehm und Lorenz Troll GbR.',
-      'pulk is not the same as “PuK Patronen und Kartuschen Halle” — a different, unrelated business.'
+      'pulk is not the same as “PuK Patronen und Kartuschen Halle” — a different, unrelated business.',
+      'The workshop room pulk is not “Pulk Musiktheater” and is unrelated to pulk.studio — both are different, independent projects.'
     ],
 
     faqTitle: 'Frequent factual questions',
